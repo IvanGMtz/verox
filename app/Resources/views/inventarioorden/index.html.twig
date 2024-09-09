@@ -1,0 +1,174 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Listado de órdenes de inventario{% endblock %}
+{% block avanzu_page_title %}Listado de órdenes de inventario{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de órdenes de inventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            
+          <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            
+          {#  <div class="form-group ml-sm-1">
+              <label for="ref1" class="sr-only">ref1</label>
+              <input type="text" class="form-control" id="ref1" name="q[ref1]" placeholder="Ref1" {% if q and q.ref1 %}value="{{ q.ref1 }}"{% endif %}>
+            </div>            
+            <div class="form-group ml-sm-1">
+              <label for="ref2" class="sr-only">ref2</label>
+              <input type="text" class="form-control" id="ref2" name="q[ref2]" placeholder="Ref2" {% if q and q.ref2 %}value="{{ q.ref2 }}"{% endif %}>
+            </div>            
+            <div class="form-group ml-sm-1">
+              <label for="ref3" class="sr-only">ref3</label>
+              <input type="text" class="form-control" id="ref3" name="q[ref3]" placeholder="Ref3" {% if q and q.ref3 %}value="{{ q.ref3 }}"{% endif %}>
+            </div>            #}
+          {#  <div class="form-group ml-sm-1">
+              <label for="descripcion" class="sr-only">descripcion</label>
+              <input type="text" class="form-control" id="descripcion" name="q[descripcion]" placeholder="Descripcion" {% if q and q.descripcion %}value="{{ q.descripcion }}"{% endif %}>
+            </div>            #}
+            <div class="form-group ml-sm-1">
+              <label for="departamentoSolicita" class="sr-only">Departamento solicita</label>
+              <input type="text" class="form-control" id="departamentoSolicita" name="q[departamentoSolicita]" placeholder="Departamento solicita" {% if q and q.departamentoSolicita %}value="{{ q.departamentoSolicita }}"{% endif %}>
+            </div>            
+           {# <div class="form-group ml-sm-1">
+              <label for="estado" class="sr-only">estado</label>
+              <input type="text" class="form-control" id="estado" name="q[estado]" placeholder="Estado" {% if q and q.estado %}value="{{ q.estado }}"{% endif %}>
+            </div> #}         
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('inventarioorden_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaCreacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fecha de creación', 'a.fechaCreacion') }}
+                  </th>
+                  <th class="nowrap">
+                    Solicitado por
+                  </th>
+                {#  <th class="nowrap {% if pagination.isSorted('a.fechaActualizacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fechaactualizacion', 'a.fechaActualizacion') }}
+                  </th>#}
+                {#  <th class="nowrap {% if pagination.isSorted('a.ref1') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Ref1', 'a.ref1') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.ref2') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Ref2', 'a.ref2') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.ref3') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Ref3', 'a.ref3') }}
+                  </th>#}
+                  <th class="nowrap {% if pagination.isSorted('a.descripcion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Descripción', 'a.descripcion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.departamentoSolicita') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Departamento solicita', 'a.departamentoSolicita') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaAceptacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fecha aceptación', 'a.fechaAceptacion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaRecibe') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fecha despacho', 'a.fechaRecibe') }}
+                  </th>
+                  <th class="nowrap text-center {% if pagination.isSorted('a.estado') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Estado', 'a.estado') }}
+                  </th>
+                  {#<th class="nowrap {% if pagination.isSorted('a.tienePendientes') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Tienependientes', 'a.tienePendientes') }}
+                  </th>#}
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for inventarioOrden in inventarioOrdens %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('inventarioorden_show', { 'id': inventarioOrden.id }) }}">{{ inventarioOrden.id }}</a></td>
+                  <td class="nowrap" data-sort-value="{% if inventarioOrden.fechaCreacion %}{{ inventarioOrden.fechaCreacion|date('U') }}{% endif %}">{% if inventarioOrden.fechaCreacion %}{{ inventarioOrden.fechaCreacion|date('d-m-Y') }}<br>{{ inventarioOrden.fechaCreacion|date('h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap"><b>{{ inventarioOrden.usuarioCreacion }}</b></td>
+{#                  <td class="nowrap" data-sort-value="{% if inventarioOrden.fechaActualizacion %}{{ inventarioOrden.fechaActualizacion|date('U') }}{% endif %}">{% if inventarioOrden.fechaActualizacion %}{{ inventarioOrden.fechaActualizacion|date('d-m-Y h:i:s a') }}{% endif %}</td>#}
+                 {# <td class="nowrap">{{ inventarioOrden.ref1 }}</td>
+                  <td class="nowrap">{{ inventarioOrden.ref2 }}</td>
+                  <td class="nowrap">{{ inventarioOrden.ref3 }}</td>#}
+                  <td class="nowrap">{{ inventarioOrden.descripcion }}</td>
+                  <td class="nowrap">{{ inventarioOrden.departamentoSolicita }}</td>
+                  <td class="nowrap" data-sort-value="{% if inventarioOrden.fechaAceptacion %}{{ inventarioOrden.fechaAceptacion|date('U') }}{% endif %}">{% if inventarioOrden.fechaAceptacion %}{{ inventarioOrden.fechaAceptacion|date('d-m-Y') }}<br>{{ inventarioOrden.fechaAceptacion|date('h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap" data-sort-value="{% if inventarioOrden.fechaRecibe %}{{ inventarioOrden.fechaRecibe|date('U') }}{% endif %}">{% if inventarioOrden.fechaRecibe %}{{ inventarioOrden.fechaRecibe|date('d-m-Y') }}<br>{{ inventarioOrden.fechaRecibe|date('h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap text-center">
+                    {% if inventarioOrden.estado == 1 %}
+                    <div class="badge badge-info">
+                      Pendiente<br>aprobación
+                    </div>
+                    {% elseif inventarioOrden.estado == 2 %}
+                    <div class="badge badge-warning">
+                      Pendiente<br>entrega
+                    </div>
+                    {% elseif inventarioOrden.estado == 3 %}
+                    <div class="badge badge-success">
+                      Entregado
+                    </div> 
+                    {% elseif inventarioOrden.estado == 0 %}
+                    <div class="badge badge-danger">
+                      Rechazada
+                    </div> 
+                    {% endif %}
+                  </td>
+{#                  <td class="nowrap">{% if inventarioOrden.tienePendientes %}Si{% else %}No{% endif %}</td>#}
+                  <td class="nowrap text-center">                                                  
+                    <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('inventarioorden_show', { 'id': inventarioOrden.id }) }}"><i class="fa fa-eye"></i></a>
+                    <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('inventarioorden_edit', { 'id': inventarioOrden.id }) }}"><i class="fa fa-edit"></i></a>
+                  </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

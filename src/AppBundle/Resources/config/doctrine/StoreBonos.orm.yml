@@ -1,0 +1,82 @@
+AppBundle\Entity\StoreBonos:
+    type: entity
+    table: store_bonos
+    indexes:
+        fk_bono_usuario:
+            columns:
+                - usuario
+        fk_bono_producto:
+            columns:
+                - producto
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        codigo:
+            type: string
+            nullable: false
+            length: 500
+            options:
+                fixed: false
+        valor:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        fechaVencimiento:
+            type: datetime
+            nullable: false
+            column: fecha_vencimiento
+        estatus:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                fixed: false
+        clienteTipo:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+        freeShipping:
+            type: integer
+            nullable: false
+    manyToOne:
+        producto:
+            targetEntity: Producto
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                producto:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuario:
+            targetEntity: StoreUsuarios
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario:
+                    referencedColumnName: id
+            orphanRemoval: false
+        categoria:
+            targetEntity: ProductoCategoria
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                categoria:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

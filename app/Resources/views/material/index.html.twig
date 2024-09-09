@@ -1,0 +1,160 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Materiales{% endblock %}
+{% block avanzu_page_title %}Materiales{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de materiales</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+
+        <form class="form-inline pull-left" method="POST">
+          {# <div class="form-group ml-sm-1">
+            <label for="referencia" class="sr-only">Referencia</label>
+            <input type="text" class="form-control" id="referencia" name="q[referencia]" placeholder="Referencia" {% if q and q.referencia %}value="{{ q.referencia }}"{% endif %}>
+          </div> #}
+          <div class="form-group ml-sm-1">
+            <label for="presentacion" class="sr-only">Referencia</label>
+            <input type="text" class="form-control" id="presentacion" name="q[presentacion]" placeholder="Referencia" {% if q and q.presentacion %}value="{{ q.presentacion }}"{% endif %}>
+          </div>
+          <div class="form-group ml-sm-1">
+            <label for="nombre" class="sr-only">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="q[nombre]" placeholder="Nombre" {% if q and q.nombre %}value="{{ q.nombre }}"{% endif %}>
+          </div>
+          <div class="form-group ml-sm-1">
+            <label for="color" class="sr-only">Color</label>
+            <input type="text" class="form-control" id="color" name="q[color]" placeholder="Color" {% if q and q.color %}value="{{ q.color }}"{% endif %}>
+          </div>
+          <div class="form-group ml-sm-1">
+            <label for="marca" class="sr-only">Marca</label>
+            <input type="text" class="form-control" id="marca" name="q[marca]" placeholder="Marca" {% if q and q.marca %}value="{{ q.marca }}"{% endif %}>
+          </div>
+          <div class="form-group ml-sm-1">
+            <label for="categoria" class="sr-only">Categoría</label>
+            <select class="form-control" name="q[categoria-equal]">
+              <option value=""  {% if not q or q is null or not q['categoria-equal'] or q['categoria-equal'] is null %}selected{% endif %}>Cualquier categoría</option>
+              {% for categoria in categorias %}
+                <option value="{{ categoria.id }}" {% if q and q['categoria-equal'] and q['categoria-equal'] == categoria.id %}selected{% endif %}>{{ categoria }}</option>
+              {% endfor %}
+            </select>
+{#            <input type="text" class="form-control" id="color" name="q[marca]" placeholder="Marca" {% if q and q.marca %}value="{{ q.marca }}"{% endif %}>#}
+          </div>
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('material_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo Material
+              </a>
+              <a href="{{ path('materialcolor_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo Color
+              </a>
+              <a href="{{ path('materialmedida_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nueva Medida
+              </a>
+              <a href="{{ path('materialnombre_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo Nombre
+              </a>
+              <a href="{{ path('materialcategoria_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nueva Categoría
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">
+        <table class="table table-sm table-bordered table-hover"  data-filtering="false">
+          <thead>
+              <tr>
+                  {# <th></th> #}
+{#                  <th class="nowrap{% if pagination.isSorted('a.id') %} sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}</th>#}
+                  <th class="nowrap{% if pagination.isSorted('a.presentacion') %} sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'Referencia', 'a.presentacion') }}</th>
+                  <th class="nowrap{% if pagination.isSorted('a.nombre') %} sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'Nombre', 'a.nombre') }}</th>
+{#                  <th class="nowrap">Descripcion</th>#}
+{#                  <th class="nowrap">Imagen</th>#}
+                  <th class="nowrap">Tamaño</th>
+                  <th class="nowrap{% if pagination.isSorted('a.color') %} sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'Color', 'a.color') }}</th>
+                  <th class="nowrap">Marca</th>
+                  <th class="nowrap">Categoría</th>
+                 {# <th class="nowrap">Ancho</th>
+                  <th class="nowrap">Largo</th>#}
+{#                  <th class="nowrap">Composicion</th>#}
+{#                  <th class="nowrap">Unidades</th>#}
+                  {# <th class="nowrap">Presentación</th> #}
+             {#     <th class="nowrap">Fechacreacion</th>
+                  <th class="nowrap">Fechaactualizacion</th>
+                  <th class="nowrap">Estado</th>#}
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for material in materials %}
+              <tr>
+                  {# <td class="text-center">
+                      <img style="height: 40px" src="{{ vich_uploader_asset(material, 'foto') }}" class="img-fluid" alt="{{ material.referencia }}" />
+                  </td> #}
+{#                  <td class="nowrap"><a href="{{ path('material_show', { 'id': material.id }) }}">{{ material.id }}</a></td>#}
+                  <td class="nowrap">{{ material.presentacion }}</td>
+                  <td class="nowrap">{{ material.nombre }}</td>
+
+                  <td class="nowrap">{{ material.medida }}</td>
+{#                  <td class="nowrap">{{ material.imagen }}</td>#}
+                  <td class="nowrap">{{ material.color }}</td>
+                  <td class="nowrap">{{ material.marca }}</td>
+                  <td class="nowrap">{{ material.categoria }}</td>
+              {#    <td class="nowrap">{{ material.ancho }}</td>
+                  <td class="nowrap">{{ material.largo }}</td>#}
+              {#    <td class="nowrap">{{ material.composicion }}</td>
+                  <td class="nowrap">{{ material.unidades }}</td>#}
+                  {# <td class="nowrap">{{ material.presentacion }}</td> #}
+                {#  <td class="nowrap" data-sort-value="{% if material.fechaCreacion %}{{ material.fechaCreacion|date('U') }}{% endif %}">{% if material.fechaCreacion %}{{ material.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap" data-sort-value="{% if material.fechaActualizacion %}{{ material.fechaActualizacion|date('U') }}{% endif %}">{% if material.fechaActualizacion %}{{ material.fechaActualizacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap">{{ material.estado }}</td>#}
+                  <td class="nowrap text-center">
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('material_show', { 'id': material.id }) }}"><i class="fa fa-eye"></i></a>
+
+
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('material_edit', { 'id': material.id }) }}"><i class="fa fa-edit"></i></a>
+
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+
+  </script>
+{% endblock %}

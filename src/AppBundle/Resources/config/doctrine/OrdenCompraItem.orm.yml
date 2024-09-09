@@ -1,0 +1,101 @@
+AppBundle\Entity\OrdenCompraItem:
+    type: entity
+    table: orden_compra_item
+    indexes:
+        orden_compra:
+            columns:
+                - orden_compra
+        estado:
+            columns:
+                - estado
+        material:
+            columns:
+                - material
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        cantidad:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        valorUnidad:
+            type: float 
+            nullable: false
+            precision: 25
+            scale: 2
+            column: valor_unidad
+        referencia:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+        valorTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            column: valor_total
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+        enInventario:
+            type: float
+            nullable: true
+            options:
+                default: 0
+            column: en_inventario
+        fechaIngresoInventario:
+            type: datetime
+            nullable: true
+            column: fecha_ingreso_inventario
+    manyToOne:
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenCompra:
+            targetEntity: OrdenCompra
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: items
+            inversedBy: items
+            joinColumns:
+                orden_compra:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

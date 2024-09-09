@@ -1,0 +1,35 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% extends 'AvanzuAdminThemeBundle:layout:login-layout.html.twig' %}
+{% block avanzu_login_box %}
+  <div class="login">
+    <div id="login">
+{#      <div class="login-box" style="width:100%">#}
+{#          <div class="login-box-body p-3 p-md-5 rounded">#}
+            <img src="/bundles/appbundle/logo.png" alt="Enterprise logo">
+            <br>
+            {% block avanzu_login_box_msg %}
+                <h3 class="mt-2">Recuperar contraseña</h3>
+                {% if error|default(false) %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+            {% endblock %}
+            <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
+                <div class="form-group">
+                    <label for="username">{{ 'resetting.request.username'|trans }}</label>
+                    <input class="form-control" type="text" id="username" name="username" required="required" />
+                </div>
+                <div class="row justify-content-center">
+                  <div class="col-12 col-sm-12 col-md-4">
+                    <button type="submit" class="btn btn-success btn-block mt-1">Recuperar</button>
+                  </div>
+                </div>
+            </form>
+            {% block avanzu_login_social_auth %}
+            {% endblock %}
+            {% block avanzu_login_actions %}
+            {% endblock %}
+{#        </div>#}
+{#      </div>#}
+    </div>
+  </div>
+{% endblock %}

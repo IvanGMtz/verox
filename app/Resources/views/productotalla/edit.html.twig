@@ -1,0 +1,65 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %} 
+{% block avanzu_document_title %}Editar Productotalla{% endblock %}
+{% block avanzu_page_title %}Editar Productotalla{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Editar productoTalla</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+{{ form_start(edit_form) }}
+<div class="row">
+   <div class="col-12 col-sm-12 col-md-6">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        {{ form_widget(edit_form) }}
+      </div>
+      <div class="card-footer">
+        <input type="submit" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+      </div>
+    </div>
+  </div>
+</div>
+{{ form_end(edit_form) }}
+<div class="row" style="display:none">
+  <div class="col-12">
+    <div class="card card-danger">
+      <div class="card-body">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('productotalla_index') }}">Regresar</a>&nbsp;  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}{{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script>
+        $(function () {
+            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+            $('select:not(.swal2-select)').select2();
+            $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+            $('[data-timepicker]').timepicker();
+        });
+    </script>
+{% endblock %}

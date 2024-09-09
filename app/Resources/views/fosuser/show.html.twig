@@ -1,0 +1,87 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}MI PERFIL{% endblock %}
+{% block avanzu_page_title %}MI PERFIL{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Perfil</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          {#<ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard v2</li>
+          </ol>#}
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12 col-sm-12 col-md-4">
+    <div class="card card-widget widget-user">
+      <!-- Add the bg color to the header using any of the bg-* classes -->
+      <div class="widget-user-header bg-warning">
+        <h3 class="widget-user-username">{{ fosUser.name }}</h3>
+        <h5 class="widget-user-desc">GTC ID: {{ fosUser.serial|upper }}</h5>
+      </div>
+      <div class="widget-user-image">
+        <img class="img-circle elevation-2" src="{% if fosUser.image %}{{ vich_uploader_asset(fosUser, 'avatar') }}{% else %}/bundles/appbundle/images/avatar2.png{% endif %}" alt="{{ fosUser.name }}">
+      </div>
+      <div class="card-footer p-0 mt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Usuario <span class="float-right">{{ fosUser.username }}</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Email <span class="float-right">{{ fosUser.email }}</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Teléfono <span class="float-right">{{ fosUser.phone }}</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Cumpleaños <span class="float-right">{% if fosUser.birthday %}{{ fosUser.birthday|date('d-m-Y') }}{% endif %}</span>
+            </a>
+          </li>
+          {% if fosUser.city %}
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Ciudad <span class="float-right">{{ fosUser.city.name }}</span>
+            </a>
+          </li>
+          {% endif %}
+          {% if fosUser.country %}
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              País <span class="float-right">{{ fosUser.country.name }}</span>
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Inscripción <span class="float-right">{% if fosUser.registeredAt %}{{ fosUser.registeredAt|date('d-m-Y') }}{% endif %}</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#!" class="nav-link">
+              Usuario <span class="float-right">{{ fosUser.username }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+      
+</div>
+{% endblock %}

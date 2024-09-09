@@ -1,0 +1,52 @@
+AppBundle\Entity\EquipoTrabajoDocumento:
+    type: entity
+    table: equipo_trabajo_documento
+    indexes:
+        fk_documento_etiqueta:
+            columns:
+                - etiqueta
+        fk_documento_trabajador:
+            columns:
+                - trabajador
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        documento:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        fechaActualizacion:
+            type: datetime
+            nullable: false
+            column: fecha_actualizacion
+    manyToOne:
+        etiqueta:
+            targetEntity: DocumentoEtiqueta
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                etiqueta:
+                    referencedColumnName: id
+            orphanRemoval: false
+        trabajador:
+            targetEntity: EquipoTrabajo
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                trabajador:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

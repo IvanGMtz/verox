@@ -1,0 +1,18 @@
+<li class="nav-item dropdown">
+  <a class="nav-link" data-toggle="dropdown" href="#">
+    {% if notifications|length %}
+      <span class="badge badge-warning navbar-badge">{{ total }}</span>
+    {% endif %}
+    <i class="far fa-bell"></i>
+  </a>
+  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
+    <span class="dropdown-item dropdown-header">{{ total }} Notificaciones</span>
+    {% for notice in notifications %}
+      <div class="dropdown-divider"></div>
+        <a href="{{ notice.link }}" class="dropdown-item" style="white-space: normal;">
+          <i class="{{ notice.icon }} {{ notice.type }} mr-2"></i> {{notice.message}}
+{#          <span class="float-right text-muted text-sm">3 mins</span>#}
+        </a>
+    {% endfor %}
+  </div>
+</li>

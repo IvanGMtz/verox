@@ -1,0 +1,4 @@
+AppBundle\Entity\StoreTiendaSlider:
+    foto:
+        mapping:           store_tienda_slider
+        filename_property: imagen

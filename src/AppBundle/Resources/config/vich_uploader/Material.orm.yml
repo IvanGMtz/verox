@@ -1,0 +1,4 @@
+AppBundle\Entity\Material:
+    foto:
+        mapping:           material_imagen
+        filename_property: imagen

@@ -1,0 +1,74 @@
+AppBundle\Entity\AlmacenZona:
+    type: entity
+    table: almacen_zona
+    indexes:
+        estante:
+            columns:
+                - estante
+        ubicacion:
+            columns:
+                - ubicacion
+        almacen:
+            columns:
+                - almacen
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        ubicacion:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        estante:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        bandeja:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+    oneToMany:
+        inventario:
+            targetEntity: AlmacenZonaInventario
+            mappedBy: almacenZona
+    manyToOne:
+        almacen:
+            targetEntity: Almacen
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: zonas
+            inversedBy: zonas
+            joinColumns:
+                almacen:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

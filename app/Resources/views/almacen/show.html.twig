@@ -1,0 +1,99 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Almacen{% endblock %}
+{% block avanzu_page_title %}Detalle Almacen{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle almacén</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+  
+<div class="row">
+  <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+    <div class="card bg-light d-flex flex-fill">
+      <div class="card-header text-muted border-bottom-0">
+        {{ almacen.id }} Almacén
+      </div>
+      <div class="card-body pt-0">
+        <div class="row">
+          <div class="col-7">
+            <h2 class="lead"><b>{{ almacen.nombre }}</b></h2>
+            <p class="text-muted text-sm"><b>{{ almacen.ciudad }} / {{ almacen.pais }}</b></p>
+            <ul class="ml-4 mb-0 fa-ul text-muted">
+              <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Dirección: {{ almacen.direccion }}</li>
+              <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono #: {{ almacen.telefono1 }}</li>
+              <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: {{ almacen.email }}</li>
+              <li class="small"><span class="fa-li"><i class="fas fa-lg fa-user"></i></span> Contacto #: {{ almacen.nombreContacto }}</li>
+              <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono: {{ almacen.telefonoContacto }}</li>
+            </ul>
+          </div>
+          <div class="col-5 text-center">
+            <img src="/bundles/appbundle/images/almacen.png" alt="user-avatar" class="img-circle img-fluid">
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="text-right">
+          <a href="{{ path('almacen_index') }}" class="btn btn-sm btn-default pull-left">
+            <i class="fas fa-chevron-left"></i> Volver
+          </a>
+          <a href="#!" class="btn btn-sm btn-primary add-zona">
+            <i class="fas fa-user"></i> Agregar Zona
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-sm-6 col-md-8 d-flex align-items-stretch flex-column">
+    {{ render(controller(
+        'AppBundle:AlmacenZona:index',
+        { 'id': almacen.id }
+    )) }}
+  </div>
+</div>
+<div class="modal" id="add-zona" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Zona</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   $('.add-zona').click(function(){
+     $('#add-zona .modal-body').load("{{ path('almacenzona_new', { 'id': almacen.id }) }}", function(){
+       $('#add-zona').modal('show');
+     });
+   });
+   $('.edit-zona').click(function(){
+     var iden = $(this).data('id');
+     $('#add-zona .modal-body').load("/admin/zona/almacen/"+iden+"/edit", function(){
+       $('#add-zona').modal('show');
+     });
+   });
+  </script>
+{% endblock %}
+
+

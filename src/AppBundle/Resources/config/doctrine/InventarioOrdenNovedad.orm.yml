@@ -1,0 +1,88 @@
+AppBundle\Entity\InventarioOrdenNovedad:
+    type: entity
+    table: inventario_orden_novedad
+    indexes:
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        inventario_orden:
+            columns:
+                - inventario_orden
+        tiene_pendientes:
+            columns:
+                - tiene_pendientes
+        tipo:
+            columns:
+                - tipo
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        descripcion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        tipo:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        ref1:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        ref2:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        tienePendientes:
+            type: boolean
+            nullable: false
+            options:
+                default: 0
+            column: tiene_pendientes
+        anotaciones:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+    manyToOne:
+        inventarioOrden:
+            targetEntity: InventarioOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: novedades
+            inversedBy: novedades
+            joinColumns:
+                inventario_orden:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

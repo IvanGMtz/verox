@@ -1,0 +1,109 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Inventarios{% endblock %}
+{% block avanzu_page_title %}Inventarios{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Inventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header border-transparent">
+        <h3 class="card-title">TOTAL</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table m-0 table-valign-middle table-sm">
+            <thead>
+            <tr>
+              <th class="text-center"></th>
+              <th>Serial ID</th>
+              <th>Material</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-center">Reserva</th>
+            </tr>
+            </thead>
+            <tbody>
+              {% for inventario in inventarios %}
+              <tr>
+                <td class="text-center"><img src="{{ vich_uploader_asset(inventario.material, 'foto') }}" alt="{{ inventario.material.nombre }}" class="img-circle img-size-32"></td>
+                <td>#{{ inventario.id }}</td>
+                <td>{{ inventario.material.nombre }}</td>
+                <td class="text-center">{{ inventario.cantidadActual }}</td>
+                <td class="text-center">
+                  <div class="sparkbar" data-color="#00a65a" data-height="20">{{ inventario.reserva }}</div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <!-- /.table-responsive -->
+      </div>
+      <!-- /.card-body -->
+      <div class="card-footer clearfix">
+        <a href="javascript:void(0)" class="btn btn-sm btn-info float-right">Modificar reservas</a>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+  </div>
+  {% for almacen in almacenes %}
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header border-transparent">
+        <h3 class="card-title"><i class="fa fa-building"></i>&nbsp;{{ almacen }}</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table m-0 table-sm table-valign-middle">
+            <thead>
+            <tr>
+              <th>Serial ID</th>
+              <th>Material</th>
+              <th class="text-center">Cantidad</th>
+{#              <th>Reserva</th>#}
+            </tr>
+            </thead>
+            <tbody>
+              {% for nombre, inventario in almacen.inventarios %}
+              <tr>
+                <td>#{{ inventario.id }}</td>
+                <td>{{ inventario.material.nombre }}</td>
+                <td class="text-center">{{ inventario.cantidadActual }}</td>
+                {#<td>
+                  <div class="sparkbar" data-color="#00a65a" data-height="20">{{ inventario.reserva }}</div>
+                </td>#}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <!-- /.table-responsive -->
+      </div>
+    </div>
+  </div>
+    
+  {% endfor %}
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

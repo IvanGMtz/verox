@@ -1,0 +1,590 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Storetiendas{% endblock %}
+{% block avanzu_page_title %}Storetiendas{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">REPORTES DE VENTAS</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div id="search_report" class="p-3 row" style="display:block;">
+  <div class="col-lg-6 col-12">
+    <div>
+      <label>Tipo de Reporte</label><br>
+      <select id="reporteTipo" class="form-control" onchange="changeReporte();data_report();" value="Total">
+        <option value="Total">Total Vendido</option>
+        <option value="Categoria">Total Vendido X Categoria</option>
+        <option value="Asesor">Total Vendido X Asesor</option>
+        <option value="Top">Productos más vendidos</option>
+      </select>
+    </div>
+    <div id="categoriasSelector" style="display:none;">
+      <label>Categoria</label><br>
+      <select id="Categoria" class="form-control" onchange="changeReporte();data_report();">
+        {% for categoria in categorias %}
+          <option value="{{ categoria }}">{{ categoria }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div id="asesorselector" style="display:none;">
+      <label>Asesor</label><br>
+      <select id="Asesor" class="form-control" onchange="changeReporte();data_report();">
+        {% for asesor in asesores %}
+          <option value="{{ asesor }}">{{ asesor }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <form onsubmit="event.preventDefault(); request_reporte();data_report();">
+        <div id="selector de fecha" class="mb-2">
+            <label for="date">Fecha Inicial:</label>
+            <input type="date" id="start" class="form-control">
+            <label for="date">Fecha Final:</label> 
+            <input type="date" id="stop" class="form-control">
+        </div> 
+        <button id="Traer_reporte" class="btn btn-success" style="display:block">Generar Reporte</button>   
+      </form>
+    </div>
+  </div>
+</div>
+<div id="table_reporte" style="display:none">
+  <h3>Resumen Reporte</h3>
+  <div class="d-flex mb-1">
+    <button id="Nuevo_reporte" class="btn btn-success no-print" style="display:none" onclick="new_Repot();">Nuevo Reporte</button>&nbsp;&nbsp;&nbsp;
+    <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default no-print"><i class="fas fa-print"></i> Imprimir</a>&nbsp;&nbsp;&nbsp;
+    <button id="export_xls" class="btn btn-primary no-print" style="display:none" onclick="ExportToExcel('xlsx');"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+  </div>
+  <table class="table table-sm table-bordered table-striped">
+    <thead id="reporte_principal_head">
+
+    </thead>
+    <tbody id="reporte_principal">
+      
+    </tbody>
+  </table>
+  <br><h4 id="detail_tittle">Detalles de Reporte</h4>
+  <div id="asesorSelector2">
+    <label>Asesor</label><br>
+    <select id="asesores2" class="form-control" onchange="changeSeller()" style="max-width:200px;">
+      <option value="TODOS" selected>Todos</option>
+      {% for asesor in asesores %}
+        <option value="{{ asesor }}">{{ asesor }}</option>
+      {% endfor %}
+    </select><br>
+  </div>
+  <div id="categoriaDetalleBox">
+    <div class="row">
+      <div class="col-3" id="CategoriaDetalleRow">
+          <label>Categoria</label><br>
+          <select id="CategoriaDetalle" class="form-control" onchange="changeCategory();" style="max-width:200px;">
+        </select>
+      </div>
+      <div class="col-3">
+          <label>Referencia</label><br>
+          <input type="text" class="form-control" id="refFilter" style="max-width:200px;" onchange="changeCategory();"/>
+      </div>
+      <div class="col-3">
+          <label>Talla</label><br>
+          <input type="text" class="form-control" id="tallaFilter" style="max-width:200px;" onchange="changeCategory();"/>
+      </div>
+      <div class="col-3">
+          <label>Color</label><br>
+          <input type="text" class="form-control" id="colorFilter" style="max-width:200px;" onchange="changeCategory();"/>
+      </div>
+    </div><br>
+  </div>
+  <table id="details" class="table table-sm table-bordered table-striped">
+    <thead id="report_detail">
+
+    </thead>
+    <tbody id="detail_data">
+      
+    </tbody>
+  </table>
+</div>
+
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+  <script> 
+   var reporteData = [];
+   function changeReporte(){
+      let selectorValue = document.getElementById("reporteTipo").value;
+      if(selectorValue=="Categoria"){
+        document.getElementById("categoriasSelector").style.display = "block";
+        document.getElementById("asesorselector").style.display = "none";
+      }
+      if(selectorValue=="Asesor"){
+        document.getElementById("asesorselector").style.display = "block";
+        document.getElementById("categoriasSelector").style.display = "none";
+      }
+      if(selectorValue=="Total"){
+        document.getElementById("asesorselector").style.display = "none";
+        document.getElementById("categoriasSelector").style.display = "none";
+      }
+      if(selectorValue=="Top"){
+        document.getElementById("asesorselector").style.display = "none";
+        document.getElementById("categoriasSelector").style.display = "none";
+      }
+   }
+   function data_report(){
+      let start_Date = document.getElementById("start").value;
+      let stop_Date = document.getElementById("stop").value;
+      let rtipo = document.getElementById("reporteTipo").value;
+      let tag = (rtipo=="Total" || rtipo=="Top")? null:document.getElementById(rtipo).value;
+   }
+   
+   function request_reporte(){
+      let start_Date = document.getElementById("start").value;
+      let stop_Date = document.getElementById("stop").value;
+      if(start_Date && stop_Date){
+        let rtipo = document.getElementById("reporteTipo").value;
+        let tag = (rtipo=="Total" || rtipo=="Top")? null:document.getElementById(rtipo).value;
+        let tipo = {
+          start: start_Date,
+          stop: stop_Date,
+          reporte_tipo: rtipo,
+          reporte_tag: tag,
+        } 
+        let ref = tipo;
+        $.post(
+          "{{ app.request.getSchemeAndHttpHost()}}/store/get_reporte",
+          ref,
+          function(reporte){
+            reporteData = reporte
+            document.getElementById("CategoriaDetalle").innerHTML = "";
+            showReporte(reporte,rtipo,start_Date,stop_Date,{category:"TODOS",refFilter:"",tallaFilter:"",colorFilter:""},tag)
+          }
+        )
+      }
+      else{
+        alert("Debes indicar las fechas requeridas")
+      }
+    }
+    function changeCategory(){
+      let filters = {
+        category:document.getElementById("CategoriaDetalle").value,
+        refFilter:document.getElementById("refFilter").value,
+        tallaFilter:document.getElementById("tallaFilter").value,
+        colorFilter:document.getElementById("colorFilter").value,
+      }
+      let start_Date = document.getElementById("start").value;
+      let stop_Date = document.getElementById("stop").value;
+      let rtipo = document.getElementById("reporteTipo").value;
+      let tag = (rtipo=="Total" || rtipo=="Top")? null:document.getElementById(rtipo).value;
+      showReporte(reporteData,rtipo,start_Date,stop_Date,filters,tag,)
+    }
+    function changeSeller(){
+      let asesor = document.getElementById("asesores2").value;
+      let start_Date = document.getElementById("start").value;
+      let stop_Date = document.getElementById("stop").value;
+      let rtipo = document.getElementById("reporteTipo").value;
+      let tag = (rtipo=="Total" || rtipo=="Top")? null:document.getElementById(rtipo).value;
+      showReporte(reporteData,rtipo,start_Date,stop_Date,{category:asesor,refFilter:"",tallaFilter:"",colorFilter:""},tag)
+    }
+    function showReporte(reporte,rtipo,start_Date,stop_Date,filtros,tag){
+      document.getElementById("reporte_principal_head").innerHTML = "";
+      document.getElementById("reporte_principal").innerHTML = "";
+      document.getElementById("report_detail").innerHTML = "";
+      document.getElementById("detail_data").innerHTML = "";
+      let cantidad = 0;
+      let totalPrendas = 0;
+      let total = 0;
+      let totalEnvios = 0;
+      let totalNuevos = 0;
+      if(rtipo=="Total"){
+        document.getElementById("asesorSelector2").style.display = "block";
+        document.getElementById("categoriaDetalleBox").style.display = "none";
+        document.getElementById("CategoriaDetalleRow").style.display = "none";
+        document.getElementById("table_reporte").style.display = "block";
+        document.getElementById("detail_tittle").style.display = "block";
+        document.getElementById("Traer_reporte").style.display = "none";
+        document.getElementById("search_report").style.display = "none";
+        document.getElementById("Nuevo_reporte").style.display = "block";
+        document.getElementById("export_xls").style.display = "block";
+        $("#reporte_principal_head").append(
+          '<tr id="reporte_data">'+
+            '<th class="nowrap">Tipo Reporte</th>'+
+            '<th class="nowrap">Fecha de Inicio</th>'+
+            '<th class="nowrap">Fecha de Cierre</th>'+
+            '<th class="nowrap">Número de ventas</th>'+
+            '<th class="nowrap">Total clientes nuevos</th>'+
+            '<th class="nowrap">Total de unidades</th>'+
+            '<th class="nowrap">Total Venta neta</th>'+
+            '<th class="nowrap">Total costo envios</th>'+
+            '<th class="nowrap">Gran total</th>'+
+          '</tr>'
+        );
+        $("#report_detail").append(
+          '<tr id="instances">'+
+            '<th class="nowrap">'+'Order ID'+'</th>'+
+            '<th class="nowrap">'+'Fecha'+'</th>'+
+            '<th class="nowrap">'+'Tipo cliente'+'</th>'+
+            '<th class="nowrap">'+'Estado cliente'+'</th>'+
+            '<th class="nowrap">'+'Venta neta'+'</th>'+
+            '<th class="nowrap">'+'Costo envío'+'</th>'+
+            '<th class="nowrap">'+'Gran Total'+'</th>'+
+          '</tr>'
+        );
+        for(let i=0; i < reporte.length; i++) {
+          let subtotal = 0
+          if(filtros.category=="TODOS"){
+            cantidad = reporte.length;
+            totalNuevos = totalNuevos + (reporte[i].client_type == 'Nuevo' ? 1 : 0);
+            totalEnvios += reporte[i].shipment_cost;
+            reporte[i].items.forEach(item=>{
+              totalPrendas+=item.product_qty;
+              total += item.product_price * item.product_qty;
+              subtotal += item.product_price * item.product_qty;
+            })
+            $("#detail_data").append(
+              '<tr id="data'+i+'">'+
+                '<td class="nowrap">'+reporte[i].id+'</td>'+
+                '<td class="nowrap">'+reporte[i].date+'</td>'+
+                '<td class="nowrap">'+reporte[i].client_type+'</td>'+
+                '<td class="nowrap">'+reporte[i].client_state+'</td>'+
+                '<td class="nowrap">'+subtotal.toFixed(2)+'</td>'+
+                '<td class="nowrap">'+reporte[i].shipment_cost+'</td>'+
+                '<td class="nowrap">'+(subtotal+reporte[i].shipment_cost).toFixed(2)+'</td>'+
+              '</tr>'
+            );     
+          }
+          else{
+            if(reporte[i].asesor == filtros.category){
+              cantidad ++;
+              totalEnvios += reporte[i].shipment_cost;
+              totalNuevos = totalNuevos + (reporte[i].client_type == 'Nuevo' ? 1 : 0);
+              reporte[i].items.forEach(item=>{
+                totalPrendas+=item.product_qty;
+                total += item.product_price * item.product_qty;
+                subtotal += item.product_price * item.product_qty;
+              })
+              $("#detail_data").append(
+                '<tr id="data'+i+'">'+
+                  '<td class="nowrap">'+reporte[i].id+'</td>'+
+                  '<td class="nowrap">'+reporte[i].date+'</td>'+
+                  '<td class="nowrap">'+reporte[i].client_type+'</td>'+
+                  '<td class="nowrap">'+reporte[i].client_state+'</td>'+
+                  '<td class="nowrap">'+subtotal.toFixed(2)+'</td>'+
+                  '<td class="nowrap">'+reporte[i].shipment_cost+'</td>'+
+                  '<td class="nowrap">'+(subtotal+reporte[i].shipment_cost).toFixed(2)+'</td>'+
+                '</tr>'
+              );  
+            }
+          }       
+        }
+         $("#reporte_principal").append(
+          '<tr id="reporte_data">'+
+            '<td class="nowrap">'+rtipo+'</td>'+
+            '<td class="nowrap">'+start_Date+'</td>'+
+            '<td class="nowrap">'+stop_Date+'</td>'+
+            '<td class="nowrap">'+cantidad+'</td>'+
+            '<td class="nowrap">'+totalNuevos+'</td>'+
+            '<td class="nowrap">'+totalPrendas+'</td>'+
+            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
+            '<td class="nowrap">'+totalEnvios.toFixed(2)+'</td>'+
+            '<td class="nowrap">'+(totalEnvios+total).toFixed(2)+'</td>'+
+          '</tr>'
+        );
+      }
+      else if(rtipo=="Categoria"){
+        document.getElementById("asesorSelector2").style.display = "none";
+        document.getElementById("categoriaDetalleBox").style.display = "block";
+        document.getElementById("CategoriaDetalleRow").style.display = "none";
+        document.getElementById("table_reporte").style.display = "block";
+        document.getElementById("detail_tittle").style.display = "block";
+        document.getElementById("Traer_reporte").style.display = "none";
+        document.getElementById("search_report").style.display = "none";
+        document.getElementById("Nuevo_reporte").style.display = "block";
+        document.getElementById("export_xls").style.display = "block";
+        $("#reporte_principal_head").append(
+          '<tr id="reporte_data">'+
+            '<th class="nowrap">Tipo Reporte</th>'+
+            '<th class="nowrap">Fecha de Inicio</th>'+
+            '<th class="nowrap">Fecha de Cierre</th>'+
+            '<th class="nowrap">Número de ventas</th>'+
+            '<th class="nowrap">Total de unidades</th>'+
+            '<th class="nowrap">Total venta neta</th>'+
+            '<th class="nowrap">Gran total</th>'+
+          '</tr>'
+        );
+        $("#report_detail").append(
+          '<tr id="instances">'+
+            '<th class="nowrap">'+'Categoria'+'</th>'+
+            '<th class="nowrap">'+'Referencia'+'</th>'+
+            '<th class="nowrap">'+'Talla'+'</th>'+
+            '<th class="nowrap">'+'Color'+'</th>'+
+            '<th class="nowrap">'+'Cantidad'+'</th>'+
+            '<th class="nowrap">'+'Valor'+'</th>'+
+          '</tr>'
+        );
+        let categoriasR = {};
+        let itemsReport = {};
+        let totalUnid = 0;
+        for(let i=0; i < reporte.length; i++) {
+          totalEnvios = 0;
+          reporte[i].items.forEach(item=>{
+            categoriasR[item.Categoría] = item.Categoría
+            if(!itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color]&&item.Categoría == tag
+              &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
+              &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
+              &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
+            ){
+              cantidad++;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color] = item;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty = 0;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val = 0;
+            }
+          })
+          reporte[i].items.forEach(item=>{
+            if(item.Categoría == tag
+              &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
+              &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
+              &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
+            ){
+              total += item.product_price * item.product_qty;
+              totalUnid += item.product_qty;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += item.product_qty;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += item.product_price * item.product_qty;
+            }
+          })   
+        }
+        let itemsArray = [];
+        Object.keys(itemsReport).forEach(itemR=>{
+          itemsArray.push(itemsReport[itemR]);
+        })
+        Object.keys(categoriasR).forEach(cat=>{
+          if(!document.getElementById('cat_'+cat)){
+            $("#CategoriaDetalle").append(
+              '<option id="cat_'+cat+'" value="'+cat+'">'+cat+'</option>'
+            );
+          }
+        })
+         $("#reporte_principal").append(
+          '<tr id="reporte_data">'+
+            '<td class="nowrap">'+rtipo+' : '+tag+'</td>'+
+            '<td class="nowrap">'+start_Date+'</td>'+
+            '<td class="nowrap">'+stop_Date+'</td>'+
+            '<td class="nowrap">'+cantidad+'</td>'+
+            '<td class="nowrap">'+totalUnid+'</td>'+
+            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
+            '<td class="nowrap">'+(totalEnvios+total).toFixed(2)+'</td>'+
+          '</tr>'
+        );
+        itemsArray.sort((a,b)=>b.qty-a.qty);
+        itemsArray.forEach(item=>{
+          $("#detail_data").append(
+            '<tr id="data'+item.product_ref+"_"+item.product_talla+"_"+item.product_color+'">'+
+              '<td class="nowrap">'+item.Categoría+'</td>'+
+              '<td class="nowrap">'+item.product_ref+'</td>'+
+              '<td class="nowrap">'+item.product_talla+'</td>'+
+              '<td class="nowrap">'+item.product_color+'</td>'+
+              '<td class="nowrap">'+item.qty+'</td>'+
+              '<td class="nowrap">'+item.val.toFixed(2)+'</td>'+
+            '</tr>'
+          );    
+        }) 
+      }
+      else if(rtipo=="Asesor"){
+        document.getElementById("asesorSelector2").style.display = "none";
+        document.getElementById("categoriaDetalleBox").style.display = "block";
+        document.getElementById("CategoriaDetalleRow").style.display = "block";
+        document.getElementById("table_reporte").style.display = "block";
+        document.getElementById("detail_tittle").style.display = "block";
+        document.getElementById("Traer_reporte").style.display = "none";
+        document.getElementById("search_report").style.display = "none";
+        document.getElementById("Nuevo_reporte").style.display = "block";
+        document.getElementById("export_xls").style.display = "block";
+        $("#reporte_principal_head").append(
+          '<tr id="reporte_data">'+
+            '<th class="nowrap">Tipo Reporte</th>'+
+            '<th class="nowrap">Fecha de Inicio</th>'+
+            '<th class="nowrap">Fecha de Cierre</th>'+
+            '<th class="nowrap">Número de ventas</th>'+
+            '<th class="nowrap">Total de unidades</th>'+
+            '<th class="nowrap">Total venta neta</th>'+
+            '<th class="nowrap">Gran total</th>'+
+          '</tr>'
+        );
+        $("#report_detail").append(
+          '<tr id="instances">'+
+            '<th class="nowrap">'+'Categoria'+'</th>'+
+            '<th class="nowrap">'+'Referencia'+'</th>'+
+            '<th class="nowrap">'+'Talla'+'</th>'+
+            '<th class="nowrap">'+'Color'+'</th>'+
+            '<th class="nowrap">'+'Cantidad'+'</th>'+
+            '<th class="nowrap">'+'Valor'+'</th>'+
+          '</tr>'
+        );
+        let categoriasR = {};
+        let itemsReport = {};
+        let totalUnid = 0;
+        for(let i=0; i < reporte.length; i++) {
+          reporte[i].items.forEach(item=>{
+            if(!itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color]&&item.Categoría == filtros.category
+              &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
+              &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
+              &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
+            ){
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color] = item;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty = 0;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val = 0;
+            }
+            else if(!itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color]&&filtros.category == "TODOS"
+              &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
+              &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
+              &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
+            ){
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color] = item;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty = 0;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val = 0;
+            }
+          })
+          reporte[i].items.forEach(item=>{
+            if(item.Categoría == filtros.category
+              &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
+              &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
+              &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
+            ){
+              cantidad ++;
+              total += item.product_price * item.product_qty;
+              categoriasR[item.Categoría] = item.Categoría;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += item.product_qty;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += item.product_price * item.product_qty;
+            }
+            else if(filtros.category == "TODOS"
+              &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
+              &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
+              &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
+            ){
+              cantidad ++;
+              total += item.product_price * item.product_qty;
+              categoriasR[item.Categoría] = item.Categoría;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += item.product_qty;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += item.product_price * item.product_qty;
+            }
+          })   
+        }
+        let itemsArray = [];
+        Object.keys(itemsReport).forEach(itemR=>{
+          itemsArray.push(itemsReport[itemR]);
+        })
+        if(!document.getElementById('cat_TODOS')){
+          $("#CategoriaDetalle").append(
+            '<option id="cat_TODOS" value="TODOS" selected>TODOS</option>'
+          );
+        }
+        Object.keys(categoriasR).forEach(cat=>{
+          if(!document.getElementById('cat_'+cat)){
+            $("#CategoriaDetalle").append(
+              '<option id="cat_'+cat+'" value="'+cat+'">'+cat+'</option>'
+            );
+          }
+        })
+        itemsArray.sort((a,b)=>b.qty-a.qty);
+        let catTotal = 0;
+        itemsArray.forEach(item=>{
+          catTotal += item.qty;
+          $("#detail_data").append(
+            '<tr id="data'+item.product_ref+"_"+item.product_talla+"_"+item.product_color+'">'+
+              '<td class="nowrap">'+item.Categoría+'</td>'+
+              '<td class="nowrap">'+item.product_ref+'</td>'+
+              '<td class="nowrap">'+item.product_talla+'</td>'+
+              '<td class="nowrap">'+item.product_color+'</td>'+
+              '<td class="nowrap">'+item.qty+'</td>'+
+              '<td class="nowrap">'+item.val.toFixed(2)+'</td>'+
+            '</tr>'
+          );    
+        })
+        $("#reporte_principal").append(
+          '<tr id="reporte_data">'+
+            '<td class="nowrap">'+rtipo+' : '+tag+'</td>'+
+            '<td class="nowrap">'+start_Date+'</td>'+
+            '<td class="nowrap">'+stop_Date+'</td>'+
+            '<td class="nowrap">'+cantidad+'</td>'+
+            '<td class="nowrap">'+catTotal+'</td>'+
+            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
+            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
+          '</tr>'
+        );
+      }
+      else if(rtipo=="Top"){
+        document.getElementById("asesorSelector2").style.display = "none";
+        document.getElementById("categoriaDetalleBox").style.display = "none";
+        document.getElementById("CategoriaDetalleRow").style.display = "none";
+        reporte.sort((a,b) => (a.cantidad < b.cantidad) ? 1 : ((b.cantidad < a.cantidad) ? -1 : 0));
+        $("#reporte_principal_head").append(
+          '<tr id="reporte_data">'+
+            '<th class="nowrap">Referencia</th>'+
+            '<th class="nowrap">Talla</th>'+
+            '<th class="nowrap">Color</th>'+
+            '<th class="nowrap">Fecha de Inicio</th>'+
+            '<th class="nowrap">Fecha de Cierre</th>'+
+            '<th class="nowrap">Número de ventas</th>'+
+            '<th class="nowrap">Total de vendido</th>'+
+          '</tr>'
+        );
+        for(let i=0; i < reporte.length; i++) {
+          $("#reporte_principal").append(
+            '<tr id="reporte-data'+i+'">'+
+              '<td class="nowrap">'+reporte[i].nombre+'</td>'+
+              '<td class="nowrap">'+reporte[i].talla+'</td>'+
+              '<td class="nowrap">'+reporte[i].color+'</td>'+
+              '<td class="nowrap">'+start_Date+'</td>'+
+              '<td class="nowrap">'+stop_Date+'</td>'+
+              '<td class="nowrap">'+reporte[i].cantidad+'</td>'+
+              '<td class="nowrap">'+reporte[i].total.toFixed(2)+'</td>'+
+            '</tr>'
+          );       
+        }
+        document.getElementById("table_reporte").style.display = "block";
+        document.getElementById("detail_tittle").style.display = "none";
+        document.getElementById("Traer_reporte").style.display = "none";
+        document.getElementById("search_report").style.display = "none";
+        document.getElementById("Nuevo_reporte").style.display = "block";
+        document.getElementById("export_xls").style.display = "block";
+      }
+    }
+    function new_Repot() {
+      let reset_report = document.getElementById("reporte_data");
+      document.getElementById("detail_data").innerHTML = "";
+      document.getElementById("report_detail").innerHTML = "";
+      document.getElementById("reporte_principal_head").innerHTML = "";
+      document.getElementById("reporte_principal").innerHTML = "";
+
+      document.getElementById("asesores2").value = "";
+      document.getElementById("Categoria").value = "";
+      document.getElementById("Asesor").value = "";
+
+      document.getElementById("table_reporte").style.display = "none";
+      document.getElementById("Traer_reporte").style.display = "block";
+      document.getElementById("Nuevo_reporte").style.display = "none";
+      document.getElementById("export_xls").style.display = "none";
+      document.getElementById("search_report").style.display = "block";
+    }
+    function ExportToExcel(type, fn, dl) {
+        var elt = document.getElementById('details');
+        var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+        let rtipo = document.getElementById("reporteTipo").value;
+        let start_Date = document.getElementById("start").value;
+        let stop_Date = document.getElementById("stop").value;
+        let asesor = document.getElementById("asesores2")?.value;
+        let tag = (rtipo=="Total" || rtipo=="Top")? "":document.getElementById(rtipo).value;
+        return dl ?
+            XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+            XLSX.writeFile(wb, fn || (rtipo +(asesor?'-'+asesor:'')+(tag!=""?" "+tag:"") + ' '+start_Date +' a '+stop_Date + '.'+(type || 'xlsx')));
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Storebonos{% endblock %}
+{% block avanzu_page_title %}Storebonos{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Bonos de Compra</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="codigo" class="sr-only">codigo</label>
+              <input type="text" class="form-control" id="codigo" name="q[codigo]" placeholder="Codigo" {% if q and q.codigo %}value="{{ q.codigo }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="valor" class="sr-only">valor</label>
+              <input type="text" class="form-control" id="valor" name="q[valor]" placeholder="Valor" {% if q and q.valor %}value="{{ q.valor }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="estatus" class="sr-only">estatus</label>
+              <input type="text" class="form-control" id="estatus" name="q[estatus]" placeholder="Estatus" {% if q and q.estatus %}value="{{ q.estatus }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('storebonos_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.codigo') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Codigo', 'a.codigo') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.valor') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Valor', 'a.valor') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaVencimiento') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fechavencimiento', 'a.fechaVencimiento') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.estatus') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Estatus', 'a.estatus') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for storeBono in storeBonos %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('storebonos_show', { 'id': storeBono.id }) }}">{{ storeBono.id }}</a></td>
+                  <td class="nowrap">{{ storeBono.codigo }}</td>
+                  <td class="nowrap">{{ storeBono.valor }}</td>
+                  <td class="nowrap" data-sort-value="{% if storeBono.fechaVencimiento %}{{ storeBono.fechaVencimiento|date('U') }}{% endif %}">{% if storeBono.fechaVencimiento %}{{ storeBono.fechaVencimiento|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap">{{ storeBono.estatus }}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('storebonos_show', { 'id': storeBono.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('storebonos_edit', { 'id': storeBono.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

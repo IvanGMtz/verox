@@ -1,0 +1,29 @@
+despachoordenitem_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DespachoOrdenItem:index" }
+    methods:  [GET, POST]
+
+despachoordenitem_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DespachoOrdenItem:show" }
+    methods:  GET
+
+despachoordenitem_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DespachoOrdenItem:new" }
+    methods:  [GET, POST]
+
+despachoordenitem_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DespachoOrdenItem:edit" }
+    methods:  [GET, POST]
+
+despachoordenitem_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DespachoOrdenItem:delete" }
+    methods:  DELETE
+
+despachoordenitem_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DespachoOrdenItem:erase" }
+    methods:  GET

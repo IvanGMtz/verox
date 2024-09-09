@@ -1,0 +1,107 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Productodescripcions{% endblock %}
+{% block avanzu_page_title %}Productodescripcions{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de productoDescripcions</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="texto" class="sr-only">texto</label>
+              <input type="text" class="form-control" id="texto" name="q[texto]" placeholder="Texto" {% if q and q.texto %}value="{{ q.texto }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="imagen" class="sr-only">imagen</label>
+              <input type="text" class="form-control" id="imagen" name="q[imagen]" placeholder="Imagen" {% if q and q.imagen %}value="{{ q.imagen }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="video" class="sr-only">video</label>
+              <input type="text" class="form-control" id="video" name="q[video]" placeholder="Video" {% if q and q.video %}value="{{ q.video }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('productodescripcion_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.texto') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Texto', 'a.texto') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.imagen') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Imagen', 'a.imagen') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.video') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Video', 'a.video') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for productoDescripcion in productoDescripcions %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('productodescripcion_show', { 'id': productoDescripcion.id }) }}">{{ productoDescripcion.id }}</a></td>
+                  <td class="nowrap">{{ productoDescripcion.texto }}</td>
+                  <td class="nowrap">{{ productoDescripcion.imagen }}</td>
+                  <td class="nowrap">{{ productoDescripcion.video }}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('productodescripcion_show', { 'id': productoDescripcion.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('productodescripcion_edit', { 'id': productoDescripcion.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

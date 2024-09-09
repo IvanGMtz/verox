@@ -1,0 +1,29 @@
+productocolor_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProductoColor:index" }
+    methods:  [GET, POST]
+
+productocolor_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProductoColor:show" }
+    methods:  GET
+
+productocolor_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProductoColor:new" }
+    methods:  [GET, POST]
+
+productocolor_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProductoColor:edit" }
+    methods:  [GET, POST]
+
+productocolor_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProductoColor:delete" }
+    methods:  DELETE
+
+productocolor_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProductoColor:erase" }
+    methods:  GET

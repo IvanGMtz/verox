@@ -1,0 +1,53 @@
+AppBundle\Entity\DisenoImagen:
+    type: entity
+    table: diseno_imagen
+    indexes:
+        diseno:
+            columns:
+                - diseno
+        estado:
+            columns:
+                - estado
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        imagen:
+            type: string
+            nullable: false
+            length: 1024
+            options:
+                fixed: false
+        orden:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        fechaActualizacion:
+            type: datetime
+            nullable: false
+            column: fecha_actualizacion
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+    manyToOne:
+        diseno:
+            targetEntity: Diseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: imagenes
+            inversedBy: imagenes
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

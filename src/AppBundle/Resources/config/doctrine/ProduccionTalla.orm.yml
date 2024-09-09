@@ -1,0 +1,58 @@
+AppBundle\Entity\ProduccionTalla:
+    type: entity
+    table: produccion_talla
+    indexes:
+        fk_talla_orden:
+            columns:
+                - orden_produccion
+        fk_talla_diseno:
+            columns:
+                - diseno
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        talla:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        cantidadConfirmada:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+    manyToOne:
+        diseno:
+            targetEntity: ProduccionDiseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

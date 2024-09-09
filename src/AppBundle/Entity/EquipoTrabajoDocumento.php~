@@ -1,0 +1,13 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * EquipoTrabajoDocumento
+ */
+class EquipoTrabajoDocumento
+{
+
+}
+
+?>

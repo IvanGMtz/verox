@@ -1,0 +1,97 @@
+AppBundle\Entity\ProcesoEncargado:
+    type: entity
+    table: proceso_encargado
+    indexes:
+        diseno:
+            columns:
+                - diseno
+        persona_asignada:
+            columns:
+                - persona_asignada
+        proceso:
+            columns:
+                - proceso
+        en_proceso:
+            columns:
+                - en_proceso
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        talla:
+            type: string
+            nullable: true
+            length: 5
+            options:
+                fixed: false
+        material:
+            type: string
+            nullable: true
+            length: 120
+            options:
+                fixed: false
+        cantidadMaterial:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+        enProceso:
+            type: boolean
+            nullable: false
+            column: en_proceso
+        fechaAsignacion:
+            type: datetime
+            nullable: false
+            column: fecha_asignacion
+        fechaFinalizacion:
+            type: datetime
+            nullable: true
+            column: fecha_finalizacion
+        duracion:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+    manyToOne:
+        diseno:
+            targetEntity: Diseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        personaAsignada:
+            targetEntity: EquipoTrabajo
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                persona_asignada:
+                    referencedColumnName: id
+            orphanRemoval: false
+        proceso:
+            targetEntity: Proceso
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proceso:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

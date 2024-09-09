@@ -1,0 +1,29 @@
+productoimagen_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProductoImagen:index" }
+    methods:  [GET, POST]
+
+productoimagen_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProductoImagen:show" }
+    methods:  GET
+
+productoimagen_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProductoImagen:new" }
+    methods:  [GET, POST]
+
+productoimagen_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProductoImagen:edit" }
+    methods:  [GET, POST]
+
+productoimagen_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProductoImagen:delete" }
+    methods:  DELETE
+
+productoimagen_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProductoImagen:erase" }
+    methods:  GET

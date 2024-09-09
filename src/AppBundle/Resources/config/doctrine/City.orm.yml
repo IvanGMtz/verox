@@ -1,0 +1,65 @@
+AppBundle\Entity\City:
+    type: entity
+    table: city
+    indexes:
+        fk_country_city:
+            columns:
+                - country
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        lat:
+            type: string
+            nullable: true
+            length: 128
+            options:
+                fixed: false
+        lng:
+            type: string
+            nullable: true
+            length: 128
+            options:
+                fixed: false
+        iso2:
+            type: string
+            nullable: true
+            length: 2
+            options:
+                fixed: false
+        iso3:
+            type: string
+            nullable: true
+            length: 3
+            options:
+                fixed: false
+        state:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+    manyToOne:
+        country:
+            targetEntity: Country
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: cities
+            inversedBy: cities
+            joinColumns:
+                country:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,217 @@
+AppBundle\Entity\OrdenCompra:
+    type: entity
+    table: orden_compra
+    indexes:
+        proveedor:
+            columns:
+                - proveedor
+        usuario_actualizacion:
+            columns:
+                - usuario_actualizacion
+        usuario_recibe:
+            columns:
+                - usuario_recibe
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        almacen_destino:
+            columns:
+                - almacen_destino
+        metodo_pago:
+            columns:
+                - metodo_pago
+        estado:
+            columns:
+                - estado
+        usuario_aceptacion:
+            columns:
+                - usuario_aceptacion
+        tiene_pendientes:
+            columns:
+                - tiene_pendientes
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        fechaActualizacion:
+            type: datetime
+            nullable: true
+            column: fecha_actualizacion
+        fechaAceptacion:
+            type: datetime
+            nullable: true
+            column: fecha_aceptacion
+        pagada:
+            type: boolean
+            nullable: true
+            options:
+                default: 0
+        fechaPagada:
+            type: datetime
+            nullable: true
+            column: fecha_pagada
+        fechaRecibe:
+            type: datetime
+            nullable: true
+            column: fecha_recibe
+        direccionDestino:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: direccion_destino
+        valor:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+        impuesto:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            options:
+                default: 0
+        valorImpuesto:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_impuesto
+        valorTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_total
+        valorPagado:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_pagado
+        valorSaldo:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default:0
+            column: valor_saldo
+        descripcion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        metodoPago:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: metodo_pago
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+        tienePendientes:
+            type: boolean
+            nullable: true
+            options:
+                default: 0
+            column: tiene_pendientes
+    oneToMany:
+        novedades:
+            targetEntity: OrdenCompraNovedad
+            mappedBy: ordenCompra
+        pagos:
+            targetEntity: OrdenCompraPago
+            mappedBy: ordenCompra
+        items:
+            targetEntity: OrdenCompraItem
+            mappedBy: ordenCompra
+            cascade:      [persist]
+    manyToOne:
+        almacenDestino:
+            targetEntity: Almacen
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen_destino:
+                    referencedColumnName: id
+            orphanRemoval: false
+        proveedor:
+            targetEntity: Proveedor
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proveedor:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioAceptacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_aceptacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioActualizacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_actualizacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioRecibe:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_recibe:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

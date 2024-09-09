@@ -1,0 +1,604 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * BinaryPayment
+ */
+class BinaryPayment
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var string|null
+     */
+    private $orderId;
+
+    /**
+     * @var \DateTime
+     */
+    private $orderDate;
+
+    /**
+     * @var float
+     */
+    private $amount;
+
+    /**
+     * @var int
+     */
+    private $state = '1';
+
+    /**
+     * @var \DateTime|null
+     */
+    private $paymentDate;
+
+    /**
+     * @var string|null
+     */
+    private $paymentType;
+
+    /**
+     * @var string|null
+     */
+    private $extra1;
+
+    /**
+     * @var string|null
+     */
+    private $extra2;
+
+    /**
+     * @var float|null
+     */
+    private $extra3;
+
+    /**
+     * @var bool
+     */
+    private $agree = false;
+
+    /**
+     * @var string|null
+     */
+    private $currency;
+
+    /**
+     * @var string|null
+     */
+    private $response;
+
+    /**
+     * @var \AppBundle\Entity\BinaryPlan
+     */
+    private $binaryPlan;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $orderUser;
+    
+    /**
+     * @var float
+     */
+    private $binaryAmount = 0;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set orderId.
+     *
+     * @param string|null $orderId
+     *
+     * @return BinaryPayment
+     */
+    public function setOrderId($orderId = null)
+    {
+        $this->orderId = $orderId;
+
+        return $this;
+    }
+
+    /**
+     * Get orderId.
+     *
+     * @return string|null
+     */
+    public function getOrderId()
+    {
+        return $this->orderId;
+    }
+
+    /**
+     * Set orderDate.
+     *
+     * @param \DateTime $orderDate
+     *
+     * @return BinaryPayment
+     */
+    public function setOrderDate($orderDate)
+    {
+        $this->orderDate = $orderDate;
+
+        return $this;
+    }
+
+    /**
+     * Get orderDate.
+     *
+     * @return \DateTime
+     */
+    public function getOrderDate()
+    {
+        return $this->orderDate;
+    }
+
+    /**
+     * Set amount.
+     *
+     * @param float $amount
+     *
+     * @return BinaryPayment
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return BinaryPayment
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set paymentDate.
+     *
+     * @param \DateTime|null $paymentDate
+     *
+     * @return BinaryPayment
+     */
+    public function setPaymentDate($paymentDate = null)
+    {
+        $this->paymentDate = $paymentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getPaymentDate()
+    {
+        return $this->paymentDate;
+    }
+
+    /**
+     * Set paymentType.
+     *
+     * @param string|null $paymentType
+     *
+     * @return BinaryPayment
+     */
+    public function setPaymentType($paymentType = null)
+    {
+        $this->paymentType = $paymentType;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentType.
+     *
+     * @return string|null
+     */
+    public function getPaymentType()
+    {
+        return $this->paymentType;
+    }
+
+    /**
+     * Set extra1.
+     *
+     * @param string|null $extra1
+     *
+     * @return BinaryPayment
+     */
+    public function setExtra1($extra1 = null)
+    {
+        $this->extra1 = $extra1;
+
+        return $this;
+    }
+
+    /**
+     * Get extra1.
+     *
+     * @return string|null
+     */
+    public function getExtra1()
+    {
+        return $this->extra1;
+    }
+
+    /**
+     * Set extra2.
+     *
+     * @param string|null $extra2
+     *
+     * @return BinaryPayment
+     */
+    public function setExtra2($extra2 = null)
+    {
+        $this->extra2 = $extra2;
+
+        return $this;
+    }
+
+    /**
+     * Get extra2.
+     *
+     * @return string|null
+     */
+    public function getExtra2()
+    {
+        return $this->extra2;
+    }
+
+    /**
+     * Set extra3.
+     *
+     * @param float|null $extra3
+     *
+     * @return BinaryPayment
+     */
+    public function setExtra3($extra3 = null)
+    {
+        $this->extra3 = $extra3;
+
+        return $this;
+    }
+
+    /**
+     * Get extra3.
+     *
+     * @return float|null
+     */
+    public function getExtra3()
+    {
+        return $this->extra3;
+    }
+
+    /**
+     * Set agree.
+     *
+     * @param bool $agree
+     *
+     * @return BinaryPayment
+     */
+    public function setAgree($agree)
+    {
+        $this->agree = $agree;
+
+        return $this;
+    }
+
+    /**
+     * Get agree.
+     *
+     * @return bool
+     */
+    public function getAgree()
+    {
+        return $this->agree;
+    }
+
+    /**
+     * Set currency.
+     *
+     * @param string|null $currency
+     *
+     * @return BinaryPayment
+     */
+    public function setCurrency($currency = null)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * Get currency.
+     *
+     * @return string|null
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * Set response.
+     *
+     * @param string|null $response
+     *
+     * @return BinaryPayment
+     */
+    public function setResponse($response = null)
+    {
+        $this->response = $response;
+
+        return $this;
+    }
+
+    /**
+     * Get response.
+     *
+     * @return string|null
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+    
+    public function getResponseArr()
+    {
+        if(!is_null($this->response)){
+          return json_decode($this->response, true);
+        }
+        return $this->response;
+    }
+    
+    public function getAmountBtc()
+    {
+        $arr = $this->getResponseArr();
+        if(!is_null($arr) && array_key_exists('amount_paid_in_btc', $arr)){
+          return $arr['amount_paid_in_btc'];
+        }
+        return 0;
+    }
+    
+    public function getAmountManual()
+    {
+        $arr = $this->getResponseArr();
+        if($this->state == 2 || $this->state == 3 || $this->state == 4){
+          if(is_null($arr) || array_key_exists('pago', $arr)){
+            return $this->amount;
+          }
+        }
+        return 0;
+    }
+
+    /**
+     * Set binaryPlan.
+     *
+     * @param \AppBundle\Entity\BinaryPlan|null $binaryPlan
+     *
+     * @return BinaryPayment
+     */
+    public function setBinaryPlan(\AppBundle\Entity\BinaryPlan $binaryPlan = null)
+    {
+        $this->binaryPlan = $binaryPlan;
+
+        return $this;
+    }
+
+    /**
+     * Get binaryPlan.
+     *
+     * @return \AppBundle\Entity\BinaryPlan|null
+     */
+    public function getBinaryPlan()
+    {
+        return $this->binaryPlan;
+    }
+
+    /**
+     * Set orderUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $orderUser
+     *
+     * @return BinaryPayment
+     */
+    public function setOrderUser(\AppBundle\Entity\FosUser $orderUser = null)
+    {
+        $this->orderUser = $orderUser;
+
+        return $this;
+    }
+
+    /**
+     * Get orderUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getOrderUser()
+    {
+        return $this->orderUser;
+    }
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $sponsor;
+
+
+    /**
+     * Set sponsor.
+     *
+     * @param \AppBundle\Entity\FosUser|null $sponsor
+     *
+     * @return BinaryPayment
+     */
+    public function setSponsor(\AppBundle\Entity\FosUser $sponsor = null)
+    {
+        $this->sponsor = $sponsor;
+
+        return $this;
+    }
+
+    /**
+     * Get sponsor.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getSponsor()
+    {
+        return $this->sponsor;
+    }
+    /**
+     * @var string|null
+     */
+    private $description;
+
+
+    /**
+     * Set description.
+     *
+     * @param string|null $description
+     *
+     * @return BinaryPayment
+     */
+    public function setDescription($description = null)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    /**
+     * @var bool
+     */
+    private $processed = 0;
+
+
+    /**
+     * Set processed.
+     *
+     * @param bool $processed
+     *
+     * @return BinaryPayment
+     */
+    public function setProcessed($processed)
+    {
+        $this->processed = $processed;
+
+        return $this;
+    }
+
+    /**
+     * Get processed.
+     *
+     * @return bool
+     */
+    public function getProcessed()
+    {
+        return $this->processed;
+    }
+
+    /**
+     * Set binaryAmount.
+     *
+     * @param float $binaryAmount
+     *
+     * @return BinaryPayment
+     */
+    public function setBinaryAmount($binaryAmount)
+    {
+        $this->binaryAmount = $binaryAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get binaryAmount.
+     *
+     * @return float
+     */
+    public function getBinaryAmount()
+    {
+        return $this->binaryAmount;
+    }
+    /**
+     * @var string|null
+     */
+    private $type = 'primero';
+
+
+    /**
+     * Set type.
+     *
+     * @param string|null $type
+     *
+     * @return BinaryPayment
+     */
+    public function setType($type = null)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return string|null
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+}

@@ -1,0 +1,29 @@
+disenobordado_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DisenoBordado:index" }
+    methods:  [GET, POST]
+
+disenobordado_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DisenoBordado:show" }
+    methods:  GET
+
+disenobordado_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DisenoBordado:new" }
+    methods:  [GET, POST]
+
+disenobordado_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DisenoBordado:edit" }
+    methods:  [GET, POST]
+
+disenobordado_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DisenoBordado:delete" }
+    methods:  DELETE
+
+disenobordado_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DisenoBordado:erase" }
+    methods:  GET

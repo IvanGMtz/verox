@@ -1,0 +1,57 @@
+<!-- User Account: style can be found in dropdown.less -->
+{# @var links \Avanzu\AdminThemeBundle\Model\NavBarUserLink[] #}
+{# @var showProfileLink bool #}
+{# @var showLogoutLink bool #}
+{% import "AvanzuAdminThemeBundle:layout:macros.html.twig" as macro %}
+<li class="nav-item dropdown user user-menu">
+  <a class="nav-link" data-toggle="dropdown" href="#">
+    {{ macro.avatar(user.image, user.username, 'user-image') }}
+    <span class="d-none d-md-inline">{{ user.name|truncate(20) }}</span>
+  </a>
+  <div class="dropdown-menu dropdown-menu-xl dropdown-menu-right bg-dark">
+    <div class="card bg-dark dropdown-item mb-0 p-0">
+      <div class="card-header text-muted border-bottom-0">
+        {{ user.name }}
+      </div>
+      <div class="card-body pt-0" style="background-color: rgba(0,0,0,0); color: wheat">
+        <div class="row">
+          <div class="col-8">
+            <h2 class="lead"><b>GTC ID: {{ user.serial }}</b></h2>
+            <p class="text-muted text-sm"><b>Bienvenido!</b></p>
+            <ul class="ml-0 mb-0 fa-ul text-muted">
+              <li class="small">
+               {# <span class="fa-li">
+                  <i class="fas fa-lg fa-user"></i>
+                </span>#}
+                {{ 'Miembro desde %date%'|trans({'%date%': user.registeredAt|date('m.Y') }, 'AvanzuAdminTheme') }}
+              </li>
+              <li class="small">
+               {# <span class="fa-li">
+                  <i class="fas fa-lg fa-clock-o"></i>
+                </span>#}
+                {{ 'Último acceso %date%'|trans({'%date%': user.lastLogin|date('d.m.Y h:i a') }, 'AvanzuAdminTheme') }}
+              </li>
+            </ul>
+          </div>
+          <div class="col-4 text-center">
+            {% if app.user.image %}
+                <img src="{{ vich_uploader_asset(app.user, 'avatar') }}" class="img-circle img-fluid" alt="{{ app.user.name }}" />
+            {% else %}
+                <img src="/bundles/appbundle/images/avatar.png" class="img-circle img-fluid" alt="{{ app.user.name }}" />
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex">
+          <a href="{{ path('avanzu_admin_profile', {'userid' : user.identifier}) }}" class="btn btn-sm btn-primary">
+            <i class="fas fa-user"></i> {{ 'Mis datos'|trans({}, 'AvanzuAdminTheme') }}
+          </a>
+          <a href="{{ logout_path() }}" class="btn btn-sm bg-danger ml-auto">
+            <i class="fas fa-sign-out-alt"></i> Salir
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</li>

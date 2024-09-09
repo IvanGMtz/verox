@@ -1,0 +1,214 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+body,
+.login-page,
+.register-page{
+  /*background-color: #000;*/
+  background-image: url('../images/bg-1.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  font-size: 16px;
+}
+
+#login img {
+    /* height: 60px; */
+    width: 30%;
+    margin: 20px 35% 20px;
+}
+
+a{
+  color: #333;
+}
+
+*.clearfix{
+  overflow: hidden;
+  clear: both;
+  height: 1px;
+}
+
+.login
+{
+	width: 450px;
+	/*height: 400px;*/
+	background-color: rgba(255,255,255,0.8);
+	overflow:hidden;
+    border: 0;
+	border-radius:10px 100px 10px 100px;
+	/*border-bottom: solid #e6cf62;*/
+	margin: 0 auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%,-50%);
+	-ms-transform: translate(-50%,-50%);
+	transform: translate(-50%,-50%);
+    padding: 30px 40px;
+}
+.login form
+{
+	/*margin: 30px 0 0 40px;*/
+	padding:0;
+    width: 100%;
+    margin: 0 auto;
+}
+.login form .username
+{
+	padding:7px 27px 7px 35px;
+	margin:0px 0 0 0px;
+	border:1px solid #fff;
+	border-radius:3px;
+    background: transparent url(/bundles/appbundle/images/244079595.png) no-repeat left;
+    outline:0;
+    width: 100%;
+    color: #333;
+}
+.login form .password
+{
+	padding:7px 27px 7px 35px;
+	margin:15px 0 0 0px;
+	border:1px solid #fff;
+	border-radius:3px;
+    background: transparent url(/bundles/appbundle/images/User-Interface-Password-icon.png) no-repeat left;
+    outline:0;
+    width: 100%;
+    color: #333;
+}
+.login form .submit
+{
+	width:100%;
+	height:35px;
+	margin:15px 0 0 0px;	
+	border:1px solid #f79828;
+	border-radius:3px;
+	background: #f79828;
+	color:#333;
+    cursor:pointer
+}
+.login form .submit:hover
+{
+	background: #f79828;
+	color:#333;
+}
+.login form .forgot
+{
+	width:137px;
+	height:35px;
+	margin:10px 0 0 0;
+	border:0;
+	border-radius:3px;
+	background:#030226 ;
+	color:#333; 
+    cursor:pointer
+}
+.login form .forgot:hover
+{
+	background:#0070B3;
+	color:#333;
+}
+
+h3{
+	color:#333;
+    font-weight: 400;
+    font-family: "HelveticaNeue-Regular","Helvetica Neue",Helvetica,arial,sans-serif;
+}
+
+#login-text{
+	padding-left: 20px;
+    width: 600px;
+    float: right;
+}
+
+#right{
+    width: 200px;
+    float: right;
+    background-color: #030226;
+    height: 282px;
+    border-left: solid #e6cf62;
+}
+#right img{
+  padding: 15px 0px;
+}
+
+@media screen and (max-width: 500px){
+  #frame-login {
+    width:100%;
+  }
+}
+
+@media screen and (max-width: 500px){
+  #login-text {
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 500px){
+  .login {
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 500px){
+#right {
+  display: none;
+  }
+}
+
+#spaceBgContainer, #spaceBg canvas, #spaceBg, #spaceBgOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+#spaceBgContainer {
+    background-color: #290834;
+}
+
+#spaceBgContainer #spaceBg {
+    background: url(../images/space.jpg) no-repeat center center transparent;
+    background-size: cover;
+}
+
+#spaceBgContainer, #spaceBg canvas, #spaceBg, #spaceBgOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: -1;
+}
+
+#spaceBgContainer #spaceBg img {
+    visibility: hidden;
+}
+
+.login-box-body, .register-box-body {
+  background: rgba(0,0,0,0.5);
+  color: #333;
+}
+
+.login-box-body h3, .register-box-body h3 {
+  color: #333 !important;
+}
+
+.login-box, .register-box {
+    width: 400px;
+    z-index: 100;
+}
+
+.particles-js-canvas-el{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+#login label{
+  color: #333;
+}

@@ -1,0 +1,54 @@
+AppBundle\Entity\ProduccionBordado:
+    type: entity
+    table: produccion_bordado
+    indexes:
+        fk_bordado_orden:
+            columns:
+                - orden_produccion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        cantidadConfirmada:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        tipo:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+    manyToOne:
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

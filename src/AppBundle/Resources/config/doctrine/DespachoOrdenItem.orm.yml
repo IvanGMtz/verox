@@ -1,0 +1,70 @@
+AppBundle\Entity\DespachoOrdenItem:
+    type: entity
+    table: despacho_orden_item
+    indexes:
+        fk_item_producto:
+            columns:
+                - producto
+        fk_producto_despacho:
+            columns:
+                - orden_despacho
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        precio:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        color:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+        bodega:
+            type: string
+            nullable: false
+            length: 120
+            options:
+                fixed: false
+        estatus:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+    manyToOne:
+        producto:
+            targetEntity: ProductoTalla
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                producto:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenDespacho:
+            targetEntity: DespachoOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_despacho:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

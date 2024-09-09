@@ -1,0 +1,29 @@
+documentoetiqueta_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DocumentoEtiqueta:index" }
+    methods:  [GET, POST]
+
+documentoetiqueta_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DocumentoEtiqueta:show" }
+    methods:  GET
+
+documentoetiqueta_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DocumentoEtiqueta:new" }
+    methods:  [GET, POST]
+
+documentoetiqueta_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DocumentoEtiqueta:edit" }
+    methods:  [GET, POST]
+
+documentoetiqueta_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DocumentoEtiqueta:delete" }
+    methods:  DELETE
+
+documentoetiqueta_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DocumentoEtiqueta:erase" }
+    methods:  GET

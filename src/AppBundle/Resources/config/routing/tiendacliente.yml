@@ -1,0 +1,29 @@
+tiendacliente_index:
+    path:     /
+    defaults: { _controller: "AppBundle:TiendaCliente:index" }
+    methods:  [GET, POST]
+
+tiendacliente_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:TiendaCliente:show" }
+    methods:  GET
+
+tiendacliente_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:TiendaCliente:new" }
+    methods:  [GET, POST]
+
+tiendacliente_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:TiendaCliente:edit" }
+    methods:  [GET, POST]
+
+tiendacliente_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:TiendaCliente:delete" }
+    methods:  DELETE
+
+tiendacliente_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:TiendaCliente:erase" }
+    methods:  GET

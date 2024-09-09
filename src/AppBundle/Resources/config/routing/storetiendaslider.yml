@@ -1,0 +1,29 @@
+storetiendaslider_index:
+    path:     /
+    defaults: { _controller: "AppBundle:StoreTiendaSlider:index" }
+    methods:  [GET, POST]
+
+storetiendaslider_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:StoreTiendaSlider:show" }
+    methods:  GET
+
+storetiendaslider_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:StoreTiendaSlider:new" }
+    methods:  [GET, POST]
+
+storetiendaslider_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:StoreTiendaSlider:edit" }
+    methods:  [GET, POST]
+
+storetiendaslider_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:StoreTiendaSlider:delete" }
+    methods:  DELETE
+
+storetiendaslider_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:StoreTiendaSlider:erase" }
+    methods:  GET

@@ -1,0 +1,430 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File as File;
+
+/**
+ * Plan
+ * @ORM\Entity
+ * @ORM\Table(name="plan")
+ * @Vich\Uploadable
+ */
+class Plan
+{
+    /**
+    * @ORM\Id
+    * @ORM\Column(type="integer")
+    * @ORM\GeneratedValue(strategy="AUTO")
+    */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var float
+     */
+    private $price = '0.00';
+
+    /**
+     * @var float|null
+     */
+    private $managementCost = '0.00';
+
+    /**
+     * @var int
+     */
+    private $referrals = '7';
+
+    /**
+     * @var string|null
+     */
+    private $description;
+
+    /**
+     * @var string|null
+     */
+    private $shortDescription;
+
+    /**
+     * @var \DateTime
+     */
+    private $creationDate;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $updateDate;
+
+    /**
+     * @var string|null
+     */
+    private $image;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     * @return Plan
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set price.
+     *
+     * @param float $price
+     *
+     * @return Plan
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get price.
+     *
+     * @return float
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * Set managementCost.
+     *
+     * @param float|null $managementCost
+     *
+     * @return Plan
+     */
+    public function setManagementCost($managementCost = null)
+    {
+        $this->managementCost = $managementCost;
+
+        return $this;
+    }
+
+    /**
+     * Get managementCost.
+     *
+     * @return float|null
+     */
+    public function getManagementCost()
+    {
+        return $this->managementCost;
+    }
+
+    /**
+     * Set referrals.
+     *
+     * @param int $referrals
+     *
+     * @return Plan
+     */
+    public function setReferrals($referrals)
+    {
+        $this->referrals = $referrals;
+
+        return $this;
+    }
+
+    /**
+     * Get referrals.
+     *
+     * @return int
+     */
+    public function getReferrals()
+    {
+        return $this->referrals;
+    }
+
+    /**
+     * Set description.
+     *
+     * @param string|null $description
+     *
+     * @return Plan
+     */
+    public function setDescription($description = null)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set shortDescription.
+     *
+     * @param string|null $shortDescription
+     *
+     * @return Plan
+     */
+    public function setShortDescription($shortDescription = null)
+    {
+        $this->shortDescription = $shortDescription;
+
+        return $this;
+    }
+
+    /**
+     * Get shortDescription.
+     *
+     * @return string|null
+     */
+    public function getShortDescription()
+    {
+        return $this->shortDescription;
+    }
+
+    /**
+     * Set creationDate.
+     *
+     * @param \DateTime $creationDate
+     *
+     * @return Plan
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
+
+        return $this;
+    }
+
+    /**
+     * Get creationDate.
+     *
+     * @return \DateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * Set updateDate.
+     *
+     * @param \DateTime|null $updateDate
+     *
+     * @return Plan
+     */
+    public function setUpdateDate($updateDate = null)
+    {
+        $this->updateDate = $updateDate;
+
+        return $this;
+    }
+
+    /**
+     * Get updateDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getUpdateDate()
+    {
+        return $this->updateDate;
+    }
+
+    /**
+     * Set image.
+     *
+     * @param string|null $image
+     *
+     * @return Plan
+     */
+    public function setImage($image = null)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get image.
+     *
+     * @return string|null
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+    
+    /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     * 
+     * @Vich\UploadableField(mapping="plan_image", fileNameProperty="image")
+     * 
+     * @var File
+     */
+    private $logo;
+
+    /**
+     * @ORM\Column(type="datetime")
+     *
+     * @var \DateTime
+     */
+    private $updatedAt;
+
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     *
+     * @return Plan
+     */
+    public function setLogo(File $image = null)
+    {
+        $this->logo = $image;
+
+        if ($image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
+    /**
+     * @var string|null
+     */
+    private $currency;
+
+
+    /**
+     * Set currency.
+     *
+     * @param string|null $currency
+     *
+     * @return Plan
+     */
+    public function setCurrency($currency = null)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * Get currency.
+     *
+     * @return string|null
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $creationUser;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $updateUser;
+
+
+    /**
+     * Set creationUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $creationUser
+     *
+     * @return Plan
+     */
+    public function setCreationUser(\AppBundle\Entity\FosUser $creationUser = null)
+    {
+        $this->creationUser = $creationUser;
+
+        return $this;
+    }
+
+    /**
+     * Get creationUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getCreationUser()
+    {
+        return $this->creationUser;
+    }
+
+    /**
+     * Set updateUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $updateUser
+     *
+     * @return Plan
+     */
+    public function setUpdateUser(\AppBundle\Entity\FosUser $updateUser = null)
+    {
+        $this->updateUser = $updateUser;
+
+        return $this;
+    }
+
+    /**
+     * Get updateUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getUpdateUser()
+    {
+        return $this->updateUser;
+    }
+}

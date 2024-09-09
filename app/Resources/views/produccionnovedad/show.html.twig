@@ -1,0 +1,59 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Produccionnovedad{% endblock %}
+{% block avanzu_page_title %}Detalle Produccionnovedad{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle produccionNovedad</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ produccionNovedad.id }}</td>
+                </tr>
+                <tr>
+                    <th>Novedad</th>
+                    <td>{{ produccionNovedad.novedad }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo</th>
+                    <td>{{ produccionNovedad.tipo }}</td>
+                </tr>
+                <tr>
+                    <th>Fechacreacion</th>
+                    <td>{% if produccionNovedad.fechaCreacion %}{{ produccionNovedad.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+      </div>
+      <div class="card-footer clearfix">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('produccionnovedad_index') }}">Regresar</a>&nbsp;<a class="btn btn-warning btn-flat btn-sm" href="{{ path('produccionnovedad_edit', { 'id': produccionNovedad.id }) }}">Editar</a>&nbsp;  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}{{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

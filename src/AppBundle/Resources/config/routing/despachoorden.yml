@@ -1,0 +1,39 @@
+despachoorden_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DespachoOrden:index" }
+    methods:  [GET, POST]
+
+despachoorden_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DespachoOrden:show" }
+    methods:  GET
+
+despachoorden_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DespachoOrden:new" }
+    methods:  [GET, POST]
+
+despachoorden_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DespachoOrden:edit" }
+    methods:  [GET, POST]
+
+despachoorden_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DespachoOrden:delete" }
+    methods:  DELETE
+
+despachoorden_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DespachoOrden:erase" }
+    methods:  GET
+
+despachoorden_pagado:
+    path:     /{id}/pagado
+    defaults: { _controller: "AppBundle:DespachoOrden:pagado" }
+    methods:  GET
+    
+despachoorden_despachado:
+    path:     /{id}/despachado
+    defaults: { _controller: "AppBundle:DespachoOrden:despachado" }
+    methods:  GET

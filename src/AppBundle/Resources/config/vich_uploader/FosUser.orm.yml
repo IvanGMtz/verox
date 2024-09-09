@@ -1,0 +1,4 @@
+AppBundle\Entity\FosUser:
+    avatar:
+        mapping:           fos_user_image
+        filename_property: image

@@ -1,0 +1,88 @@
+AppBundle\Entity\OrdenCompraNovedad:
+    type: entity
+    table: orden_compra_novedad
+    indexes:
+        orden_compra:
+            columns:
+                - orden_compra
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        tipo:
+            columns:
+                - tipo
+        tiene_pendientes:
+            columns:
+                - tiene_pendientes
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        descripcion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        tipo:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        ref1:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        ref2:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        tienePendientes:
+            type: boolean
+            nullable: true
+            options:
+                default: 0
+            column: tiene_pendientes
+        anotaciones:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+    manyToOne:
+        ordenCompra:
+            targetEntity: OrdenCompra
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: novedades
+            inversedBy: novedades
+            joinColumns:
+                orden_compra:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

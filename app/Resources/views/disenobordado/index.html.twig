@@ -1,0 +1,111 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Disenobordados{% endblock %}
+{% block avanzu_page_title %}Disenobordados{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de disenoBordados</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="cantidad" class="sr-only">cantidad</label>
+              <input type="text" class="form-control" id="cantidad" name="q[cantidad]" placeholder="Cantidad" {% if q and q.cantidad %}value="{{ q.cantidad }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="tipo" class="sr-only">tipo</label>
+              <input type="text" class="form-control" id="tipo" name="q[tipo]" placeholder="Tipo" {% if q and q.tipo %}value="{{ q.tipo }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="estado" class="sr-only">estado</label>
+              <input type="text" class="form-control" id="estado" name="q[estado]" placeholder="Estado" {% if q and q.estado %}value="{{ q.estado }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('disenobordado_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.cantidad') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Cantidad', 'a.cantidad') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.tipo') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Tipo', 'a.tipo') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.estado') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Estado', 'a.estado') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaCreacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fechacreacion', 'a.fechaCreacion') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for disenoBordado in disenoBordados %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('disenobordado_show', { 'id': disenoBordado.id }) }}">{{ disenoBordado.id }}</a></td>
+                  <td class="nowrap">{{ disenoBordado.cantidad }}</td>
+                  <td class="nowrap">{{ disenoBordado.tipo }}</td>
+                  <td class="nowrap">{{ disenoBordado.estado }}</td>
+                  <td class="nowrap" data-sort-value="{% if disenoBordado.fechaCreacion %}{{ disenoBordado.fechaCreacion|date('U') }}{% endif %}">{% if disenoBordado.fechaCreacion %}{{ disenoBordado.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('disenobordado_show', { 'id': disenoBordado.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('disenobordado_edit', { 'id': disenoBordado.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

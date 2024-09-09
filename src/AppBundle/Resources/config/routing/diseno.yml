@@ -1,0 +1,54 @@
+diseno_index:
+    path:     /{id}/disenoOrden
+    defaults: { _controller: "AppBundle:Diseno:index" }
+    methods:  [GET, POST]
+
+diseno_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:Diseno:show" }
+    methods:  GET
+
+diseno_show2:
+    path:     /{diseno}/diseno/{produccionOrden}/produccionOrden/show2
+    defaults: { _controller: "AppBundle:Diseno:show2" }
+    methods:  GET
+
+diseno_show3:
+    path:     /{diseno}/diseno/{produccionOrden}/produccionOrden/show3
+    defaults: { _controller: "AppBundle:Diseno:show3" }
+    methods:  GET
+
+diseno_show4:
+    path:     /{id}/show4
+    defaults: { _controller: "AppBundle:Diseno:show4" }
+    methods:  GET
+
+diseno_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:Diseno:new" }
+    methods:  [GET, POST]
+
+diseno_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:Diseno:edit" }
+    methods:  [GET, POST]
+
+diseno_aprobar:
+    path:     /{id}/aprobar
+    defaults: { _controller: "AppBundle:Diseno:aprobar" }
+    methods:  GET
+
+diseno_rechazar:
+    path:     /{id}/rechazar
+    defaults: { _controller: "AppBundle:Diseno:rechazar" }
+    methods:  GET
+
+#diseno_delete:
+#    path:     /{id}/delete
+#    defaults: { _controller: "AppBundle:Diseno:delete" }
+#    methods:  DELETE
+#
+#diseno_erase:
+#    path:     /{id}/erase
+#    defaults: { _controller: "AppBundle:Diseno:erase" }
+#    methods:  GET

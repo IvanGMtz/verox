@@ -1,0 +1,29 @@
+productoinventariomovimiento_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProductoInventarioMovimiento:index" }
+    methods:  [GET, POST]
+
+productoinventariomovimiento_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProductoInventarioMovimiento:show" }
+    methods:  GET
+
+productoinventariomovimiento_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProductoInventarioMovimiento:new" }
+    methods:  [GET, POST]
+
+productoinventariomovimiento_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProductoInventarioMovimiento:edit" }
+    methods:  [GET, POST]
+
+productoinventariomovimiento_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProductoInventarioMovimiento:delete" }
+    methods:  DELETE
+
+productoinventariomovimiento_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProductoInventarioMovimiento:erase" }
+    methods:  GET

@@ -1,0 +1,71 @@
+AppBundle\Entity\ProductoCategoria:
+    type: entity
+    table: producto_categoria
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        nombreEs:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: nombre_es
+        nombreEn:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: nombre_en
+        principal:
+            type: string
+            nullable: false
+            length: 5
+            options:
+                fixed: false
+            column: principal
+        verox:
+            type: string
+            nullable: false
+            length: 5
+            options:
+                fixed: false
+            column: verox
+        kiwi:
+            type: string
+            nullable: false
+            length: 5
+            options:
+                fixed: false
+            column: kiwi
+        imagen:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        imagen2:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        orden:
+            type: integer
+            nullable: false
+            options:
+                fixed: false
+            column: orden
+        fechaActualizacion:
+            type: datetime
+            nullable: false
+            column: fecha_actualizacion
+    lifecycleCallbacks: {  }

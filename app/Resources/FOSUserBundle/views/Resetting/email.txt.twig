@@ -1,0 +1,45 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% block subject %}
+{%- autoescape false -%}
+  ¡RECUPERAR CONTRASEÑA GOLDEN TRADE
+{%- endautoescape -%}
+{% endblock %}
+{% block body_text %}
+{% autoescape false %}
+  <img style="height:200px;margin: 0 auto" src="/bundles/appbundle/images/favicon.png" alt="GOlD Trade Company">
+  <br>
+  <h4>Hola {{ user.name|upper }},</h4>
+  <p>Para restablecer tu contraseña, por favor visita: </p>
+  <a href="{{ confirmationUrl }}">{{ confirmationUrl }}</a>
+  <br>
+  <br>
+  <p>Cordial saludo,</p>
+  <b>Equipo de soporte  GOLDEN TRADE</b>
+{% endautoescape %}
+{% endblock %}
+{% block body_html %}
+    <img style="height:200px;margin: 0 auto" src="/bundles/appbundle/images/favicon.png" alt="GOlD Trade Company">
+  <br>
+  <h4>Hola {{ user.name|upper }},</h4>
+  <p>Para restablecer tu contraseña, por favor visita: </p>
+  <a href="{{ confirmationUrl }}">{{ confirmationUrl }}</a>
+  <br>
+  <br>
+  <p>Cordial saludo,</p>
+  <b>Equipo de soporte GOLDEN TRADE</b>
+{% endblock %}
+
+
+{#{% trans_default_domain 'FOSUserBundle' %}
+{% block subject %}
+{%- autoescape false -%}
+{{ 'resetting.email.subject'|trans({'%username%': user.username}) }}
+{%- endautoescape -%}
+{% endblock %}
+
+{% block body_text %}
+{% autoescape false %}
+{{ 'resetting.email.message'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl}) }}
+{% endautoescape %}
+{% endblock %}
+{% block body_html %}{% endblock %}#}

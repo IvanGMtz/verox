@@ -1,0 +1,59 @@
+# To get started with security, check out the documentation:
+# https://symfony.com/doc/current/security.html
+security:
+    encoders:
+        FOS\UserBundle\Model\UserInterface: bcrypt
+
+    role_hierarchy:
+        #ROLES DE PRODUCCION
+        ROLE_USER:               []
+        #ROLE_SUPERVISOR:         ROLE_USER
+        ROLE_TRAZO:              ROLE_USER
+        ROLE_FOTOS:              ROLE_USER
+        ROLE_INVENTARIO:         [ROLE_USER, ROLE_TERMINADOS, ROLE_PRETERMINADOS, ROLE_EMPAQUE]
+        ROLE_CORTE:           [ROLE_USER]
+        ROLE_CONFECCION:           ROLE_USER
+        ROLE_BORDADO:           ROLE_USER
+        ROLE_PRETERMINADOS:           ROLE_USER
+        ROLE_TERMINADOS:           [ROLE_USER, ROLE_FOTOS]
+        ROLE_LAVANDERIA:           ROLE_USER
+        ROLE_EMPAQUE:           ROLE_USER
+        ROLE_DESIGN:             [ROLE_USER, ROLE_LAVANDERIA]
+        ROLE_ADMIN_PRODUCCION: [ROLE_INVENTARIO, ROLE_DESIGN, ROLE_CORTE, ROLE_BORDADO, ROLE_CONFECCION,ROLE_LAVANDERIA, ROLE_PRETERMINADOS, ROLE_TERMINADOS, ROLE_TRAZO, ROLE_EMPAQUE]
+        ROLE_SUPER_ADMIN:        [ROLE_ADMIN_VENTAS,ROLE_INVENTARIO, ROLE_DESIGN, ROLE_CORTE, ROLE_BORDADO, ROLE_CONFECCION,ROLE_LAVANDERIA, ROLE_PRETERMINADOS, ROLE_TERMINADOS, ROLE_TRAZO, ROLE_EMPAQUE]
+        # ROLES DE VENTAS
+        ROLE_ADMIN_VENTAS:  ROLE_USER
+        ROLE_VENDEDOR: ROLE_USER
+        ROLE_DESPACHOS: ROLE_USER
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username_email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            form_login:
+                check_path: /login_check
+                login_path: /login
+                provider: fos_userbundle
+                failure_path:   null
+                default_target_path: /admin/dashboard
+                always_use_default_target_path:   false
+            logout:
+                path:   /logout
+                target: /login
+            anonymous:    true
+
+    access_control:
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/home, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/public, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, roles: [ROLE_INVENTARIO, ROLE_TRAZO,ROLE_DESIGN, ROLE_CORTE, ROLE_CONFECCION, ROLE_BORDADO, ROLE_LAVANDERIA, ROLE_PRETERMINADOS, ROLE_TERMINADOS, ROLE_EMPAQUE, ROLE_ADMIN_VENTAS, ROLE_VENDEDOR, ROLE_DESPACHOS] }
+        - { path: ^/admin/diseno, roles: [ROLE_DESIGN, ROLE_CORTE, ROLE_CONFECCION, ROLE_BORDADO, ROLE_LAVANDERIA, ROLE_PRETERMINADOS, ROLE_TERMINADOS, ROLE_EMPAQUE, ROLE_TRAZO] }

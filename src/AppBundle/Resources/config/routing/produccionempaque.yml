@@ -1,0 +1,29 @@
+produccionempaque_index:
+    path:     /{produccionOrden}/produccionOrden/
+    defaults: { _controller: "AppBundle:ProduccionEmpaque:index" }
+    methods:  [GET, POST]
+
+produccionempaque_show:
+    path:     /{produccionEmpaque}/produccionEmpaque/{produccionOrden}/produccionOrden/show
+    defaults: { _controller: "AppBundle:ProduccionEmpaque:show" }
+    methods:  GET
+
+produccionempaque_new:
+    path:     /{produccionOrden}/produccionOrden/new
+    defaults: { _controller: "AppBundle:ProduccionEmpaque:new" }
+    methods:  [GET, POST]
+
+produccionempaque_edit:
+    path:     /{produccionEmpaque}/produccionEmpaque/{produccionOrden}/produccionOrden/edit
+    defaults: { _controller: "AppBundle:ProduccionEmpaque:edit" }
+    methods:  [GET, POST]
+
+produccionempaque_delete:
+    path:     /{produccionEmpaque}/produccionEmpaque/{produccionOrden}/produccionOrden/delete
+    defaults: { _controller: "AppBundle:ProduccionEmpaque:delete" }
+    methods:  DELETE
+
+produccionempaque_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionEmpaque:erase" }
+    methods:  GET

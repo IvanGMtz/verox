@@ -1,0 +1,108 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Home{% endblock %}
+{% block avanzu_page_title %}Estación de Trabajo{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Ordenes de Trabajo</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-lg-3 col-6">
+    <!-- small box -->
+    <div class="small-box bg-success">
+      <div class="inner">
+        <h3>Abrir</h3>
+
+        <p>Ordenes de producción</p>
+      </div>
+      <div class="icon">
+        <i class="ion ion-bag"></i>
+      </div>
+      <a href="{{ path('produccionorden_index') }}" class="small-box-footer">Abrir <i class="fas fa-check"></i></a>
+    </div>
+  </div>
+  <div class="col-lg-3 col-6">
+    <!-- small box -->
+    <div class="small-box bg-info">
+      <div class="inner">
+        <h3>Abrir</h3>
+
+        <p>Ordenes de Diseño</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-female"></i>
+      </div>
+      <a href="{{ path('disenoorden_index') }}" class="small-box-footer">Abrir <i class="fas fa-check"></i></a>
+    </div>
+  </div>
+</div>
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Mis pendientes</h1>
+      </div><!-- /.col -->
+      <div class="col-sm-6">
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+{% if is_granted('ROLE_DESIGN') %}
+  {% for orden in ordenes %}
+    {% set count = 0 %}
+    {% for diseno in disenos %}
+      {% if diseno.orden.id == orden.id %}
+        {% set count = count + 1 %}
+      {% endif %}
+    {% endfor %}
+    {% if count < orden.cantidad %}
+      <div class="alert alert-warning mt-2" role="alert">
+        Atención: <br>
+        La orden <a class="alert-link" href="{{ path('disenoorden_show',{id: orden.id}) }}">{{ orden.referencia }}</a> tiene diseños pendientes por crear
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% for proceso in procesos_activos %}
+  {% if proceso.proceso == "DISEÑO" %}
+    {% if is_granted('ROLE_DESIGN') %}
+    <div class="alert alert-warning mt-2" role="alert">
+      Pendiente en orden de {{ proceso.tipoOrden }}: <br>
+      Tienes pendiente terminar el diseño <a class="alert-link" href="{{ path('diseno_show',{id: proceso.diseno.id}) }}">{{ proceso.diseno.nombre }}</a>
+    </div>
+    {% endif %}
+  {% elseif proceso.proceso == "BORDADO" and proceso.status == 0 and is_granted('ROLE_BORDADO') %}
+  <div class="alert alert-warning mt-2" role="alert">
+    Pendiente en orden de {{ proceso.tipoOrden }}: <br>
+    Tienes pendiente piezas por Bordar para: <a class="alert-link" href="{% if proceso.tipoOrden == 'DISEÑO' %}{{ path('diseno_show4',{id: proceso.diseno.id}) }}{% else %}{{ path('diseno_show3',{diseno: proceso.diseno.id,produccionOrden:proceso.orden}) }}{% endif %} ">{{ proceso.diseno.nombre }}</a>
+  </div>
+  {% else %}
+    {% if is_granted('ROLE_' ~ proceso.proceso) %}
+    <div class="alert alert-warning mt-2" role="alert">
+      Pendiente en orden de {{ proceso.tipoOrden }}: <br>
+      Tienes pendiente terminar tu proceso para: <a class="alert-link" href="{% if proceso.tipoOrden == 'DISEÑO' %}{{ path('diseno_show',{id: proceso.diseno.id}) }}{% else %}{{ path('diseno_show2',{diseno: proceso.diseno.id,produccionOrden:proceso.orden}) }}{% endif %} ">{{ proceso.diseno.nombre }}</a>
+    </div>
+    {% endif %}
+  {% endif %}
+{% endfor %}
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+
+  function new_order_design(){
+    $('#modal-design').modal('show');
+  }
+  </script>
+{% endblock %}

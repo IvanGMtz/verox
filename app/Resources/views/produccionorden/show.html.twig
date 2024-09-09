@@ -1,0 +1,584 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Orden de Producción - Detalle{% endblock %}
+{% block avanzu_page_title %}Orden de Producción - Detalle{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle de la orden - {{ produccionOrden.referencia }}</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="modal" id="modal-preliquidar" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingresa los datos solicitados</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="" action="{{ path('produccion_preliquidar') }}" method="post">
+          <label for="cantidad">Proceso a Preliquidar (Ya terminado)</label>
+          <select class="custom-select form-control" name="proceso" required>
+            {% for key,process in procesos_ended  %}
+              <option value="{{ process }}">{{ key }}</option>
+            {% endfor %}
+          </select>
+          <input type="text" style="visibility:hidden" name="tipo_orden" value="PRODUCCION">
+          <input type="text" style="visibility:hidden" name="orden_produccion" value="{{ produccionOrden.id }}">
+          <button type="submit" style="float:right" class="btn btn-primary m-1" data-bs-dismiss="modal">Ok</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-new-costo" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar costo adicional</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="create_costo" action="{{ path('produccioncosto_new',{produccionOrden:produccionOrden.id}) }}">
+          <input type="number" name="ordenProduccion" value="{{ produccionOrden.id }}" style="visibility:hidden"/>
+          <label>Costo de mano de obra por unidad</label>
+          <input type="number" name="costo" class="form-control" value="0" required/>
+          <label>Descripción</label>
+          <input type="text" name="descripcion" class="form-control" value="" required/>
+        </form>
+      </div>
+      <div class="modal-footer">
+         <button type="button" onclick="submitCosto()" class="btn btn-primary m-2" style="float:right" data-bs-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-costo-produccion" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Total Costo de Producción</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% for diseno in disenos_orden %}
+          {% set qty_presillas = diseno.diseno.presillas %}
+          {% set qty_puntadas = diseno.puntadas %}
+          {% set qty_ojales = diseno.diseno.ojales %}
+          {% set qty_taches = 0 %}
+          {% set qty_garra_placa = 0 %}
+          {% set qty_botones = 0 %}
+          {% set total = 0 %}
+          {% set totalProduccion = 0 %}
+          {% set total_mano_obra = 0 %}
+          <div class="diseno_costos" id="costo_diseno-{{ diseno.diseno.id }}">
+            <label>Materias primas</label>
+            <table class="table table-sm table-bordered table-hover">
+              <tbody>
+                  <tr>
+                    <th>Material</th>
+                    <th>Cantidad</th>
+                    <th>Costo</th>
+                    <th>Subtotal</th>
+                  </tr>
+                  {% for key,material in materiales %}
+                    {% if key == diseno.diseno.id %}
+                      {% for material_data in materiales[key] %}
+                        <tr>
+                          <td>{{ material_data.material.material.nombre }} {{ material_data.material.material.color }} {{ material_data.material.material.medida }}</td>
+                          <td>{{ material_data.cantidad }}</td>
+                          <td>{{ material_data.material.valorConIva|number_format(0, ',', '.') }}</td>
+                          <td>{{ (material_data.cantidad * material_data.material.valorConIva)|number_format(0, ',', '.') }}</td>
+                        </tr>
+                        {% if material_data.material.material.categoria.nombre == "BOTON" %}
+                          {% set qty_botones = qty_botones + material_data.cantidad %}
+                        {% elseif material_data.material.material.categoria.nombre == "PLACA" or  material_data.material.material.categoria.nombre == "GARRA" %}
+                          {% set qty_garra_placa = qty_garra_placa + material_data.cantidad %}
+                        {% elseif material_data.material.material.categoria.nombre == "TACHE"  %}
+                          {% set qty_taches = qty_taches + material_data.cantidad %}
+                        {% endif %}
+                        {% set total = total + ((material_data.cantidad) * material_data.material.valorConIva) %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <th>Total</th>
+                    <th>{{ total|number_format(0, ',', '.') }}</th>
+                  </tr>
+              </tbody>
+            </table>
+            <label>Mano de obra</label>
+            <table class="table table-sm table-bordered table-hover">
+              <tbody>
+                  <tr>
+                    <th>Proceso</th>
+                    <th>Cantidad</th>
+                    <th>Costo</th>
+                    <th>Subtotal</th>
+                  </tr>
+                  {% for proceso in costos %}
+                    {% if proceso.proceso.nombre == "BORDADO" %}
+                      <tr>
+                        <td>PUNTADAS</td>
+                        <td>{{ (qty_puntadas * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        <td>{{ proceso.costo|number_format(2, ',', '.') }}</td>
+                        <td>{{ ((qty_puntadas * diseno.cantidad) * proceso.costo + 100)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + ((qty_puntadas * diseno.cantidad) * proceso.costo) + 100 %}
+                      </tr>
+                      <tr>
+                        <td>PRETINAS (Bordado)</td>
+                        <td>{{ diseno.cantidad }}</td>
+                        <td>{{ proceso.costo2|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo2 * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo2 * diseno.cantidad) %}
+                      </tr>
+                    {% elseif proceso.proceso.nombre == "CONFECCION" %}
+                      <tr>
+                        <td>ENSAMBLE</td>
+                        <td>{{ diseno.cantidad }}</td>
+                        <td>{{ proceso.costo|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>PRETINAS (Confección)</td>
+                        <td>{{ diseno.cantidad }}</td>
+                        <td>{{ proceso.costo2|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo2 * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo2 * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>FILETEADO</td>
+                        <td>{{ diseno.cantidad }}</td>
+                        <td>{{ proceso.costo3|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo3 * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo3 * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>HILOS (Promedio/Unidad)</td>
+                        <td>{{ diseno.cantidad }}</td>
+                        <td>{{ proceso.costo4|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo4 * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo4 * diseno.cantidad) %}
+                      </tr>
+                    {% elseif proceso.proceso.nombre == "PRETERMINADOS" %}
+                      <tr>
+                        <td>PRESILLAS</td>
+                        <td>{{ qty_presillas * diseno.cantidad }}</td>
+                        <td>{{ proceso.costo|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo * qty_presillas * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo * qty_presillas * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>OJALES</td>
+                        <td>{{ qty_ojales * diseno.cantidad }}</td>
+                        <td>{{ proceso.costo2 }}</td>
+                        <td>{{ (proceso.costo2 * qty_ojales * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo2 * qty_ojales * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>DESPELUZADO CRUDO</td>
+                        <td>1</td>
+                        <td>{{ proceso.costo3|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo3 * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo3 * diseno.cantidad) %}
+                      </tr>
+                    {% elseif proceso.proceso.nombre == "TERMINADOS" %}
+                      <tr>
+                        <td>TACHES</td>
+                        <td>{{ qty_taches }}</td>
+                        <td>{{ proceso.costo|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo * qty_taches * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo * qty_taches * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>GARRA O PLACA</td>
+                        <td>{{ qty_garra_placa }}</td>
+                        <td>{{ proceso.costo2|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo2 * qty_garra_placa * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo2 * qty_garra_placa * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>TERMINADO</td>
+                        <td>1</td>
+                        <td>{{ proceso.costo3|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo3 * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo3 * diseno.cantidad) %}
+                      </tr>
+                      <tr>
+                        <td>BOTONES</td>
+                        <td>{{ qty_botones }}</td>
+                        <td>{{ proceso.costo4|number_format(0, ',', '.') }}</td>
+                        <td>{{ (proceso.costo4 * qty_botones * diseno.cantidad)|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo4 * qty_botones * diseno.cantidad) %}
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td>{{ (proceso.descripcion) ? proceso.descripcion : proceso.proceso.nombre }}</td>
+                        <td>{{ diseno.cantidad }}</td>
+                        <td>{{ (proceso.costo)|number_format(0, ',', '.') }}</td>
+                        <td>{{ proceso.costo * diseno.cantidad|number_format(0, ',', '.') }}</td>
+                        {% set total_mano_obra = total_mano_obra + (proceso.costo * diseno.cantidad) %}
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <th>Total</th>
+                    <th>{{ total_mano_obra|number_format(0, ',', '.') }}</th>
+                  </tr>
+              </tbody>
+            </table>
+            <label style="font-size:large">TOTAL COSTO PRODUCCIÓN: {{ (total + total_mano_obra)|number_format(0, ',', '.') }} pesos</label><br>
+            <label style="font-size:large">TOTAL COSTO / UNIDAD: {{ ((total + total_mano_obra) / diseno.cantidad)|number_format(0, ',', '.') }} pesos</label>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-designs" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Diseño</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="add_diseno" action="{{ path('producciontalla_new',{produccionOrden:produccionOrden.id}) }}" method="post">
+          <select class="form-control mb-2" aria-label="Diseños" name="diseno" id="diseno_select" required>
+            <option value="NA" selected disabled>Seleccionar diseño</option>
+            {% for diseno in disenos %}
+              <option value="{{ diseno.id }}">{{ diseno.nombre }} - {{ diseno.orden.referencia }}</option>
+            {% endfor %}
+          </select>
+          <label for="total">Cantidad total a producir</label>
+          <input type="number" class="form-control" name="total" id="total" value="1"/>
+          <table class="table table-striped" id="main_table">
+            <thead>
+              <tr>
+                <th>Talla</th>
+                <th>Cantidad por talla</th>
+                <th></th>
+              </tr>
+              <tr class="talla" id="R-0">
+                {% set tallas = ['6','8','10','12','14','16','18','20','XS','S','M','L','XL','XXL'] %}
+                <td>
+                  <select id="T-0" name="T-0" class="form-control" aria-label="Talla">
+                    {% for T in tallas %}
+                      <option class="talla_option" value="{{ T }}">{{ T }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td><input type="number" class="form-control qty" name="Q-0" value="1"/></td>
+                <td><span style="color:red;cursor:pointer;font-size:x-large;float:right;visibility:hidden" id="D-0"><i class="fas fa-window-close"></i></span></td>
+              </tr>
+            </thead>
+          </table>
+          <button class="btn btn-success" type="button" name="add_talla" id="new_talla">Agregar Talla</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="submitForm()" class="btn btn-primary m-2" style="float:right" data-bs-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Referencia</th>
+                    <td>{{ produccionOrden.referencia }}</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Creación</th>
+                    <td>{% if produccionOrden.fechaCreacion %}{{ produccionOrden.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+                {% if produccionOrden.fechaFinalizacion %}
+                  <tr>
+                      <th>Fecha de finalizacion</th>
+                      <td>{% if produccionOrden.fechaFinalizacion %}{{ produccionOrden.fechaFinalizacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  </tr>
+                  <tr>
+                      <th>Duración</th>
+                      <td>Dias: {{ ( (produccionOrden.duracion / 60) / 24 > 1 ) ? ((produccionOrden.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((produccionOrden.duracion / 60 / 24) - (produccionOrden.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ ((produccionOrden.duracion / 60) - (produccionOrden.duracion / 60)|round(0, 'floor'))*60 }}</td>
+                  </tr>
+                {% endif %}
+                <tr>
+                    <th>Estado</th>
+                    <td>{% if produccionOrden.estado == 0 %}
+                        Pendiente por Lanzar
+                        {% elseif produccionOrden.estado == 1 %}
+                        En Proceso
+                        {% elseif produccionOrden.estado == 2 %}
+                        Terminada
+                      {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Notas</th>
+                    <td>{{ produccionOrden.notas }}</td>
+                </tr>
+                {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                <tr>
+                  <td></td>
+                  <td>
+                    <a style="float:right" class="btn btn-warning btn-flat btn-sm" href="{{ path('produccionorden_edit', { 'id': produccionOrden.id }) }}">Editar</a>
+                  </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <h4 class="m-2">Costo de mano de obra:</h4>
+        <div class="row">
+          {% for proceso in costos %}
+            {% if is_granted('ROLE_' ~ proceso.proceso.nombre) %}
+              <div class="col col-3">
+                <div class="card">
+                    <label class="text-center">
+                      <span style="font-weight:bolder;font-size:large">{{ proceso.proceso.nombre }}</span><br>
+                      {% if proceso.proceso.nombre == "PRETERMINADOS" %}
+                      <span>Presillas: {{ proceso.costo }} pesos</span><br>
+                      <span>Ojales: {{ proceso.costo2 }} pesos</span><br>
+                      <span>Despeluzado Crudo: {{ proceso.costo3 }} pesos</span><br>
+                      {% elseif proceso.proceso.nombre == "TERMINADOS" %}
+                      <span>Taches: {{ proceso.costo }} pesos</span><br>
+                      <span>Garra/Placa: {{ proceso.costo2 }} pesos</span><br>
+                      <span>Terminado: {{ proceso.costo3 }} pesos</span><br>
+                      <span>Botones: {{ proceso.costo4 }} pesos</span><br>
+                      {% elseif proceso.proceso.nombre == "CONFECCION" %}
+                      <span>Ensamble: {{ proceso.costo }} pesos</span><br>
+                      <span>Pretina: {{ proceso.costo2 }} pesos</span><br>
+                      <span>Fileteado: {{ proceso.costo3 }} pesos</span><br>
+                      <span {{ (proceso.costo4 == 0) ? "class='bg-warning'" }}>Hilos: {{ proceso.costo4 }} pesos</span><br>
+                      {% elseif proceso.proceso.nombre == "BORDADO" %}
+                      <span>Puntada: {{ proceso.costo }} pesos</span><br>
+                      <span>Pretina: {{ proceso.costo2 }} pesos</span><br>
+                      {% else %}
+                      <span>Valor/unidad: {{ proceso.costo }} pesos</span><br>
+                      {% endif %}
+                      {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                      <a class="btn btn-primary btn-flat btn-xs float-end" title="Editar" href="{{ path('produccioncosto_edit', { 'id': proceso.id }) }}">Editar &nbsp;<i class="fa fa-edit"></i></a>
+                      {% endif %}
+                    </label>
+                </div>
+              </div>
+            {% endif %}
+            {% if proceso.proceso.nombre == "ADICIONALES" %}
+              <div class="col col-3">
+                <div class="card">
+                    <label class="text-center">
+                      <span style="font-weight:bolder;font-size:large">{{ proceso.descripcion }}</span><br>
+                      <span>Valor/unidad: {{ proceso.costo }} pesos</span><br>
+                      {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                      <a class="btn btn-primary btn-flat btn-xs float-end" title="Editar" href="{{ path('produccioncosto_edit', { 'id': proceso.id }) }}">Editar &nbsp;<i class="fa fa-edit"></i></a>
+                      {% endif %}
+                    </label>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div style="width:100%">
+          <a style="float:right" onclick="new_costo()" class="btn btn-dark btn-flat btn-sm">Agregar Costo Adicional</a>
+        </div><br>
+        <h4 class="m-2">Diseños de la orden de producción:</h4>
+        {% if disenos_orden %}
+        <div class="row">
+          {% for key,diseno in disenos_orden %}
+              <div class="col col-5">
+                <div class="card mb-3">
+                  <div class="row g-0">
+                    <div class="col-md-5" style="overflow:hidden">
+                      <img style="height: 200px; width: auto; margin: 0 auto" class="d-block" src="{{ vich_uploader_asset(diseno.diseno.imagenes[0], 'foto') }}" alt="{{ diseno.diseno.usuarioCreacion }}">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ diseno.diseno.nombre }}</h5><br>
+                        <span class="card-text">Cantidad total: {{ diseno.cantidad }} Unidades</span><br>
+                          {% if diseno.estado == 1 %}
+                            {% for proceso in procesos_disenos  %}
+                              {% if proceso is not empty %}
+                                {% if proceso[0].diseno.id == diseno.diseno.id %}
+                                <div class="badge badge-success" style="font-weight:bold;font-size:small">
+                                  Proceso Actual: {{ proceso[0].proceso }}
+                                </div><br>
+                                {% endif %}
+                              {% else %}
+                              {% endif %}
+                            {% endfor %}
+                          {% endif %}
+                        <a  data-toggle="collapse" href="#C-{{ diseno.id }}" role="button" aria-expanded="false" aria-controls="C-{{ diseno.id }}">
+                          Ver tallas:
+                        </a>
+                        <div class="collapse" id="C-{{ diseno.id }}">
+                          {% for talla in tallas_orden %}
+                            {% if talla.diseno.diseno.id == diseno.diseno.id %}
+                              <small class="text-muted {{ (talla.cantidadConfirmada < talla.cantidad) ? "bg-warning" : "" }}">Talla: {{ talla.talla }} / Cantidad: {{ (talla.cantidad < talla.cantidadConfirmada) ? talla.cantidad : talla.cantidadConfirmada }} Unidades</small><br>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                        <p class="card-text" style="">
+                          <small class="text-muted">Asignado: {{ diseno.fechaCreacion|date('d-m-Y h:i:s a') }}</small><br>
+                          {% if diseno.fechaFinalizacion %}
+                            <small class="text-muted">Finalizado: {{ diseno.fechaFinalizacion|date('d-m-Y h:i:s a') }}</small><br>
+                            <small class="text-muted">Duración: Dias: {{ ( (diseno.duracion / 60) / 24 > 1 ) ? ((diseno.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((diseno.duracion / 60 / 24) - (diseno.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ ((diseno.duracion / 60) - (diseno.duracion / 60)|round(0, 'floor'))*60 }}</small>
+                          {% endif %}
+                          {% if produccionOrden.estado == 1 or produccionOrden.estado == 2  %}<br><a href="{{ path('diseno_show2', {diseno:diseno.diseno.id, produccionOrden:produccionOrden.id}) }}">ver detalles</a>{% endif %}
+                          {% if produccionOrden.estado == 2  %}<br><button class="btn btn-success btn-sm" onclick="open_costos({{ diseno.diseno.id }})">Costos de Producción</button>{% endif %}
+                        </p>
+                      </div>
+                      {% if diseno.estado == 0 and is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                        <a href="{{ path('producciondiseno_delete', {produccionDiseno:diseno.id, produccionOrden:produccionOrden.id}) }}" class="btn btn-danger btn-flat m-1" style="float:right" type="button">Eliminar &nbsp;<i class="fa fa-trash"></i></a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+          {% endfor %}
+          </div>
+        {% endif %}
+        {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') or is_granted('ROLE_EMPAQUE') %}
+        <div class="row">
+          <a href="{{ path('produccionempaque_index',{produccionOrden: produccionOrden.id}) }}" class="btn btn-secondary btn-lg btn-flat float-right m-1">
+            <i class="fas fa-list-alt fa-lg mr-2"></i>
+            Ver lista de Empaque
+          </a>
+          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+          <a href="#!" onclick="new_preliquidacion()" class="btn btn-info btn-flat m-1" style="float:right" type="button">Crear cuenta de cobro &nbsp;<i class="fas fa-money-bill-alt"></i></a>
+          {% endif %}
+        </div>
+        {% endif %}
+        <button class="btn btn-primary btn-flat" style="float:right" type="button" onclick="add_design()"><i class="fa fa-plus"></i>&nbsp;Agregar Diseño</button>
+        {% if novedades != null %}
+        <h4 class="m-2">Novedades:</h4>
+          <div class="card-footer card-comments bg-warning">
+            {% for novedad in novedades %}
+            <div class="card-comment">
+              <span class="username">
+                {{ novedad.tipo }}<br>
+                <span class="text-muted"> {{ novedad.novedad }}</span>
+                <span class="text-muted float-right">{{ novedad.fechaCreacion|date('d-m-Y h:i a') }}</span>
+              </span>
+            </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="card-footer clearfix"> 
+        {% if produccionOrden.estado == 0 and disenos_orden != null %} <a href="{{ path('produccionorden_lanzar', {'id':produccionOrden.id}) }}" class="btn btn-success btn-flat btn-sm" style="float:right"><i class="fa fa-check"></i>&nbsp;Lanzar Orden de Producción</a> {% endif %}
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('produccionorden_index') }}">Regresar</a>&nbsp;  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}{{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar Orden de Producción">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+<script>
+var row_counter = 1;
+function add_design(){
+  $('#modal-designs').modal('show');
+}
+function open_costos(id){
+  let disenos = $(".diseno_costos");
+  for (var i = 0; i < disenos.length; i++) {
+    disenos[i].style.display = "none";
+  }
+  $("#costo_diseno-"+id.toString()).css("display","block");
+  $('#modal-costo-produccion').modal('show');
+}
+function new_costo(){
+  $('#modal-new-costo').modal('show');
+}
+function submitForm(){
+  var total = $('#total').val();
+  var total2 = 0;
+  var qty_inputs = document.getElementsByClassName('qty');
+  for (var i = 0; i < qty_inputs.length; i++) {
+    total2 += parseInt(qty_inputs[i].value);
+  }
+  if ($('#diseno_select').val() == null) {
+    alert('Debes seleccionar un diseño antes de continuar');
+    return;
+  }
+  if(total > total2){
+    alert("la cantidad asignada a las tallas no puede ser menor que la cantidad total a producir");
+  }
+  else if(total < total2){
+    alert("Faltan unidades por asignarle talla")
+  }
+  else if(total == total2){
+    $('#add_diseno').submit();
+  }
+}
+function submitCosto(){
+  $('#create_costo').submit();
+}
+$('#new_talla').click(function(){
+  var tallas = ['6','8','10','12','14','16','18','20','XS','S','M','L','XL','XXL'];
+  var tallaHTML = "";
+  for (var i = 0; i < tallas.length; i++) {
+    tallaHTML+='<option class="talla_option1" value='+tallas[i]+'>'+tallas[i]+'</option>'
+  }
+  var input_qty = '<input type="number" class="form-control qty" name="Q-'+row_counter.toString()+'" value="1"/>';
+  var select_talla = '<select id="T-'+row_counter.toString()+'" name="T-'+row_counter.toString()+'" class="form-control" aria-label="Talla">';
+  var delete_button="";
+  for (var i = 1; i < row_counter; i++) {
+    $('#D-'+i.toString()).html('');
+  }
+  var delete_button = '<span style="color:red;cursor:pointer;font-size:x-large;float:right" id="D-'+row_counter.toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>';
+  $("#main_table").append('<tr class="talla" id="R-'+row_counter.toString()+'"><td>'+select_talla+tallaHTML +'</select></td><td>'+input_qty+
+  '</td><td id="ETH-'+row_counter.toString()+'">'+delete_button+'</td>');
+  row_counter++;
+});
+function delete_row(id){
+  row_counter--;
+  var row = document.getElementById("R-"+id.split('-')[1]);
+  row.parentNode.removeChild(row);
+  if(row_counter==1){
+    $('#ETH-'+(row_counter).toString()).append('<span style="color:red;cursor:pointer;font-size:x-large;float:right" id="D-'+(row_counter).toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>');
+  }
+  else{
+    $('#ETH-'+(row_counter-1).toString()).append('<span style="color:red;cursor:pointer;font-size:x-large;float:right" id="D-'+(row_counter-1).toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>');
+  }
+}
+function new_preliquidacion(){
+  $('#modal-preliquidar').modal('show');
+}
+</script>
+{% endblock %}

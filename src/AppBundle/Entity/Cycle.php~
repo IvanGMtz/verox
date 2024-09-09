@@ -1,0 +1,541 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * Cycle
+ */
+class Cycle
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $startDate;
+
+    /**
+     * @var int
+     */
+    private $position;
+
+    /**
+     * @var int
+     */
+    private $state = '1';
+
+    /**
+     * @var \DateTime|null
+     */
+    private $cycledDate;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $cycleUser;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $father;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $grandpa;
+
+    /**
+     * @var \AppBundle\Entity\Plan
+     */
+    private $plan;
+
+    /**
+     * @var \AppBundle\Entity\Payment
+     */
+    private $payment;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set startDate.
+     *
+     * @param \DateTime $startDate
+     *
+     * @return Cycle
+     */
+    public function setStartDate($startDate)
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    /**
+     * Get startDate.
+     *
+     * @return \DateTime
+     */
+    public function getStartDate()
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * Set position.
+     *
+     * @param int $position
+     *
+     * @return Cycle
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * Get position.
+     *
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return Cycle
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set cycledDate.
+     *
+     * @param \DateTime|null $cycledDate
+     *
+     * @return Cycle
+     */
+    public function setCycledDate($cycledDate = null)
+    {
+        $this->cycledDate = $cycledDate;
+
+        return $this;
+    }
+
+    /**
+     * Get cycledDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getCycledDate()
+    {
+        return $this->cycledDate;
+    }
+
+    /**
+     * Set cycleUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $cycleUser
+     *
+     * @return Cycle
+     */
+    public function setCycleUser(\AppBundle\Entity\FosUser $cycleUser = null)
+    {
+        $this->cycleUser = $cycleUser;
+
+        return $this;
+    }
+
+    /**
+     * Get cycleUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getCycleUser()
+    {
+        return $this->cycleUser;
+    }
+
+    /**
+     * Set father.
+     *
+     * @param \AppBundle\Entity\FosUser|null $father
+     *
+     * @return Cycle
+     */
+    public function setFather(\AppBundle\Entity\FosUser $father = null)
+    {
+        $this->father = $father;
+
+        return $this;
+    }
+
+    /**
+     * Get father.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getFather()
+    {
+        return $this->father;
+    }
+
+    /**
+     * Set grandpa.
+     *
+     * @param \AppBundle\Entity\FosUser|null $grandpa
+     *
+     * @return Cycle
+     */
+    public function setGrandpa(\AppBundle\Entity\FosUser $grandpa = null)
+    {
+        $this->grandpa = $grandpa;
+
+        return $this;
+    }
+
+    /**
+     * Get grandpa.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getGrandpa()
+    {
+        return $this->grandpa;
+    }
+
+    /**
+     * Set plan.
+     *
+     * @param \AppBundle\Entity\Plan|null $plan
+     *
+     * @return Cycle
+     */
+    public function setPlan(\AppBundle\Entity\Plan $plan = null)
+    {
+        $this->plan = $plan;
+
+        return $this;
+    }
+
+    /**
+     * Get plan.
+     *
+     * @return \AppBundle\Entity\Plan|null
+     */
+    public function getPlan()
+    {
+        return $this->plan;
+    }
+
+    /**
+     * Set payment.
+     *
+     * @param \AppBundle\Entity\Payment|null $payment
+     *
+     * @return Cycle
+     */
+    public function setPayment(\AppBundle\Entity\Payment $payment = null)
+    {
+        $this->payment = $payment;
+
+        return $this;
+    }
+
+    /**
+     * Get payment.
+     *
+     * @return \AppBundle\Entity\Payment|null
+     */
+    public function getPayment()
+    {
+        return $this->payment;
+    }
+    /**
+     * @var float|null
+     */
+    private $amount = '0.00';
+
+    /**
+     * @var string|null
+     */
+    private $currency;
+
+    /**
+     * @var bool|null
+     */
+    private $cashout = '0';
+
+
+    /**
+     * Set amount.
+     *
+     * @param float|null $amount
+     *
+     * @return Cycle
+     */
+    public function setAmount($amount = null)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float|null
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set currency.
+     *
+     * @param string|null $currency
+     *
+     * @return Cycle
+     */
+    public function setCurrency($currency = null)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * Get currency.
+     *
+     * @return string|null
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * Set cashout.
+     *
+     * @param bool|null $cashout
+     *
+     * @return Cycle
+     */
+    public function setCashout($cashout = null)
+    {
+        $this->cashout = $cashout;
+
+        return $this;
+    }
+
+    /**
+     * Get cashout.
+     *
+     * @return bool|null
+     */
+    public function getCashout()
+    {
+        return $this->cashout;
+    }
+    /**
+     * @var float|null
+     */
+    private $reward = '0.00';
+
+
+    /**
+     * Set reward.
+     *
+     * @param float|null $reward
+     *
+     * @return Cycle
+     */
+    public function setReward($reward = null)
+    {
+        $this->reward = $reward;
+
+        return $this;
+    }
+
+    /**
+     * Get reward.
+     *
+     * @return float|null
+     */
+    public function getReward()
+    {
+        return $this->reward;
+    }
+    /**
+     * @var int
+     */
+    private $cycleCode;
+
+
+    /**
+     * Set cycleCode.
+     *
+     * @param int $cycleCode
+     *
+     * @return Cycle
+     */
+    public function setCycleCode($cycleCode)
+    {
+        $this->cycleCode = $cycleCode;
+
+        return $this;
+    }
+
+    /**
+     * Get cycleCode.
+     *
+     * @return int
+     */
+    public function getCycleCode()
+    {
+        return $this->cycleCode;
+    }
+    /**
+     * @var \DateTime|null
+     */
+    private $cashoutDate;
+
+
+    /**
+     * Set cashoutDate.
+     *
+     * @param \DateTime|null $cashoutDate
+     *
+     * @return Cycle
+     */
+    public function setCashoutDate($cashoutDate = null)
+    {
+        $this->cashoutDate = $cashoutDate;
+
+        return $this;
+    }
+
+    /**
+     * Get cashoutDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getCashoutDate()
+    {
+        return $this->cashoutDate;
+    }
+    /**
+     * @var bool|null
+     */
+    private $enabledInCycle = 0;
+
+
+    /**
+     * Set enabledInCycle.
+     *
+     * @param bool|null $enabledInCycle
+     *
+     * @return Cycle
+     */
+    public function setEnabledInCycle($enabledInCycle = null)
+    {
+        $this->enabledInCycle = $enabledInCycle;
+
+        return $this;
+    }
+
+    /**
+     * Get enabledInCycle.
+     *
+     * @return bool|null
+     */
+    public function getEnabledInCycle()
+    {
+        return $this->enabledInCycle;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $invoices;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->invoices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add invoice.
+     *
+     * @param \AppBundle\Entity\Invoice $invoice
+     *
+     * @return Cycle
+     */
+    public function addInvoice(\AppBundle\Entity\Invoice $invoice)
+    {
+        $this->invoices[] = $invoice;
+
+        return $this;
+    }
+
+    /**
+     * Remove invoice.
+     *
+     * @param \AppBundle\Entity\Invoice $invoice
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeInvoice(\AppBundle\Entity\Invoice $invoice)
+    {
+        return $this->invoices->removeElement($invoice);
+    }
+
+    /**
+     * Get invoices.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvoices()
+    {
+        return $this->invoices;
+    }
+    
+    public function __toString() {
+      return 'Ciclo: '.$this->cycleCode.' | '.$this->plan->getName().' | Cobro: '.number_format($this->reward,0,'.',' ');
+    }
+}

@@ -1,0 +1,41 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% extends 'AvanzuAdminThemeBundle:layout:login-layout.html.twig' %}
+
+{% block avanzu_login_box %}
+    <div class="login-container">
+      <div class="login">
+          <div id="login">
+            <img src="/bundles/appbundle/logo.png" alt="Enterprise logo">
+            {% block avanzu_login_form %}
+            <form action="{{ path("fos_user_security_check") }}" method="post">
+                {% if csrf_token %}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+                {% endif %}
+                <h3 style="text-align:center">{{ 'LOGIN'|trans({}, 'AvanzuAdminTheme') }}</h3>
+                {% block avanzu_login_box_msg %}
+                    {% if error|default(false) %}
+                        <div class="alert alert-danger text-center">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+                {% endblock %}
+                <input class="username" id="username" name="_username" type="text" class="form-control" value="{{ last_username }}" required="required" placeholder="{{ 'security.login.username'|trans({}, 'FOSUserBundle') }}"/>
+                <br>
+                <input class="password" type="password" id="password" name="_password" class="form-control" placeholder="{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}" required="required"/>
+                <br>
+                <br>
+                <div class="clearfix"></div>
+                <a href="{{ path('fos_user_resetting_request') }}" title="{{ 'He olvidado mi contraseña'|trans({}, 'AvanzuAdminTheme') }}">{{ 'He olvidado mi contraseña'|trans({}, 'AvanzuAdminTheme') }}</a><br>
+{#                <a href="{{ path('fos_user_registration_register') }}" title="{{ 'Registrarme'|trans({}, 'AvanzuAdminTheme') }}" class="text-center">{{ 'Registrarme'|trans({}, 'AvanzuAdminTheme') }}</a>#}
+                <br>
+                <div class="clearfix"></div>
+                <div class="row justify-content-center">
+                  <div class="col-12 col-sm-12 col-md-4">
+                    <button type="submit" class="btn btn-success btn-block mt-1" id="_submit" name="_submit">{{ 'Ingresar'|trans({}, 'FOSUserBundle') }}</button>
+                  </div>
+                </div>
+            </form>
+            {% endblock %}
+          </div>
+      </div>
+    </div>
+    
+{% endblock %}

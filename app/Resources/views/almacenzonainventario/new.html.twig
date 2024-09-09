@@ -1,0 +1,33 @@
+{{ form_start(form, {attr:{'action':path('almacenzonainventario_new',{'id': ordenCompraItem.id})}}) }}
+<div class="row">
+   <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        {{ form_widget(form) }}
+      </div>
+      <div class="card-footer">
+        <input type="submit" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+      </div>
+    </div>
+  </div>
+</div>
+{{ form_end(form) }}
+<script>
+{#  $('#appbundle_almacenzonainventario_almacenZona').select2();#}
+  $('#appbundle_almacenzonainventario_almacen').change(function(){
+    var almacen = $(this).find('option:selected', this).val();
+    $.get("/admin/zona/almacen/"+almacen+"/get_zonas", function(data){
+      var zonas = data.zonas;
+      var selector = $('#appbundle_almacenzonainventario_almacenZona');
+      selector.empty();
+      for(var i = 0; i < zonas.length; i++){
+        var opcion = $('<option value="'+zonas[i].id+'">'+zonas[i].tag+"</option>");
+        selector.append(opcion);
+      }
+    });
+  });
+  $('.modal select').select2();
+</script>

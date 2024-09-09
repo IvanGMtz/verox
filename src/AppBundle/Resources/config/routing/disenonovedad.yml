@@ -1,0 +1,29 @@
+disenonovedad_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DisenoNovedad:index" }
+    methods:  [GET, POST]
+
+disenonovedad_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DisenoNovedad:show" }
+    methods:  GET
+
+disenonovedad_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DisenoNovedad:new" }
+    methods:  [GET, POST]
+
+disenonovedad_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DisenoNovedad:edit" }
+    methods:  [GET, POST]
+
+disenonovedad_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DisenoNovedad:delete" }
+    methods:  DELETE
+
+disenonovedad_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DisenoNovedad:erase" }
+    methods:  GET

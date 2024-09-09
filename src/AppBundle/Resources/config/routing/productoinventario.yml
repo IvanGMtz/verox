@@ -1,0 +1,50 @@
+productoinventario_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProductoInventario:index" }
+    methods:  [GET, POST]
+
+productoinventario_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProductoInventario:show" }
+    methods:  GET
+
+productoinventario_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProductoInventario:new" }
+    methods:  [GET, POST]
+productoinventario_out:
+    path:     /out
+    defaults: { _controller: "AppBundle:ProductoInventario:out" }
+    methods:  [GET, POST]
+productoinventario_importexcel:
+    path:     /importexcel
+    defaults: { _controller: "AppBundle:ProductoInventario:importexcel" }
+    methods:  [GET, POST]
+productoinventario_importexcelnew:
+    path:     /importexcelnew
+    defaults: { _controller: "AppBundle:ProductoInventario:importexcelnew" }
+    methods:  [GET, POST]
+productoinventario_importexcelreplace:
+    path:     /importexcelreplace
+    defaults: { _controller: "AppBundle:ProductoInventario:importexcelreplace" }
+    methods:  [GET, POST]
+
+productoinventario_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProductoInventario:edit" }
+    methods:  [GET, POST]
+
+productoinventario_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProductoInventario:delete" }
+    methods:  DELETE
+
+productoinventario_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProductoInventario:erase" }
+    methods:  GET
+productoinventario_createreport:
+    path:     /report
+    defaults: { _controller: "AppBundle:ProductoInventario:report" }
+    methods:  [GET, POST]
+

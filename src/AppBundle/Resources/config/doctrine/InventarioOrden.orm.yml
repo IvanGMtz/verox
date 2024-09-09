@@ -1,0 +1,143 @@
+AppBundle\Entity\InventarioOrden:
+    type: entity
+    table: inventario_orden
+    indexes:
+        estado:
+            columns:
+                - estado
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        usuario_recibe:
+            columns:
+                - usuario_recibe
+        usuario_aceptacion:
+            columns:
+                - usuario_aceptacion
+        tiene_pendientes:
+            columns:
+                - tiene_pendientes
+        usuario_actualizacion:
+            columns:
+                - usuario_actualizacion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        fechaActualizacion:
+            type: datetime
+            nullable: true
+            column: fecha_actualizacion
+        fechaAceptacion:
+            type: datetime
+            nullable: true
+            column: fecha_aceptacion
+        fechaRecibe:
+            type: datetime
+            nullable: true
+            column: fecha_recibe
+        ref1:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        ref2:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        ref3:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+        descripcion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        departamentoSolicita:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+            column: departamento_solicita
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+        tienePendientes:
+            type: boolean
+            nullable: false
+            options:
+                default: 0
+            column: tiene_pendientes
+    oneToMany:
+        items:
+            targetEntity: InventarioOrdenItem
+            mappedBy: inventarioOrden
+            cascade:  [persist]
+        novedades:
+            targetEntity: InventarioOrdenNovedad
+            mappedBy: inventarioOrden
+        descargas:
+            targetEntity: InventarioOrdenDescarga
+            mappedBy: inventarioOrden
+    manyToOne:
+        usuarioAceptacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_aceptacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioActualizacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_actualizacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioRecibe:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_recibe:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

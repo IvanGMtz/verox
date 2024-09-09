@@ -1,0 +1,51 @@
+ordencompra_index:
+    path:     /
+    defaults: { _controller: "AppBundle:OrdenCompra:index" }
+    methods:  [GET, POST]
+
+ordencompra_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:OrdenCompra:show" }
+    methods:  GET
+    
+ordencompra_aceptar:
+    path:     /{id}/aceptar
+    defaults: { _controller: "AppBundle:OrdenCompra:aceptar" }
+    methods:  GET
+    
+ordencompra_rechazar:
+    path:     /{id}/rechazar
+    defaults: { _controller: "AppBundle:OrdenCompra:rechazar" }
+    methods:  GET
+
+ordencompra_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:OrdenCompra:new" }
+    methods:  [GET, POST]
+
+ordencompra_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:OrdenCompra:edit" }
+    methods:  [GET, POST]
+    
+ordencompra_pend_aceptar:
+    path:     /pend_aceptar
+    defaults: { _controller: "AppBundle:OrdenCompra:pendAceptar" }
+    methods:  [GET]
+    
+ordencompra_pend_recibir:
+    path:     /pend_recibir
+    defaults: { _controller: "AppBundle:OrdenCompra:pendRecibir" }
+    methods:  [GET]
+    
+    
+#
+#ordencompra_delete:
+#    path:     /{id}/delete
+#    defaults: { _controller: "AppBundle:OrdenCompra:delete" }
+#    methods:  DELETE
+#
+#ordencompra_erase:
+#    path:     /{id}/erase
+#    defaults: { _controller: "AppBundle:OrdenCompra:erase" }
+#    methods:  GET

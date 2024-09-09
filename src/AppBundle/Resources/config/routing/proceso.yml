@@ -1,0 +1,149 @@
+proceso_index:
+    path:     /
+    defaults: { _controller: "AppBundle:Proceso:index" }
+    methods:  [GET, POST]
+
+proceso_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:Proceso:show" }
+    methods:  GET
+
+proceso_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:Proceso:new" }
+    methods:  [GET, POST]
+
+proceso_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:Proceso:edit" }
+    methods:  [GET, POST]
+
+proceso_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:Proceso:delete" }
+    methods:  DELETE
+
+proceso_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:Proceso:erase" }
+    methods:  GET
+
+proceso_pasar_trazo:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_trazo
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoTrazo" }
+    methods:  POST
+
+proceso_pasar_corte:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_corte
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoCorte" }
+    methods:  POST
+
+proceso_pasar_corte2:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_corte2
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoCorte2" }
+    methods:  POST
+
+proceso_pasar_corte3:
+    path:     /{id}/pasar_corte3
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoCorte3" }
+    methods:  POST
+
+proceso_pasar_bordado:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_bordado
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoBordado" }
+    methods:  POST
+
+proceso_pasar_confeccion:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_confeccion
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoConfeccion" }
+    methods:  POST
+
+proceso_pasar_lavanderia:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_lavanderia
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoLavanderia" }
+    methods:  POST
+
+proceso_pasar_preterminados:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_preterminados
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoPreterminados" }
+    methods:  POST
+
+proceso_pasar_terminados:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_terminados
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoTerminados" }
+    methods:  POST
+
+proceso_pasar_empaque:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_empaque
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoEmpaque" }
+    methods:  POST
+
+proceso_pasar_fotos:
+    path:     /{diseno}/diseno/{proceso}/proceso/pasar_fotos
+    defaults: { _controller: "AppBundle:Proceso:pasarProcesoFotos" }
+    methods:  POST
+
+proceso_asignar_diseno:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_diseno
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoDiseno" }
+    methods:  POST
+
+proceso_asignar_trazo:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_trazo
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoTrazo" }
+    methods:  POST
+
+proceso_asignar_corte:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_corte
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoCorte" }
+    methods:  POST
+
+proceso_asignar_bordado:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_bordado
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoBordado" }
+    methods:  POST
+
+proceso_asignar_confeccion:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_confeccion
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoConfeccion" }
+    methods:  POST
+
+proceso_asignar_lavanderia:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_lavanderia
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoLavanderia" }
+    methods:  POST
+
+proceso_asignar_preterminados:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_preterminados
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoPreterminados" }
+    methods:  POST
+
+proceso_asignar_terminados:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_terminados
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoTerminados" }
+    methods:  POST
+
+proceso_asignar_fotos:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_fotos
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoFotos" }
+    methods:  POST
+
+proceso_asignar_empaque:
+    path:     /{diseno}/diseno/{proceso}/proceso/asignar_empaque
+    defaults: { _controller: "AppBundle:Proceso:asignarProcesoEmpaque" }
+    methods:  POST
+
+proceso_terminar_procesos:
+    path:     /{diseno}/diseno/{proceso}/proceso/terminar_procesos
+    defaults: { _controller: "AppBundle:Proceso:terminarProcesos" }
+    methods:  POST
+
+proceso_terminar_bordado:
+    path:     /{diseno}/diseno/{proceso}/proceso/terminar_bordado
+    defaults: { _controller: "AppBundle:Proceso:terminarProcesoCorte" }
+    methods:  GET
+
+proceso_terminar_confeccion:
+    path:     /{diseno}/diseno/{proceso}/proceso/terminar_confeccion
+    defaults: { _controller: "AppBundle:Proceso:terminarProcesoConfeccion" }
+    methods:  GET

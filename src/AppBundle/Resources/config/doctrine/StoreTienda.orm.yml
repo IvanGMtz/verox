@@ -1,0 +1,107 @@
+AppBundle\Entity\StoreTienda:
+    type: entity
+    table: store_tienda
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        nombre:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+        fuenteNavbar:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+            column: fuente_navbar
+        hexFuenteNavbar:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: hex_fuente_navbar
+        hexFondoNavbar:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: hex_fondo_navbar
+        whatsappMainColor:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: whatsapp_main_color
+        whatsappTextColor:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: whatsapp_text_color
+        logoNavbar:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: logo_navbar
+        mayoristasImagen:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: mayoristas_imagen
+        mayoristasImagen2:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: mayoristas_imagen2
+        mayoristasImagen3:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: mayoristas_imagen3
+        mayoristasImagen4:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: mayoristas_imagen4
+        mayoristasImagen5:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: mayoristas_imagen5
+        fechaModificacion:
+            type: datetime
+            nullable: false
+            column: fecha_modificacion
+    oneToMany: 
+        imagenesSlider:
+            targetEntity: StoreTiendaSlider
+            mappedBy: store
+            cascade:  [persist]
+            orphanRemoval: true
+    lifecycleCallbacks: {  }

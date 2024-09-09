@@ -1,0 +1,84 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Storetiendas{% endblock %}
+{% block avanzu_page_title %}Storetiendas{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Configuración Tienda</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.nombre') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Tienda', 'a.nombre') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fuenteNavbar') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fuentenavbar', 'a.fuenteNavbar') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.hexFuenteNavbar') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Hexfuentenavbar', 'a.hexFuenteNavbar') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.hexFondoNavbar') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Hexfondonavbar', 'a.hexFondoNavbar') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.logoNavbar') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Logonavbar', 'a.logoNavbar') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaModificacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fechamodificacion', 'a.fechaModificacion') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for storeTienda in storeTiendas %}
+              <tr>
+                  <td class="nowrap">{{ storeTienda.nombre }}</td>
+                  <td class="nowrap">{{ storeTienda.fuenteNavbar }}</td>
+                  <td class="nowrap">{{ storeTienda.hexFuenteNavbar }}</td>
+                  <td class="nowrap">{{ storeTienda.hexFondoNavbar }}</td>
+                  <td class="nowrap">{{ storeTienda.logoNavbar }}</td>
+                  <td class="nowrap" data-sort-value="{% if storeTienda.fechaModificacion %}{{ storeTienda.fechaModificacion|date('U') }}{% endif %}">{% if storeTienda.fechaModificacion %}{{ storeTienda.fechaModificacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap text-center">                                                  
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('storetienda_edit', { 'id': storeTienda.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

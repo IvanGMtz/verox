@@ -1,0 +1,62 @@
+<div class="card card-widget">
+  <div class="card-header">
+      <span class="card-title">Registro</span>
+  </div>
+  <div class="card-footer card-comments">
+    {% for novedad in inventarioOrdenNovedads %}
+    <div class="card-comment">
+      <div class="">
+        <span class="username">
+          {{ novedad.usuarioCreacion }}
+          <span class="text-muted float-right">{{ novedad.fechaCreacion|date('d-m-Y h:i a') }}</span>
+        </span>
+          {% if novedad.tipo == 'RESOLUCION NOVEDAD' %}
+            <i class="fa fa-check"></i>&nbsp;
+          {% elseif novedad.tipo == 'ITEM RECHAZADO INVENTARIO' or novedad.tipo == 'PAGO ANULADO'%}
+            <i class="fa fa-times"></i>&nbsp;
+          {% elseif novedad.tipo == 'ITEM INGRESADO PARCIALMENTE INVENTARIO' or novedad.tipo == 'ITEM INGRESO INVENTARIO' %}
+            <i class="fa fa-cubes"></i>&nbsp;
+          {% elseif novedad.tipo == 'PAGO GENERADO' %}
+            <i class="fa fa-cash-register"></i>&nbsp;
+          {% elseif novedad.tipo == 'CREADA' %}
+            <i class="fa fa-envelope"></i>&nbsp;
+          {% elseif novedad.tipo == 'EDITADA' %}
+            <i class="fa fa-edit"></i>&nbsp;
+          {% elseif novedad.tipo == 'ACEPTADA' %}
+            <i class="fa fa-check-circle"></i>&nbsp;
+          {% elseif novedad.tipo == 'RECHAZADA' %}
+            <i class="fa fa-reply"></i>&nbsp;
+          {% elseif novedad.tipo == 'CERRADA' %}
+            <i class="fa fa-sign-language"></i>&nbsp;
+          {% endif %}
+          {{ novedad.descripcion }}<br>
+          {% if novedad.tienePendientes %}
+          <a href="#!" class="resolver-novedad" data-id="{{ novedad.id }}">
+            <div class="badge badge-warning">
+              Requiere revisión.
+            </div>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="modal" id="modal-resolver-novedad" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Pagos</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,157 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Producto{% endblock %}
+{% block avanzu_page_title %}Detalle Producto{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle producto</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        
+        <table class="table table-sm table-bordered table-hover no-print">
+            <tbody>
+                <tr>
+                    <th>Nombre</th>
+                    <td>{{ producto.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Categoría</th>
+                    <td>{{ producto.categoria }}</td>
+                </tr>
+                <tr>
+                    <th>Precio mayorista</th>
+                    <td>{{ producto.precioMayorista }}</td>
+                </tr>
+                <tr>
+                    <th>Precio detal</th>
+                    <td>{{ producto.precioDetal }}</td>
+                </tr>
+                <tr>
+                    <th>Referencia</th>
+                    <td>{{ producto.referencia }}</td>
+                </tr>
+                <tr>
+                    <th>Eqtiqueta</th>
+                    <td>{{ producto.etiqueta }}</td>
+                </tr>
+                <tr>
+                    <th>Marca</th>
+                    <td>{{ producto.marca }}</td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td>{{ producto.estado }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div class="row">
+          <div class="col col-lg-6 col-sm-12 no-print">
+            <table class="table table-sm table-bordered table-hover">
+                <tbody>
+                    <tr>
+                      <th class="nowrap text-center">Talla</th>
+                      <th class="nowrap text-center">Color</th>
+                      <th class="nowrap text-center">Qty Bodega Detal</th>
+                      <th class="nowrap text-center">Qty Bodega Mayoristas</th>
+                    </tr>
+                    {% for registro in cantidad %}
+                      <tr>
+                        <td class="nowrap text-center">{{ registro.producto.nombre }}</td>
+                        <td class="nowrap text-center">{{ registro.color.nombre }}</td>
+                        <td class="nowrap text-center">{{ registro.qtyActualDetal }}</td>
+                        <td class="nowrap text-center">{{ registro.qtyActualMayorista }}</td>
+                      </tr>
+                    {% endfor %}
+                </tbody>
+            </table>  
+          </div>
+          <div id= "container" class="col col-lg-6 col-sm-12 no-print">
+            <table class="table table-sm table-bordered table-hover">
+              <tbody>
+                  <tr>
+                    <th class="nowrap text-center">Colores</th>
+                    <th></th>
+                  </tr>
+                  {% for color in color %}
+                    <tr>
+                      <td class="nowrap text-center">{{ (color.nombre) ? color.nombre : 'Sin Color' }}</td>
+                      <td class="nowrap text-center"><div class="border border-1" style="background-color:{{ color.hex }};color:{{ color.hex }}">,</div></td>
+                    </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <h5>Imágenes del Producto</h5>
+        <div class="row p-1">
+        {% for imagen in imagenes %}
+          <div class="col col-lg-3 col-md-4 col-sm-6 border border-1">
+            {% if producto.etiqueta != 'NINGUNA' %}
+              <div class="ribbon-wrapper ribbon-lg">
+              {% if producto.etiqueta == 'NEW' %}
+                <div class="ribbon bg-primary">
+                    {{ producto.etiqueta }}
+                </div>
+              {% elseif producto.etiqueta == 'SALES' %}
+                <div class="ribbon bg-success">
+                    {{ producto.etiqueta }}
+                </div>
+              {% endif %}
+              </div>
+            {% endif %}
+            <img style="height:250px; width: auto; margin: 0 auto" class="d-block" src="{{ vich_uploader_asset(imagen, 'foto') }}">
+          </div>
+        {% endfor %}
+        </div>
+        <br>
+        <h5>Descripción</h5>
+        <div class="border border-1 p-1">
+          {{ (descripcion) ? descripcion[0].texto | raw : "No hay descripción para este producto" }}
+        </div>
+        <br>
+        <h5>Productos Recomendados</h5>
+        <div class="row p-1">
+        {% for producto in complementarios %}
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+          <div class="card card-widget">
+            <div class="card-header">
+              <h6>{{ producto.nombre }}</h6>
+            </div>
+            <div class="card-body">
+              <img style="height: 230px; width: auto; margin: 0 auto" class="d-block" src="{{ vich_uploader_asset(producto.imagenes[0], 'foto') }}">
+            </div>
+          </div>
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+      <div class="card-footer clearfix no-print">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('producto_index') }}">Regresar</a>&nbsp;<a class="btn btn-warning btn-flat btn-sm" href="{{ path('producto_edit', { 'id': producto.id }) }}">Editar</a>&nbsp;  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}{{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts_inline %} 
+
+{% endblock %}

@@ -1,0 +1,50 @@
+AppBundle\Entity\ProductoImagen:
+    type: entity
+    table: producto_imagen
+    indexes:
+        fk_imagen_producto:
+            columns:
+                - producto
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        imagen:
+            type: string
+            nullable: false
+            length: 1024
+            options:
+                fixed: false
+        color:
+            type: string
+            nullable: true
+            length: 522
+            options:
+                fixed: false
+        fechaActualizacion:
+            type: datetime
+            nullable: false
+            column: fecha_actualizacion
+        orden:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+    manyToOne:
+        producto:
+            targetEntity: Producto
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                producto:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

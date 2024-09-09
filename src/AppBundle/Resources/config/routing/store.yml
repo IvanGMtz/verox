@@ -1,0 +1,64 @@
+store_configInit:
+    path:     /config
+    defaults: { _controller: "AppBundle:Store:configInit" }
+    methods:  GET
+store_configStore:
+    path:     /configstore
+    defaults: { _controller: "AppBundle:Store:configStore" }
+    methods:  GET
+store_categories:
+    path:     /categories
+    defaults: { _controller: "AppBundle:Store:categories" }
+    methods:  GET
+store_products:
+    path:     /products
+    defaults: { _controller: "AppBundle:Store:products" }
+    methods:  GET
+store_send_product:
+    path:     /send_product
+    defaults: { _controller: "AppBundle:Store:send_product" }
+    methods:  GET
+store_search_product:
+    path:     /search_product
+    defaults: { _controller: "AppBundle:Store:search_product" }
+    methods:  GET
+store_get_bono:
+    path:     /get_bono
+    defaults: { _controller: "AppBundle:Store:get_bono" }
+    methods:  GET
+store_test_mail:
+    path:     /test_mail
+    defaults: { _controller: "AppBundle:Store:test_mail" }
+    methods:  GET
+store_get_order_data:
+    path:     /get_order_data
+    defaults: { _controller: "AppBundle:Store:get_order_data" }
+    methods:  GET
+store_get_orders:
+    path:     /get_orders
+    defaults: { _controller: "AppBundle:Store:get_orders" }
+    methods:  GET
+new_order:
+    path:     /new_order
+    defaults: { _controller: "AppBundle:Store:new_order" }
+    methods:  [POST]
+paypal_payment:
+    path:     /paypal_payment
+    defaults: { _controller: "AppBundle:Store:paypal_payment" }
+    methods:  [POST]
+store_reporte:
+    path:     /store_reporte
+    defaults: { _controller: "AppBundle:Store:store_reporte" }
+    methods:  [POST,GET]
+store_get_reporte:
+    path:     /get_reporte
+    defaults: { _controller: "AppBundle:Store:get_reporte" }
+    methods:  [POST]
+store_new_from_store:
+    path:     /new_user_from_store
+    defaults: { _controller: "AppBundle:Store:newFromStore" }
+    methods:  [POST]
+store_get_user:
+    path:     /get_user
+    defaults: { _controller: "AppBundle:Store:get_user" }
+    methods:  [GET]

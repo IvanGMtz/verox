@@ -1,0 +1,29 @@
+producciontalla_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionTalla:index" }
+    methods:  [GET, POST]
+
+producciontalla_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionTalla:show" }
+    methods:  GET
+
+producciontalla_new:
+    path:     /{produccionOrden}/produccionOrden/new
+    defaults: { _controller: "AppBundle:ProduccionTalla:new" }
+    methods:  [GET, POST]
+
+producciontalla_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionTalla:edit" }
+    methods:  [GET, POST]
+
+producciontalla_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProduccionTalla:delete" }
+    methods:  DELETE
+
+producciontalla_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionTalla:erase" }
+    methods:  GET

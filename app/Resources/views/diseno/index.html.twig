@@ -1,0 +1,189 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Diseños{% endblock %}
+{% block avanzu_page_title %}Diseños{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <h1 class="m-0">Diseños para la orden: {{ orden.referencia }}</h1>
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+
+        <form class="form-inline pull-left" method="POST">
+            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>
+            <div class="form-group ml-sm-1">
+              <label for="referencia" class="sr-only">referencia</label>
+              <input type="text" class="form-control" id="referencia" name="q[referencia]" placeholder="Referencia" {% if q and q.referencia %}value="{{ q.referencia }}"{% endif %}>
+            </div>
+            <div class="form-group ml-sm-1">
+              <label for="nombre" class="sr-only">nombre</label>
+              <input type="text" class="form-control" id="nombre" name="q[nombre]" placeholder="Nombre" {% if q and q.nombre %}value="{{ q.nombre }}"{% endif %}>
+            </div>
+            <div class="form-group ml-sm-1">
+              <label for="categoria" class="sr-only">categoria</label>
+              <input type="text" class="form-control" id="categoria" name="q[categoria]" placeholder="Categoria" {% if q and q.categoria %}value="{{ q.categoria }}"{% endif %}>
+            </div>
+          {#  <div class="form-group ml-sm-1">
+              <label for="estado" class="sr-only">estado</label>
+              <input type="text" class="form-control" id="estado" name="q[estado]" placeholder="Estado" {% if q and q.estado %}value="{{ q.estado }}"{% endif %}>
+            </div>  #}
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('diseno_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body pb-0">
+        <div class="row">
+          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+          <a href="#!" onclick="new_preliquidacion()" class="btn btn-info btn-flat m-2" style="float:right" type="button">Crear cuenta de cobro &nbsp;<i class="fas fa-money-bill-alt"></i></a>
+          {% endif %}
+        </div>
+        <div class="row">
+          {% for diseno in disenos %}
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <!-- Box Comment -->
+            <div class="card card-widget">
+              <div class="ribbon-wrapper ribbon-lg">
+                {% if diseno.estado == 1 %}
+                <div class="ribbon bg-secondary">
+                  Pendiente
+                </div>
+                {% elseif diseno.estado == 2 %}
+                <div class="ribbon bg-success">
+                  Aceptado
+                </div>
+                {% elseif diseno.estado == 0 %}
+                <div class="ribbon bg-danger">
+                  Rechazado
+                </div>
+                {% endif %}
+              </div>
+              <div class="card-header">
+                <div class="user-block">
+                  {% if diseno.imagenes|length %}
+                    <img class="img-circle" src="{{ vich_uploader_asset(diseno.imagenes[0], 'foto') }}" alt="{{ diseno.usuarioCreacion }}">
+                  {% else %}
+                    <img class="img-circle" src="/bundles/appbundle/images/avatar.png" alt="{{ diseno.usuarioCreacion }}">
+                  {% endif %}
+                  <span class="username"><a href="{{ path('diseno_show',{id: diseno.id}) }}">#{{ diseno.referencia }} {{ diseno.nombre }}</a></span>
+                  <span class="description">{{ diseno.id }} /
+                    {% if diseno.fechaCreacion %}
+                      {{ diseno.fechaCreacion|date('d-m-Y') }} {{ diseno.fechaCreacion|date('h:i:s a') }}
+                    {% endif %}
+                  </span>
+                  <span class="description"><a href="{{ path('disenoorden_show',{id: diseno.orden.id}) }}">{{ diseno.orden.referencia }}</a></span>
+                </div>
+                <div class="card-tools mr-5 mt-2">
+                  {#<a href="{{ path('diseno_edit',{id: diseno.id}) }}" class="btn btn-tool" title="Editar">
+                    <i class="far fa-edit"></i>
+                  </a>#}
+                </div>
+              </div>
+              <div class="card-body">
+                {% if diseno.imagenes|length %}
+                <div id="carousel{{ diseno.id }}" class="carousel slide" data-ride="carousel">
+                  <div class="carousel-inner">
+                    {% for imagen in diseno.imagenes %}
+                    <div class="carousel-item {% if loop.index == 1%}active{% endif %}">
+                      <img style="height: 230px; width: auto; margin: 0 auto" class="d-block" src="{{ vich_uploader_asset(imagen, 'foto') }}" alt="Imagen {{ loop.index }}">
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a class="carousel-control-prev" href="#carousel{{ diseno.id }}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carousel{{ diseno.id }}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </div>
+                {% else %}
+                  <img style="height: 230px" class="img-fluid pad" src="/bundles/appbundle/images/no-image.jpg" alt="Photo">
+                {% endif %}
+
+                <p></p>
+                <span class="float-right text-muted">By <b><i>{{ diseno.usuarioCreacion }}</i></b></span>
+              </div>
+              <!-- /.card-body -->
+              <!-- /.card-footer -->
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+          </div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              {{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+                <input class="btn btn-danger btn-flat m-2" style="" type="submit" value="Eliminar">
+              {{ form_end(delete_form) }}
+            {% endif %}
+          </div>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-preliquidar" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingresa los datos solicitados</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="" action="{{ path('produccion_preliquidar') }}" method="post">
+          <label for="cantidad">Proceso a Preliquidar (Ya terminado)</label>
+          <select class="custom-select form-control" name="proceso" required>
+            {% if procesos_ended != null %}
+              <option value="{{ procesos_ended[0].id }}">{{ procesos_ended[0].proceso }}</option>
+            {% endif %}
+          </select>
+          <input type="text" style="visibility:hidden" name="tipo_orden" value="DISEÑO">
+          <input type="text" style="visibility:hidden" name="orden_diseno" value="{{ orden.id }}">
+          <button type="submit" style="float:right" class="btn btn-primary m-1" data-bs-dismiss="modal">Ok</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+         
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+  function new_preliquidacion(){
+    $('#modal-preliquidar').modal('show');
+  }
+  </script>
+{% endblock %}

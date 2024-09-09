@@ -1,0 +1,80 @@
+AppBundle\Entity\StoreUsuarios:
+    type: entity
+    table: store_usuarios
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        email:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        nombre:
+            type: string
+            nullable: true
+            length: 250
+            options:
+                fixed: false
+        apellidos:
+            type: string
+            nullable: true
+            length: 250
+            options:
+                fixed: false
+        idn:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        telefono:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        birthday:
+            type: string
+            nullable: true
+            length: 50
+            options:
+                fixed: false
+        direccion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        estado:
+            type: string
+            nullable: true
+            length: 250
+            options:
+                fixed: false
+        tipo:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+        webId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: web_id
+        asesor:
+            type: string
+            nullable: true
+            length: 150
+            options:
+                fixed: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,227 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_document_title %}Detalle orden de inventario{% endblock %}
+{% block avanzu_page_title %}Detalle orden de inventario{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle orden de inventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %} 
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-9">
+      {% if inventarioOrden.tienePendientes %}
+        <div class="alert alert-warning alert-dismissible no-print">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h5><i class="icon fas fa-exclamation-triangle"></i> Alerta!</h5>
+          Tiene novedades que requieren revisión.
+        </div>
+      {% endif %}
+      <div class="invoice p-3 mb-3">
+        <div class="row">
+          <div class="col-12">
+            <h4>
+              <img src="/bundles/appbundle/logo.png" alt="Enterprise logo" class="brand-image" style="opacity: 1;margin: 0 auto;float: none;width:70px"> VRX Group S.A.S
+              <small class="float-right text-right">{{ inventarioOrden.fechaCreacion|date('d-m-Y h:i a') }}<br><small>{{ inventarioOrden.usuarioCreacion }}</small></small>
+              <br>ORDEN DE INVENTARIO #{{ inventarioOrden.id }}
+            </h4>
+          </div>
+        </div>
+        <div class="row invoice-info">
+          <div class="col-sm-4 invoice-col">
+            Solicita:
+            <address>
+                <ul class="list-unstyled">
+                  <li class="small">{{ inventarioOrden.usuarioCreacion }}</li>
+                </ul>
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            Descripción:
+            <address>
+                <ul class="list-unstyled">
+                  <li class="small">{{ inventarioOrden.descripcion }}</li>
+                </ul>
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            Registro:
+            <address>
+              <ul class="list-unstyled">
+                <li class="small">Aceptada por: {{ inventarioOrden.usuarioAceptacion }} {% if inventarioOrden.fechaAceptacion %} {{ inventarioOrden.fechaAceptacion|date('d-m-Y h:i a') }} {% endif %}</li>
+                <li class="small">Recibida por: {{ inventarioOrden.usuarioRecibe }} {% if inventarioOrden.fechaRecibe %} {{ inventarioOrden.fechaRecibe|date('d-m-Y h:i a') }} {% endif %}</li>
+              </ul>
+            </address>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th style="width:10%">Qty</th>
+                <th>Producto</th>
+                {% if inventarioOrden.estado == 2 %}
+                <th>Qty Entregada</th>
+                <th class="text-center">Disponible</th>
+                {% endif %}
+                <th></th>
+              </tr>
+              </thead>
+              <tbody class="items">
+                {% for item in inventarioOrden.items %}
+                <tr>
+                  <td style="width:10%">{{ item.cantidad }}</td>
+                  <td>{{ item.material }}</td>
+                  {% if inventarioOrden.estado == 2 %}
+                  <td>{{ item.qty_entregado }}</td>
+                  <td class="text-center {% if item.alcanza %}text-success{% else %}text-danger{% endif %}" style="width:10%">
+                    {% if item.estado == 1 %}
+                      <b>{{ item.disponible }}</b> => {{ item.disponible - (item.cantidad - item.qty_entregado) }}
+                    {% else %}
+                      {{ item.disponible }}
+                    {% endif %}
+                  </td>
+                  {% endif %}
+                  <td class="text-center" style="width:15%">
+                    {% if item.estado == 1 %}
+                      {% if inventarioOrden.estado == 2 %}
+                        {% if is_granted('ROLE_INVENTARIO') and item.material.categoria != "TELA" %}
+                          <a data-id="{{ item.id }}" class="btn btn-primary btn-xs entrega-item" title="Entregar item inventario" href="#!">
+                            <i class="fa fa-hand-o-right"></i>
+                          </a>
+                        {% elseif is_granted('ROLE_CORTE') and item.material.categoria == "TELA" %}
+                          <a data-id="{{ item.id }}" class="btn btn-primary btn-xs entrega-item" title="Entregar item inventario" href="#!">
+                            <i class="fa fa-hand-o-right"></i>
+                          </a>
+                        {% endif %}
+              {#        <a data-id="{{ item.id }}" class="btn btn-warning btn-xs parcial-item" title="Entrega parcial del item" href="#!">
+                        <i class="fa fa-question"></i>
+                      </a>#}
+                    {#  <a data-id="{{ item.id }}" class="btn btn-danger btn-xs rechazar-item" title="Rechazar entrega del item" href="#!">
+                        <i class="fa fa-times"></i>
+                      </a>#}
+                      {% endif %}
+                    {% else %}
+                      {% if item.estado == 2 %}
+                        <span class="badge badge-success">Entregado</span> 
+                      {% endif %}
+                      {% if item.estado == 0 %}
+                        <span class="badge badge-danger">Rechazado</span>
+                      {% endif %}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row no-print">
+          <div class="col-12">
+            <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a>
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              {% if inventarioOrden.estado == 1 %}
+              <a href="{{ path('inventarioorden_aceptar', { 'id': inventarioOrden.id }) }}" class="btn btn-success float-right ml-1"><i class="fas fa-check"></i>
+                Aceptar
+              </a>
+              {% endif %}
+              {% if inventarioOrden.estado == 2 or inventarioOrden.estado == 1 %}
+              <a href="{{ path('inventarioorden_rechazar', { 'id': inventarioOrden.id }) }}" class="btn btn-danger float-right ml-1"><i class="fas fa-times"></i>
+                Rechazar
+              </a>
+              {% endif %}
+            {% endif %}
+            {% if inventarioOrden.estado == 2 or inventarioOrden.estado == 1 %}
+            <a href="{{ path('inventarioorden_edit', { 'id': inventarioOrden.id }) }}" class="btn btn-primary float-right" style="margin-right: 5px;">
+              <i class="fas fa-edit"></i> Editar
+            </a>
+            {% endif %}
+            <a href="{{ path('inventarioorden_index') }}" class="btn btn-default float-right" style="margin-right: 5px;">
+              <i class="fas fa-chevron-left"></i> Regresar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 no-print">
+      {{ render(controller(
+        'AppBundle:InventarioOrdenNovedad:index',
+        { inventarioOrden: inventarioOrden.id }
+      )) }}
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-pagos" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pagos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   {#$('.modal-pagos').click(function(){
+     $('#modal-pagos .modal-body').load("{{ path('ordencomprapago_index',{id: inventarioOrden.id}) }}", function(){
+       $('#modal-pagos .modal-title').html('Pagos');
+       $('#modal-pagos').modal('show');
+     });
+   });#}
+
+   $('.entrega-item').click(function(){
+     var iden = $(this).data('id');
+     $('#modal-pagos .modal-body').load("/admin/orden/descarga/inventario/"+iden+"/new", function(){
+       $('#modal-pagos .modal-title').html('Descargar de inventario');
+       $('#modal-pagos').modal('show');
+       $('#modal-pagos select').select2();
+     });
+   });
+
+ {#  $('.parcial-item').click(function(){
+     var iden = $(this).data('id');
+     $('#modal-pagos .modal-body').load("/admin/item/ordencompra/"+iden+"/parcial", function(){
+       $('#modal-pagos .modal-title').html('Ingresar a inventario con anotaciones');
+       $('#modal-pagos').modal('show');
+     });
+   });#}
+
+   $('.rechazar-item').click(function(){
+     var iden = $(this).data('id');
+     $('#modal-pagos .modal-body').load("/admin/item/ordencompra/"+iden+"/rechazar_modal", function(){
+       $('#modal-pagos .modal-title').html('Rechazar item');
+       $('#modal-pagos').modal('show');
+     });
+   });
+   $('.resolver-novedad').click(function(){
+      var iden = $(this).data('id');
+      $('#modal-resolver-novedad .modal-body').load("/admin/novedad/ordencompra/"+iden+"/resolver_modal", function(){
+        $('#modal-resolver-novedad .modal-title').html('Resolver novedad #'+iden);
+        $('#modal-resolver-novedad').modal('show');
+      });
+    });
+  </script>
+{% endblock %}

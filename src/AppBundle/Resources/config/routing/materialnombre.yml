@@ -1,0 +1,29 @@
+materialnombre_index:
+    path:     /
+    defaults: { _controller: "AppBundle:MaterialNombre:index" }
+    methods:  [GET, POST]
+
+materialnombre_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:MaterialNombre:show" }
+    methods:  GET
+
+materialnombre_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:MaterialNombre:new" }
+    methods:  [GET, POST]
+
+materialnombre_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:MaterialNombre:edit" }
+    methods:  [GET, POST]
+
+materialnombre_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:MaterialNombre:delete" }
+    methods:  DELETE
+
+materialnombre_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:MaterialNombre:erase" }
+    methods:  GET

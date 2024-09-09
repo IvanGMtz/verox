@@ -1,0 +1,89 @@
+AppBundle\Entity\Proceso:
+    type: entity
+    table: proceso
+    indexes:
+        status:
+            columns:
+                - status
+        user_creacion:
+            columns:
+                - user_creacion
+        proceso:
+            columns:
+                - proceso
+        diseno:
+            columns:
+                - diseno
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        orden:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        proceso:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        tipoOrden:
+            type: string
+            nullable: false
+            length: 50
+            options:
+                fixed: false
+        fechaInicio:
+            type: datetime
+            nullable: true
+            column: fecha_inicio
+        status:
+            type: integer
+            nullable: false
+            column: status
+            options:
+                unsigned: false
+        fechaFinalizacion:
+            type: datetime
+            nullable: true
+            column: fecha_finalizacion
+        duracion:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+    manyToOne:
+        diseno:
+            targetEntity: Diseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        userCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                user_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

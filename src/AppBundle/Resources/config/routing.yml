@@ -1,0 +1,193 @@
+app_fosuser:
+        resource: "@AppBundle/Resources/config/routing/fosuser.yml"
+        prefix:   /admin/fosuser
+app_material:
+        resource: "@AppBundle/Resources/config/routing/material.yml"
+        prefix:   /admin/material
+app_proveedor:
+        resource: "@AppBundle/Resources/config/routing/proveedor.yml"
+        prefix:   /admin/proveedor
+app_almacen:
+        resource: "@AppBundle/Resources/config/routing/almacen.yml"
+        prefix:   /admin/almacen
+app_ordencompra:
+        resource: "@AppBundle/Resources/config/routing/ordencompra.yml"
+        prefix:   /admin/ordencompra
+app_ordencompranovedad:
+        resource: "@AppBundle/Resources/config/routing/ordencompranovedad.yml"
+        prefix:   /admin/novedad/ordencompra
+app_ordencompraitem:
+        resource: "@AppBundle/Resources/config/routing/ordencompraitem.yml"
+        prefix:   /admin/item/ordencompra
+app_ordencomprapago:
+        resource: "@AppBundle/Resources/config/routing/ordencomprapago.yml"
+        prefix:   /admin/pago/ordencompra
+app_almacenzona:
+        resource: "@AppBundle/Resources/config/routing/almacenzona.yml"
+        prefix:   /admin/zona/almacen
+app_almacenzonainventario:
+        resource: "@AppBundle/Resources/config/routing/almacenzonainventario.yml"
+        prefix:   /admin/zona_almacen/inventario
+app_inventario:
+        resource: "@AppBundle/Resources/config/routing/inventario.yml"
+        prefix:   /admin/inventario
+app_diseno:
+        resource: "@AppBundle/Resources/config/routing/diseno.yml"
+        prefix:   /admin/diseno
+app_disenomaterial:
+        resource: "@AppBundle/Resources/config/routing/disenomaterial.yml"
+        prefix:   /admin/diseno_material
+app_disenonovedad:
+        resource: "@AppBundle/Resources/config/routing/disenonovedad.yml"
+        prefix:   /admin/diseno_novedad
+app_disenoimagen:
+        resource: "@AppBundle/Resources/config/routing/disenoimagen.yml"
+        prefix:   /admin/diseno_imagen
+app_inventarioorden:
+        resource: "@AppBundle/Resources/config/routing/inventarioorden.yml"
+        prefix:   /admin/orden/inventario
+app_inventarioordenitem:
+        resource: "@AppBundle/Resources/config/routing/inventarioordenitem.yml"
+        prefix:   /admin/orden/item/inventario
+app_inventarioordennovedad:
+        resource: "@AppBundle/Resources/config/routing/inventarioordennovedad.yml"
+        prefix:   /admin/orden/novedad/inventario
+app_inventarioordendescarga:
+        resource: "@AppBundle/Resources/config/routing/inventarioordendescarga.yml"
+        prefix:   /admin/orden/descarga/inventario
+app_produccion:
+        resource: "@AppBundle/Resources/config/routing/produccion.yml"
+        prefix:   /admin/produccion
+app_ordenes:
+        resource: "@AppBundle/Resources/config/routing/ordenes.yml"
+        prefix:   /admin/ordenes
+app_proceso:
+        resource: "@AppBundle/Resources/config/routing/proceso.yml"
+        prefix:   /admin/proceso
+app_equipotrabajo:
+        resource: "@AppBundle/Resources/config/routing/equipotrabajo.yml"
+        prefix:   /admin/equipotrabajo
+app_procesoencargado:
+        resource: "@AppBundle/Resources/config/routing/procesoencargado.yml"
+        prefix:   /admin/procesoencargado
+app_procesonotas:
+        resource: "@AppBundle/Resources/config/routing/procesonotas.yml"
+        prefix:   /admin/procesonotas
+app_procesonombre:
+        resource: "@AppBundle/Resources/config/routing/procesonombre.yml"
+        prefix:   /admin/procesonombre
+
+app_disenoorden:
+        resource: "@AppBundle/Resources/config/routing/disenoorden.yml"
+        prefix:   /admin/disenoorden
+app_produccionorden:
+        resource: "@AppBundle/Resources/config/routing/produccionorden.yml"
+        prefix:   /admin/produccionorden
+app_producciondiseno:
+        resource: "@AppBundle/Resources/config/routing/producciondiseno.yml"
+        prefix:   /admin/producciondiseno
+app_producciontalla:
+        resource: "@AppBundle/Resources/config/routing/producciontalla.yml"
+        prefix:   /admin/producciontalla
+app_produccioncosto:
+        resource: "@AppBundle/Resources/config/routing/produccioncosto.yml"
+        prefix:   /admin/produccioncosto
+app_produccionnovedad:
+        resource: "@AppBundle/Resources/config/routing/produccionnovedad.yml"
+        prefix:   /admin/produccionnovedad
+app_produccionempaque:
+        resource: "@AppBundle/Resources/config/routing/produccionempaque.yml"
+        prefix:   /admin/produccionempaque
+app_documentoetiqueta:
+        resource: "@AppBundle/Resources/config/routing/documentoetiqueta.yml"
+        prefix:   /admin/documentoetiqueta
+app_equipotrabajodocumento:
+        resource: "@AppBundle/Resources/config/routing/equipotrabajodocumento.yml"
+        prefix:   /admin/equipotrabajodocumento
+app_produccionbordado:
+        resource: "@AppBundle/Resources/config/routing/produccionbordado.yml"
+        prefix:   /admin/produccionborado
+app_disenobordado:
+        resource: "@AppBundle/Resources/config/routing/disenobordado.yml"
+        prefix:   /admin/disenoborado
+
+app_producto:
+        resource: "@AppBundle/Resources/config/routing/producto.yml"
+        prefix:   /admin/producto
+app_productoimagen:
+        resource: "@AppBundle/Resources/config/routing/productoimagen.yml"
+        prefix:   /admin/productoimagen
+app_productotalla:
+        resource: "@AppBundle/Resources/config/routing/productotalla.yml"
+        prefix:   /admin/productotalla
+app_productocolor:
+        resource: "@AppBundle/Resources/config/routing/productocolor.yml"
+        prefix:   /admin/productocolor
+app_productoinventario:
+        resource: "@AppBundle/Resources/config/routing/productoinventario.yml"
+        prefix:   /admin/productoinventario
+app_productodescripcion:
+        resource: "@AppBundle/Resources/config/routing/productodescripcion.yml"
+        prefix:   /admin/productodescripcion
+app_despachoorden:
+        resource: "@AppBundle/Resources/config/routing/despachoorden.yml"
+        prefix:   /admin/despachoorden
+app_despachoordenitem:
+        resource: "@AppBundle/Resources/config/routing/despachoordenitem.yml"
+        prefix:   /admin/despachoordenitem
+app_tiendacliente:
+        resource: "@AppBundle/Resources/config/routing/tiendacliente.yml"
+        prefix:   /admin/tiendacliente
+app_inventariocosto:
+        resource: "@AppBundle/Resources/config/routing/inventariocosto.yml"
+        prefix:   /admin/inventariocosto
+app_produccioncostomaterial:
+        resource: "@AppBundle/Resources/config/routing/produccioncostomaterial.yml"
+        prefix:   /admin/produccioncostomaterial
+app_materialnombre:
+        resource: "@AppBundle/Resources/config/routing/materialnombre.yml"
+        prefix:   /admin/materialnombre
+app_materialcolor:
+        resource: "@AppBundle/Resources/config/routing/materialcolor.yml"
+        prefix:   /admin/materialcolor
+app_materialmedida:
+        resource: "@AppBundle/Resources/config/routing/materialmedida.yml"
+        prefix:   /admin/materialmedida
+app_materialcategoria:
+        resource: "@AppBundle/Resources/config/routing/materialcategoria.yml"
+        prefix:   /admin/materialcategoria
+app_productocomplemento:
+        resource: "@AppBundle/Resources/config/routing/productocomplemento.yml"
+        prefix:   /admin/productocomplemento
+app_productocategoria:
+        resource: "@AppBundle/Resources/config/routing/productocategoria.yml"
+        prefix:   /admin/productocategoria
+app_store:
+        resource: "@AppBundle/Resources/config/routing/store.yml"
+        prefix:   /store
+app_storeinicio:
+        resource: "@AppBundle/Resources/config/routing/storeinicio.yml"
+        prefix:   /store/storeinicio
+app_storetienda:
+        resource: "@AppBundle/Resources/config/routing/storetienda.yml"
+        prefix:   /store/storetienda
+app_storetiendaslider:
+        resource: "@AppBundle/Resources/config/routing/storetiendaslider.yml"
+        prefix:   /store/storetiendaslider
+app_storeseo:
+        resource: "@AppBundle/Resources/config/routing/storeseo.yml"
+        prefix:   /admin/storeseo
+app_storebonos:
+        resource: "@AppBundle/Resources/config/routing/storebonos.yml"
+        prefix:   /admin/storebonos
+app_storeusuarios:
+        resource: "@AppBundle/Resources/config/routing/storeusuarios.yml"
+        prefix:   /admin/storeusuarios
+
+app_productoinventariomovimiento:
+        resource: "@AppBundle/Resources/config/routing/productoinventariomovimiento.yml"
+        prefix:   /admin/productoinventariomovimiento
+
+app_default:
+        resource: "@AppBundle/Resources/config/routing/default.yml"
+        prefix:   /

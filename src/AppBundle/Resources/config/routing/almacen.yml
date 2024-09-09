@@ -1,0 +1,29 @@
+almacen_index:
+    path:     /
+    defaults: { _controller: "AppBundle:Almacen:index" }
+    methods:  [GET, POST]
+
+almacen_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:Almacen:show" }
+    methods:  GET
+
+almacen_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:Almacen:new" }
+    methods:  [GET, POST]
+
+almacen_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:Almacen:edit" }
+    methods:  [GET, POST]
+
+almacen_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:Almacen:delete" }
+    methods:  DELETE
+
+almacen_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:Almacen:erase" }
+    methods:  GET

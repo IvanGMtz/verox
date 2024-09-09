@@ -1,0 +1,29 @@
+disenoimagen_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DisenoImagen:index" }
+    methods:  [GET, POST]
+
+disenoimagen_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DisenoImagen:show" }
+    methods:  GET
+
+disenoimagen_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DisenoImagen:new" }
+    methods:  [GET, POST]
+
+disenoimagen_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DisenoImagen:edit" }
+    methods:  [GET, POST]
+
+disenoimagen_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DisenoImagen:delete" }
+    methods:  DELETE
+
+disenoimagen_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DisenoImagen:erase" }
+    methods:  GET

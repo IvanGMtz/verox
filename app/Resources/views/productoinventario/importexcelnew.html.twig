@@ -1,0 +1,74 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %} 
+{% block avanzu_document_title %}Importar Excel{% endblock %}
+{% block avanzu_page_title %}Importar Excel{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Importar Inventario Nuevos registros</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <input type="file" name="" id="file_input" accept=".xlsx" required>
+        <form onsubmit="event.preventDefault(); sendData();" id="confirmation_form" action = "{{ path('productoinventario_importexcelnew') }}" method = "post">
+         <input style="visibility: hidden" id="products_data" type="text" name="products_data"></input>
+         <button id="importBtn" type="submit" class="btn btn-success" style="float:right;" disabled>Importar datos</button>
+        </form>
+      </div>
+      <div class="card-body table-responsive">
+          <table class="table table-bordered" id="excel_table">
+          
+          </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script src="https://unpkg.com/read-excel-file@5.x/bundle/read-excel-file.min.js"></script>
+    <script>
+        const input = document.getElementById("file_input");
+        const table = document.getElementById("excel_table");
+        const importBtn = document.getElementById("importBtn");
+        input.addEventListener('change',(event)=>{
+          const file = event.target.files[0];
+          table.innerHTML = "";
+          importBtn.disabled = true;
+          $("#products_data").val("");
+          readXlsxFile(file).then((rows)=>{
+            $("#products_data").val(JSON.stringify(rows));
+            if(rows.length > 0){
+              importBtn.disabled = false;
+            }
+            rows.forEach(row=>{
+              let tr = document.createElement("tr");
+              row.forEach(cell=>{
+                const td = document.createElement("td");
+                td.textContent = cell
+                tr.appendChild(td)
+              })
+              table.appendChild(tr)
+            })
+          })
+        })
+        function sendData(){
+          document.getElementById("preloaderBackground").style.height = '100vh';
+          document.getElementById("preloaderImg").style.display = 'block';
+          document.getElementById("confirmation_form").submit();
+        }
+    </script>
+{% endblock %}

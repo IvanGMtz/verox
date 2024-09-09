@@ -1,0 +1,373 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * BinaryPlanUser
+ */
+class BinaryPlanUser
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $purchaseDate;
+
+    /**
+     * @var \DateTime
+     */
+    private $upgradeDate;
+
+    /**
+     * @var int
+     */
+    private $state = '1';
+
+    /**
+     * @var string|null
+     */
+    private $observation;
+
+    /**
+     * @var \AppBundle\Entity\BinaryPlan
+     */
+    private $binaryPlan;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $user;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set purchaseDate.
+     *
+     * @param \DateTime $purchaseDate
+     *
+     * @return BinaryPlanUser
+     */
+    public function setPurchaseDate($purchaseDate)
+    {
+        $this->purchaseDate = $purchaseDate;
+
+        return $this;
+    }
+
+    /**
+     * Get purchaseDate.
+     *
+     * @return \DateTime
+     */
+    public function getPurchaseDate()
+    {
+        return $this->purchaseDate;
+    }
+
+    /**
+     * Set upgradeDate.
+     *
+     * @param \DateTime $upgradeDate
+     *
+     * @return BinaryPlanUser
+     */
+    public function setUpgradeDate($upgradeDate)
+    {
+        $this->upgradeDate = $upgradeDate;
+
+        return $this;
+    }
+
+    /**
+     * Get upgradeDate.
+     *
+     * @return \DateTime
+     */
+    public function getUpgradeDate()
+    {
+        return $this->upgradeDate;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return BinaryPlanUser
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set observation.
+     *
+     * @param string|null $observation
+     *
+     * @return BinaryPlanUser
+     */
+    public function setObservation($observation = null)
+    {
+        $this->observation = $observation;
+
+        return $this;
+    }
+
+    /**
+     * Get observation.
+     *
+     * @return string|null
+     */
+    public function getObservation()
+    {
+        return $this->observation;
+    }
+
+    /**
+     * Set binaryPlan.
+     *
+     * @param \AppBundle\Entity\BinaryPlan|null $binaryPlan
+     *
+     * @return BinaryPlanUser
+     */
+    public function setBinaryPlan(\AppBundle\Entity\BinaryPlan $binaryPlan = null)
+    {
+        $this->binaryPlan = $binaryPlan;
+
+        return $this;
+    }
+
+    /**
+     * Get binaryPlan.
+     *
+     * @return \AppBundle\Entity\BinaryPlan|null
+     */
+    public function getBinaryPlan()
+    {
+        return $this->binaryPlan;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param \AppBundle\Entity\FosUser|null $user
+     *
+     * @return BinaryPlanUser
+     */
+    public function setUser(\AppBundle\Entity\FosUser $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+    /**
+     * @var string|null
+     */
+    private $sector;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $sponsor;
+
+
+    /**
+     * Set sector.
+     *
+     * @param string|null $sector
+     *
+     * @return BinaryPlanUser
+     */
+    public function setSector($sector = null)
+    {
+        $this->sector = $sector;
+
+        return $this;
+    }
+
+    /**
+     * Get sector.
+     *
+     * @return string|null
+     */
+    public function getSector()
+    {
+        return $this->sector;
+    }
+
+    /**
+     * Set sponsor.
+     *
+     * @param \AppBundle\Entity\FosUser|null $sponsor
+     *
+     * @return BinaryPlanUser
+     */
+    public function setSponsor(\AppBundle\Entity\FosUser $sponsor = null)
+    {
+        $this->sponsor = $sponsor;
+
+        return $this;
+    }
+
+    /**
+     * Get sponsor.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getSponsor()
+    {
+        return $this->sponsor;
+    }
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $leftUser;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $rightUser;
+
+
+    /**
+     * Set leftUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $leftUser
+     *
+     * @return BinaryPlanUser
+     */
+    public function setLeftUser(\AppBundle\Entity\FosUser $leftUser = null)
+    {
+        $this->leftUser = $leftUser;
+
+        return $this;
+    }
+
+    /**
+     * Get leftUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getLeftUser()
+    {
+        return $this->leftUser;
+    }
+
+    /**
+     * Set rightUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $rightUser
+     *
+     * @return BinaryPlanUser
+     */
+    public function setRightUser(\AppBundle\Entity\FosUser $rightUser = null)
+    {
+        $this->rightUser = $rightUser;
+
+        return $this;
+    }
+
+    /**
+     * Get rightUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getRightUser()
+    {
+        return $this->rightUser;
+    }
+    /**
+     * @var bool
+     */
+    private $complete = false;
+
+
+    /**
+     * Set complete.
+     *
+     * @param bool $complete
+     *
+     * @return BinaryPlanUser
+     */
+    public function setComplete($complete)
+    {
+        $this->complete = $complete;
+
+        return $this;
+    }
+
+    /**
+     * Get complete.
+     *
+     * @return bool
+     */
+    public function getComplete()
+    {
+        return $this->complete;
+    }
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $head;
+
+
+    /**
+     * Set head.
+     *
+     * @param \AppBundle\Entity\FosUser|null $head
+     *
+     * @return BinaryPlanUser
+     */
+    public function setHead(\AppBundle\Entity\FosUser $head = null)
+    {
+        $this->head = $head;
+
+        return $this;
+    }
+
+    /**
+     * Get head.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getHead()
+    {
+        return $this->head;
+    }
+}

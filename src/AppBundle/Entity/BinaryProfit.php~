@@ -1,0 +1,257 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * BinaryProfit
+ */
+class BinaryProfit
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $generationDate;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $cashoutDate;
+
+    /**
+     * @var float
+     */
+    private $amount;
+
+    /**
+     * @var string|null
+     */
+    private $description;
+
+    /**
+     * @var string
+     */
+    private $type;
+
+    /**
+     * @var int
+     */
+    private $state;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $paymentUser;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $user;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set generationDate.
+     *
+     * @param \DateTime $generationDate
+     *
+     * @return BinaryProfit
+     */
+    public function setGenerationDate($generationDate)
+    {
+        $this->generationDate = $generationDate;
+
+        return $this;
+    }
+
+    /**
+     * Get generationDate.
+     *
+     * @return \DateTime
+     */
+    public function getGenerationDate()
+    {
+        return $this->generationDate;
+    }
+
+    /**
+     * Set cashoutDate.
+     *
+     * @param \DateTime|null $cashoutDate
+     *
+     * @return BinaryProfit
+     */
+    public function setCashoutDate($cashoutDate = null)
+    {
+        $this->cashoutDate = $cashoutDate;
+
+        return $this;
+    }
+
+    /**
+     * Get cashoutDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getCashoutDate()
+    {
+        return $this->cashoutDate;
+    }
+
+    /**
+     * Set amount.
+     *
+     * @param float $amount
+     *
+     * @return BinaryProfit
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set description.
+     *
+     * @param string|null $description
+     *
+     * @return BinaryProfit
+     */
+    public function setDescription($description = null)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set type.
+     *
+     * @param string $type
+     *
+     * @return BinaryProfit
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return BinaryProfit
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set paymentUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $paymentUser
+     *
+     * @return BinaryProfit
+     */
+    public function setPaymentUser(\AppBundle\Entity\FosUser $paymentUser = null)
+    {
+        $this->paymentUser = $paymentUser;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getPaymentUser()
+    {
+        return $this->paymentUser;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param \AppBundle\Entity\FosUser|null $user
+     *
+     * @return BinaryProfit
+     */
+    public function setUser(\AppBundle\Entity\FosUser $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+}

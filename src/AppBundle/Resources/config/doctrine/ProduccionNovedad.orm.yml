@@ -1,0 +1,58 @@
+AppBundle\Entity\ProduccionNovedad:
+    type: entity
+    table: produccion_novedad
+    indexes:
+        fk_novedad_diseno:
+            columns:
+                - diseno
+        fk_novedad_orden:
+            columns:
+                - orden_produccion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        novedad:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+        tipo:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+    manyToOne:
+        diseno:
+            targetEntity: ProduccionDiseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,63 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Almacenzonainventario{% endblock %}
+{% block avanzu_page_title %}Detalle Almacenzonainventario{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle almacenZonaInventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ almacenZonaInventario.id }}</td>
+                </tr>
+                <tr>
+                    <th>Ingresototal</th>
+                    <td>{{ almacenZonaInventario.ingresoTotal }}</td>
+                </tr>
+                <tr>
+                    <th>Egresototal</th>
+                    <td>{{ almacenZonaInventario.egresoTotal }}</td>
+                </tr>
+                <tr>
+                    <th>Cantidadactual</th>
+                    <td>{{ almacenZonaInventario.cantidadActual }}</td>
+                </tr>
+                <tr>
+                    <th>Fechaultimoingreso</th>
+                    <td>{% if almacenZonaInventario.fechaUltimoIngreso %}{{ almacenZonaInventario.fechaUltimoIngreso|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Fechaultimoegreso</th>
+                    <td>{% if almacenZonaInventario.fechaUltimoEgreso %}{{ almacenZonaInventario.fechaUltimoEgreso|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+
+      </div>
+    
+    </div>
+  </div>
+</div>
+
+{% endblock %}

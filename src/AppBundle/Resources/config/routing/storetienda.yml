@@ -1,0 +1,29 @@
+storetienda_index:
+    path:     /
+    defaults: { _controller: "AppBundle:StoreTienda:index" }
+    methods:  [GET, POST]
+
+storetienda_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:StoreTienda:show" }
+    methods:  GET
+
+storetienda_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:StoreTienda:new" }
+    methods:  [GET, POST]
+
+storetienda_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:StoreTienda:edit" }
+    methods:  [GET, POST]
+
+storetienda_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:StoreTienda:delete" }
+    methods:  DELETE
+
+storetienda_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:StoreTienda:erase" }
+    methods:  GET

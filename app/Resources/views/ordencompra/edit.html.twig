@@ -1,0 +1,214 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %} 
+{% block avanzu_document_title %}Editar Ordencompra{% endblock %}
+{% block avanzu_page_title %}Editar Ordencompra{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Editar orden de compra</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+{{ form_start(edit_form) }}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="invoice p-3 mb-3">
+        <div class="row">
+          <div class="col-12">
+            <h4>
+              <i class="fas fa-globe"></i> VRX Group S.A.S
+              <small class="float-right">{{ now|date('d-m-Y h:i a') }}</small>
+            </h4>
+          </div>
+        </div>
+        <div class="row invoice-info">
+          <div class="col-sm-4 invoice-col">
+            <address>
+              {{ form_row(edit_form.proveedor) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+              {{ form_row(edit_form.almacenDestino) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+            {{ form_row(edit_form.direccionDestino) }}
+            </address>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th style="width:10%">Qty</th>
+                <th>Producto</th>
+                <th style="width:15%">Valor unidad</th>
+                <th style="width:15%">Subtotal</th>
+                <th style="width:10%"></th>
+              </tr>
+              </thead>
+              <tbody class="items" data-prototype="{{('<td style="width:10%">' ~ form_widget(edit_form.items.vars.prototype.cantidad) ~ '</td><td>' ~ form_widget(edit_form.items.vars.prototype.material) ~ '</td><td style="width:15%">' ~ form_widget(edit_form.items.vars.prototype.valorUnidad) ~ '</td><td style="width:15%">' ~ form_widget(edit_form.items.vars.prototype.valorTotal) ~ '</td>')|e('html_attr')}}">
+                {% for item in edit_form.items %}
+                <tr>
+                  <td style="width:10%">{{ form_widget(item.cantidad) }}</td>
+                  <td>{{ form_widget(item.material) }}</td>
+                  <td style="width:15%">{{ form_widget(item.valorUnidad) }}</td>
+                  <td style="width:15%">{{ form_widget(item.valorTotal) }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <p class="lead">Método de pago:</p>
+            {{ form_row(edit_form.metodoPago) }}
+            <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
+              {{ form_row(edit_form.descripcion) }}
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="lead"></p>
+            <div class="table-responsive">
+              <table class="table">
+                <tbody><tr>
+                  <th style="width:50%">Subtotal:</th>
+                  <td>{{ form_row(edit_form.valor) }}</td>
+                </tr>
+                <tr>
+                  <th>{{ form_row(edit_form.impuesto) }}</th>
+                  <td>{{ form_row(edit_form.valorImpuesto) }}</td>
+                </tr>
+                <tr>
+                  <th>Total:</th>
+                  <td>{{ form_row(edit_form.valorTotal) }}</td>
+                </tr>
+              </tbody></table>
+            </div>
+          </div>
+        </div>
+        <div class="row no-print">
+          <div class="col-12">
+            <input type="submit" class="btn btn-sm btn-success float-right" value="Guardar" />
+            <a href="{{ path('ordencompra_show',{id: ordenCompra.id}) }}" class="btn btn-sm btn-default float-right mr-1">
+              <i class="fas fa-chevron-left"></i> Cancelar
+            </a>
+            {#<a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
+            <button type="button" class="btn btn-success float-right"><i class="far fa-credit-card"></i> Submit
+              Payment
+            </button>
+            <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
+              <i class="fas fa-download"></i> Generate PDF
+            </button>#}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ form_end(edit_form) }}
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script>
+        $(function () {
+            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+            $('select:not(.swal2-select)').select2();
+            $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+            $('[data-timepicker]').timepicker();
+            
+            function calcular(){
+              console.log('Calculando');
+              var valor_sub_total = 0;
+              $('tbody.items tr').each(function(){
+                var tr = $(this);
+                var cantidad = tr.find('.cantidad');
+                var valor_unitario = tr.find('.valor_unidad');
+                var valor_total = tr.find('.valor_total');
+                var material = tr.find('.material');
+                var valor_unitario_guardado = material.find('option:selected', this).data('costo');
+                
+                valor_total.val(0);
+                
+                if(valor_unitario_guardado){valor_unitario.val(valor_unitario_guardado);}
+                if(cantidad.val() && valor_unitario.val()){
+                  var valor_t = parseFloat(cantidad.val()) * parseFloat(valor_unitario.val());
+                  valor_total.val(valor_t);
+                  valor_sub_total += valor_t;
+                }
+              });
+              $('#appbundle_ordencompra_valor').val(valor_sub_total);
+              $('#appbundle_ordencompra_valorImpuesto').val(0);
+              if($('#appbundle_ordencompra_impuesto').val() && valor_sub_total){
+                var impuesto_valor = parseFloat($('#appbundle_ordencompra_impuesto').val()) * valor_sub_total/100;
+                $('#appbundle_ordencompra_valorImpuesto').val(impuesto_valor);
+              }
+              $('#appbundle_ordencompra_valorTotal').val(parseFloat($('#appbundle_ordencompra_valor').val()) + parseFloat($('#appbundle_ordencompra_valorImpuesto').val()));
+            }
+            
+            var $collectionHolder;
+            $collectionHolder = $('tbody.items');
+            $collectionHolder.find('tr').each(function() {
+                $(this).find('select').select2();
+                addTagFormDeleteLink($(this));
+            });
+            function addTagFormDeleteLink($tagFormLi) {
+                var $removeFormButton = $('<td style="width:10%" class="text-right"><button type="button"><i class="fa fa-trash"></i></button></td>');
+                $tagFormLi.append($removeFormButton);
+                $removeFormButton.on('click', function(e) {
+                    $tagFormLi.remove();
+                    calcular();
+                });
+            }
+            function addTagForm($collectionHolder, $newLinkLi) {
+                var prototype = $collectionHolder.data('prototype');
+                var index = $collectionHolder.data('index');
+                var newForm = prototype;
+                newForm = newForm.replace(/__name__/g, index);
+                $collectionHolder.data('index', index + 1);
+                var $newFormLi = $('<tr></tr>').append(newForm);
+                $newFormLi.find('select').select2();
+                $newLinkLi.before($newFormLi);
+                addTagFormDeleteLink($newFormLi);
+            }
+            var $addTagButton = $('<td class="text-right"><button type="button" class="add_tag_link">Agregar item</button></td>');
+            var $newLinkLi = $('<tr><td></td><td></td><td></td><td></td></tr>').append($addTagButton);
+            $collectionHolder = $('tbody.items');
+            $collectionHolder.append($newLinkLi);
+            $collectionHolder.data('index', $collectionHolder.find('tr').length);
+            $addTagButton.on('click', function(e) {
+                addTagForm($collectionHolder, $newLinkLi);
+            });
+            
+            $('#appbundle_ordencompra_almacenDestino').change(function(){
+              var address = $('option:selected', this).data('address');
+              if(address){$('#appbundle_ordencompra_direccionDestino').val(address);}
+            });
+            
+            $('tbody.items').on('keyup', '.cantidad', calcular);
+            $('tbody.items').on('change', '.material', calcular);
+            $('tbody.items').on('keyup', '.valor_unidad', calcular);
+            $('#appbundle_ordencompra_impuesto').keyup(calcular);
+            
+        });
+    </script>
+{% endblock %}

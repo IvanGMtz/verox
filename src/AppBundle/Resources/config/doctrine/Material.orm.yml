@@ -1,0 +1,160 @@
+AppBundle\Entity\Material:
+    type: entity
+    table: material
+    indexes:
+        estado:
+            columns:
+                - estado
+        color:
+            columns:
+                - color
+        referencia:
+            columns:
+                - referencia
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        nombre:
+            type: string
+            nullable: false
+            length: 512
+            options:
+                fixed: false
+        referencia:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        descripcion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        imagen:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        marca:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        medida:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        unidad:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        color:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        peso:
+            type: float
+            nullable: true
+            precision: 25
+            scale: 2
+        alto:
+            type: float
+            nullable: true
+            precision: 25
+            scale: 2
+        ancho:
+            type: float
+            nullable: true
+            precision: 25
+            scale: 2
+        largo:
+            type: float
+            nullable: true
+            precision: 25
+            scale: 2
+        composicion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        costoActual:
+            type: float
+            nullable: true
+            precision: 25
+            scale: 2
+            column: costo_actual
+        unidades:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+        presentacion:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        fechaActualizacion:
+            type: datetime
+            nullable: true
+            column: fecha_actualizacion
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+    oneToMany:
+        zonas:
+            targetEntity: AlmacenZonaInventario
+            mappedBy: material
+        inventario:
+            targetEntity: Inventario
+            mappedBy: material
+    manyToOne:
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        categoria:
+            targetEntity: MaterialCategoria
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: materiales
+            inversedBy: materiales
+            joinColumns:
+                categoria:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

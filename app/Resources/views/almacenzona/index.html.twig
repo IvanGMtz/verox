@@ -1,0 +1,30 @@
+<h6>Zonas:</h6>
+<table class="table table-sm table-bordered table-hover">
+  <thead>
+      <tr>
+          <th class="nowrap">
+            Ubicación
+          </th>
+          <th class="nowrap">
+            Estante
+          </th>
+          <th class="nowrap">
+            Bandeja
+          </th>
+          <th class="nowrap"></th>
+      </tr>
+  </thead>
+  <tbody>
+  {% for almacenZona in almacenZonas %}
+      <tr>
+          <td class="nowrap">{{ almacenZona.ubicacion }}</td>
+          <td class="nowrap">{{ almacenZona.estante }}</td>
+          <td class="nowrap">{{ almacenZona.bandeja }}</td>
+          <td class="nowrap text-center">                                                  
+            <a data-id="{{ almacenZona.id }}" class="btn btn-primary btn-xs edit-zona" title="Editar item" href="#!"><i class="fa fa-edit"></i></a>
+          </td>
+      </tr>
+  {% endfor %}
+  </tbody>
+</table>
+      

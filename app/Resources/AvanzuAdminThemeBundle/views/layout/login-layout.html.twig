@@ -1,0 +1,131 @@
+<!DOCTYPE html{% block avanzu_html_start %}{% endblock %}>
+<html>
+<head>
+    <title>{% block avanzu_login_title %}{% if branding.enterprise|default() %}{{ branding.enterprise.name }}{% endif %}{% endblock %}</title>
+    {% include('AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig') %}
+    {% include('AvanzuAdminThemeBundle:Partials:_head.html.twig') %}
+    <link rel="stylesheet" href="{{ asset('bundles/appbundle/css/login.css') }}">
+    {% block avanzu_head %}{% endblock %}
+</head>
+<body{% block avanzu_body_start %}{% endblock %} class="hold-transition login-page" id="particles-js">
+{% block avanzu_after_body_start %}{% endblock %}
+{% block avanzu_login_box %}
+<div class="login-box">
+    <div class="login-logo">
+        <a href="{{ path('homepage') }}">
+            <b>Sistemas</b>W3
+        </a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+        <p class="login-box-msg">
+            {% block avanzu_login_box_msg %}
+                {{ 'Sign in to start your session'|trans({}, 'AvanzuAdminTheme') }}
+            {% if error|default(false) %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+            {% endblock %}
+        </p>
+
+        {% block avanzu_login_form %}
+        <form action="{{ path('login'|route_alias) }}" method="post">
+            <div class="form-group has-feedback">
+                <input type="text" name="_username" class="form-control" placeholder="{{ 'Username'|trans({}, 'AvanzuAdminTheme') }}" value="{{ last_username }}">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input name="_password" type="password" class="form-control" placeholder="{{ 'Password'|trans({}, 'AvanzuAdminTheme') }}">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+                <div class="col-xs-8">
+                    <div class="checkbox icheck">
+                        <label>
+                            <input type="checkbox"> {{ 'Remember Me'|trans({}, 'AvanzuAdminTheme') }}
+                        </label>
+                    </div>
+                </div>
+                <!-- /.col -->
+                <div class="col-xs-4">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">{{ 'Sign In'|trans({}, 'AvanzuAdminTheme') }}</button>
+                </div>
+                <!-- /.col -->
+            </div>
+        </form>
+        {% endblock %}
+        {% block avanzu_login_social_auth %}
+        <div class="social-auth-links text-center">
+            <p>{{ '- OR -'|trans({}, 'AvanzuAdminTheme') }}</p>
+            <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i>
+                {{ 'Sign in using Facebook'|trans({}, 'AvanzuAdminTheme') }}
+            </a>
+            <a href="#" class="btn btn-block btn-social btn-google btn-flat"><i class="fa fa-google-plus"></i>
+                {{ 'Sign in usingGoogle+'|trans({}, 'AvanzuAdminTheme') }}
+            </a>
+        </div>
+        <!-- /.social-auth-links -->
+        {% endblock %}
+        {% block avanzu_login_actions %}
+        <a href="#">
+            {{ 'I forgot my password'|trans({}, 'AvanzuAdminTheme') }}
+        </a>
+            <br>
+        <a href="register.html" class="text-center">
+            {{ 'Register a new membership'|trans({}, 'AvanzuAdminTheme') }}
+        </a>
+        {% endblock %}
+    </div>
+    <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+{% endblock %}
+
+{% include 'AvanzuAdminThemeBundle:Partials:_scripts.html.twig' %}
+{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}
+
+<script>moment.locale('es');</script>
+{% for label, messages in app.flashes %}
+  {% for message in messages %}
+    <script>
+      swal("{{message}}", "", "{{label}}");
+    </script>
+  {% endfor %}
+{% endfor %}
+<script>
+  window.alert = function(message, type = 'warning'){
+    swal(message, "", type);
+  };
+  $('form').submit(function(){
+    $(this).find('[type=submit]').attr('disabled',true);
+  });
+  $(window).on('shown.bs.modal', function() { 
+    $('form').submit(function(){
+      $(this).find('[type=submit]').attr('disabled',true);
+    });
+  });
+  $(document).ajaxComplete(function( event, request, settings ) {
+    $('form').find('[type=submit]').removeAttr('disabled');
+  });
+</script>
+<script>
+    $(function () {
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' // optional
+        });
+    });
+    $('select:not(.swal2-select)').select2();
+    $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+    $('[data-timepicker]').timepicker();
+</script>
+
+{% block avanzu_javascripts %}
+{#  <script>
+    particlesJS.load('particles-js', '{{ asset('bundles/appbundle/js/particlesjs-config.json') }}', function() {
+    });
+  </script>#}
+{% endblock %}
+{% block avanzu_javascripts_inline %}{% endblock %}
+</body>
+</html>

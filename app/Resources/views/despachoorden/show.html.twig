@@ -1,0 +1,236 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Despachoorden{% endblock %}
+{% block avanzu_page_title %}Detalle Despachoorden{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle Orden de despacho</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid --> 
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="modal" tabindex="-1" role="dialog" id="modal-link_pago">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Link de pago PayPal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <span style="font-size:large">https://www.veroxcloset.com/store/payment_link/order/{{ despachoOrden.id }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modal-delete">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Eliminar Orden de Despacho</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <span style="font-size:medium;">Estás seguro que quieres eliminar la orden de despacho?</span>
+      </div>
+      <div class="modal-footer">
+        {{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+          <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+        {{ form_end(delete_form) }}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modal-transporte">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingresa el número de gúia de transporte</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input id="guia" type="text" name="guia" class="form-control" placeholder="Guía de transporte">
+      </div>
+      <div class="modal-footer">
+        <button onclick="confirmar_despacho()" id="confirmarDespachoBtn" class="btn btn-primary"><i class="fa fa-check"></i> Confirmar Despacho</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        <h4>
+          ACPM FASHION GROUP<br>
+          <small class="float-right text-right">{{ despachoOrden.fechaCreacion|date('d-m-Y h:i a') }}<br><small>{{ despachoOrden.clienteId.asesor ?? despachoOrden.usuarioCreacion }}</small></small>
+          <span class="float-end">ORDEN DE DESPACHO #{{ despachoOrden.id }}</span>
+        </h4>
+        <div class="row invoice-info">
+          <div class="col-sm-6 invoice-col">
+            Cliente: <b>{{ despachoOrden.clienteId.nombre }} {{ despachoOrden.clienteId.apellidos }}</b>
+            <address>
+              <ul class="ml-4 mb-0 fa-ul text-muted">
+                <li><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Direcciónde entrega: {{ despachoOrden.direccionEnvio }}</li>
+                <li><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono #: {{ despachoOrden.clienteId.telefono }}</li>
+                <li><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: {{ despachoOrden.clienteId.email }}</li>
+              </ul>
+            </address>
+          </div>
+        </div>
+        {% set subtotal = 0 %}
+        {% set qty_items = 0 %}
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered table-striped">
+            <thead>
+                <tr>
+                  <th class="nowrap">Referencia</th>
+                  <th class="nowrap">Nombre</th>
+                  <th class="nowrap">Talla</th>
+                  <th class="nowrap">Color</th>
+                  <th class="nowrap">Precio</th>
+                  <th class="nowrap">Cantidad</th>
+                  <th class="nowrap">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody class="items" id="product_table">
+              {% for item in items %}
+              {% set precio = item.precio %}
+              <tr>
+                <td>{{ item.producto.producto.referencia }}</td>
+                <td>{{ item.producto.producto.nombre }}</td>
+                <td>{{ item.producto.nombre }}</td>
+                <td>{{ item.color }}</td>
+                <td>{{ precio }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>{{ item.cantidad * precio }}</td>
+                {% set subtotal = subtotal + (item.cantidad * precio) %}
+                {% set qty_items = qty_items + item.cantidad %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+         <div class="row">
+          <div class="col-6">
+            <p class="lead">Método de pago: {{ despachoOrden.tipoPago }}</p>
+            {% if despachoOrden.statusPago == 1 %}
+              <br>
+              <h4>PENDIENTE PAGO</h4>
+            {% elseif despachoOrden.statusPago == 2 %}
+              <br>
+              <h4>PAGADA</h4>
+            {% elseif despachoOrden.statusPago == 3 %}
+              <br>
+              <h4>PAGO RECHAZADO O ANULADO</h4>
+            {% endif %}
+            {% if despachoOrden.statusOrden == 1 %}
+              <h4>PENDIENTE POR DESPACHAR</h4>
+            {% else %}
+              <h4>DESPACHADA</h4>
+            {% endif %}
+            <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
+              {{ despachoOrden.notas }}
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="lead"></p>
+            <div class="table-responsive">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <th style="width:50%">Total prendas:</th>
+                    <td class="text-right">{{ qty_items }}</td>
+                  </tr>
+                  <tr>
+                    <th style="width:50%">Subtotal:</th>
+                    <td class="text-right">{{ subtotal }}</td>
+                  </tr>
+                  {% if 'Bono' in despachoOrden.notas %}
+                    <tr>
+                      <th>Descuentos</th>
+                      <td class="text-right">{{ (despachoOrden.notas|split('//'))[1] }}</td>
+                    </tr>
+                  {% endif %}
+                  <tr>
+                    <th>Costo Envío</th>
+                    <td class="text-right">{{ despachoOrden.costoEnvio }}</td>
+                  </tr>
+                  <tr>
+                    <th>Total</th>
+                    <td class="text-right">{{ despachoOrden.total }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="card-footer clearfix no-print">
+      <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a> 
+        <a class="btn btn-default btn-flat btn-sm" href="{{ path('despachoorden_index') }}">Regresar</a>&nbsp;
+        {% if despachoOrden.statusOrden == 1 and user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') %}
+        <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
+        {% elseif despachoOrden.statusOrden == 2 and is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') %}
+        <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
+        {% endif %}
+        {% if user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS') %}
+          <a onclick="$('#modal-delete').modal('show');" class="btn btn-danger">Eliminar
+          </a>
+        {% endif %}
+        <span class="float-right">
+        {% if despachoOrden.statusOrden == 1 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) %}
+          <button onclick="add_guia()"  class="btn btn-primary"><i class="fa fa-check"></i> Confirmar Despacho
+          </button>
+        {% endif %}
+        {% if despachoOrden.statusPago == 1 %}
+          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS') %}
+            &nbsp;
+            <a href="{{ path('despachoorden_pagado', { 'id': despachoOrden.id }) }}" class="btn btn-success"><i class="far fa-credit-card"></i> Confirmar Pago
+            </a>
+          {% endif %}
+          &nbsp;
+          <a onclick="$('#modal-link_pago').modal('show');" class="btn btn-warning"><i class="far fa-credit-card"></i> Crear Link de Pago
+          </a>
+        {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function add_guia(){
+    $('#modal-transporte').modal('show');
+  }
+  function confirmar_despacho(){
+    document.getElementById("confirmarDespachoBtn").innerHTML = "Procesando...";
+    document.getElementById("confirmarDespachoBtn").disabled = true;
+    let guia = $("#guia").val();
+    if(guia!=""){
+      let url = "{{ path('despachoorden_despachado', { 'id': despachoOrden.id }) }}";
+      let new_url = url+"?guia="+guia;
+      window.location.href = new_url;
+    }
+    else{
+      alert("Debes confirmar la guia de transporte");
+    }
+  }
+</script>
+{% endblock %}

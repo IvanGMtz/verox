@@ -1,0 +1,29 @@
+inventarioordenitem_index:
+    path:     /
+    defaults: { _controller: "AppBundle:InventarioOrdenItem:index" }
+    methods:  [GET, POST]
+
+inventarioordenitem_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:InventarioOrdenItem:show" }
+    methods:  GET
+
+inventarioordenitem_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:InventarioOrdenItem:new" }
+    methods:  [GET, POST]
+
+inventarioordenitem_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:InventarioOrdenItem:edit" }
+    methods:  [GET, POST]
+
+inventarioordenitem_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:InventarioOrdenItem:delete" }
+    methods:  DELETE
+
+inventarioordenitem_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:InventarioOrdenItem:erase" }
+    methods:  GET

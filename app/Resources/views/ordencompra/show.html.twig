@@ -1,0 +1,290 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_document_title %}Detalle orden de compra{% endblock %}
+{% block avanzu_page_title %}Detalle orden de compra{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle orden de compra</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-9">
+      {% if ordenCompra.tienePendientes %}
+        <div class="alert alert-warning alert-dismissible no-print">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+          <h5><i class="icon fas fa-exclamation-triangle"></i> Alerta!</h5>
+          Tiene novedades que requieren revisión.
+        </div>
+      {% endif %}
+      <div class="invoice p-3 mb-3">
+        <div class="row">
+          <div class="col-12">
+            <h4>
+              <i class="fas fa-globe"></i> VRX Group S.A.S
+              <small class="float-right text-right">{{ ordenCompra.fechaCreacion|date('d-m-Y h:i a') }}<br><small>{{ ordenCompra.usuarioCreacion }}</small></small>
+              <br>ORDEN DE COMPRA #{{ ordenCompra.id }}
+            </h4>
+          </div>
+        </div>
+        <div class="row invoice-info">
+          <div class="col-sm-4 invoice-col">
+            Proveedor: <b>{{ ordenCompra.proveedor.nombre }}</b>
+            <address>
+              <ul class="ml-4 mb-0 fa-ul text-muted">
+                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Dirección: {{ ordenCompra.proveedor.direccion }}</li>
+                <li class="small"><span class="fa-li"></span>{{ ordenCompra.proveedor.ciudad }} / {{ ordenCompra.proveedor.pais }}</li>
+                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono #: {{ ordenCompra.proveedor.telefono1 }}</li>
+                <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: {{ ordenCompra.proveedor.email }}</li>
+              </ul>
+            </address>
+          </div>
+          {% if ordenCompra.almacenDestino %}
+          <div class="col-sm-4 invoice-col">
+            Almacen destino: <b>{{ ordenCompra.almacenDestino.nombre }}</b>
+            <address>
+                <ul class="ml-4 mb-0 fa-ul text-muted">
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Dirección: {{ ordenCompra.almacenDestino.direccion }}</li>
+                  <li class="small"><span class="fa-li"></span>{{ ordenCompra.almacenDestino.ciudad }} / {{ ordenCompra.almacenDestino.pais }}</li>
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono #: {{ ordenCompra.almacenDestino.telefono1 }}</li>
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: {{ ordenCompra.almacenDestino.email }}</li>
+                </ul>
+            </address>
+          </div>
+          {% endif %}
+          <div class="col-sm-4 invoice-col">
+            Registro:
+            <address>
+              <ul class="list-unstyled">
+                <li class="small">Destino: {{ ordenCompra.direccionDestino }}</li>
+                <li class="small">Aceptada por: {{ ordenCompra.usuarioAceptacion }} {% if ordenCompra.fechaAceptacion %} {{ ordenCompra.fechaAceptacion|date('d-m-Y h:i a') }} {% endif %}</li>
+                <li class="small">Recibida por: {{ ordenCompra.usuarioRecibe }} {% if ordenCompra.fechaRecibe %} {{ ordenCompra.fechaRecibe|date('d-m-Y h:i a') }} {% endif %}</li>
+              </ul>
+            </address>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th style="width:10%">Qty</th>
+                <th>Producto</th>
+                <th class="text-right" style="width:15%">Unidad</th>
+                <th class="text-right" style="width:15%">Valor Unitario</th>
+                <th class="text-right" style="width:15%">Subtotal</th>
+                <th class="text-right" style="width:15%">Referencia</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody class="items">
+                {% for item in ordenCompra.items %}
+                <tr>
+                  <td style="width:10%">{{ item.cantidad }}</td>
+                  <td>{{ item.material }}</td>
+                  <td class="text-right">{{ item.material.unidad }}</td>
+                  <td class="text-right">{{ item.valorUnidad }}</td>
+                  <td class="text-right">{{ item.valorTotal }}</td>
+                  <td class="text-right">{{ item.referencia }}</td>
+                  <td class="text-center" width="15%">
+                    {% if item.estado == 1  or item.estado == 3 %}
+                      {% if ordenCompra.estado == 2 %}
+                        {% if is_granted('ROLE_INVENTARIO') and item.material.categoria != "TELA" %}
+                          {% if item.estado != 3 %}
+                          <a data-id="{{ item.id }}" class="btn btn-primary btn-xs inventario-item" title="Agregar a inventario item" href="#!">
+                            <i class="fa fa-check"></i>
+                          </a>
+                          {% endif %}
+                          <a data-id="{{ item.id }}" class="btn btn-warning btn-xs parcial-item" title="Aceptación parcial del item" href="#!">
+                            <i class="fa fa-question"></i>
+                          </a>
+                          <a data-id="{{ item.id }}" class="btn btn-danger btn-xs rechazar-item" title="Rechazar aceptación del item" href="#!">
+                            <i class="fa fa-times"></i>
+                          </a>
+                        {% elseif is_granted('ROLE_CORTE') and item.material.categoria == "TELA" %}
+                        {% if item.estado != 3 %}
+                        <a data-id="{{ item.id }}" class="btn btn-primary btn-xs inventario-item" title="Agregar a inventario item" href="#!">
+                          <i class="fa fa-check"></i>
+                        </a>
+                        {% endif %}
+                        <a data-id="{{ item.id }}" class="btn btn-warning btn-xs parcial-item" title="Aceptación parcial del item" href="#!">
+                          <i class="fa fa-question"></i>
+                        </a>
+                        <a data-id="{{ item.id }}" class="btn btn-danger btn-xs rechazar-item" title="Rechazar aceptación del item" href="#!">
+                          <i class="fa fa-times"></i>
+                        </a>
+                        {% endif %}
+                      {% endif %}
+                    {% else %}
+                      {% if item.estado == 2 %}
+                        <span class="badge badge-success">Aceptado</span>
+                      {% endif %}
+                      {% if item.estado == 0 %}
+                        <span class="badge badge-danger">Rechazado</span>
+                      {% endif %}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <p class="lead">Método de pago:</p>
+            {{ ordenCompra.metodoPago }}
+            {% if ordenCompra.pagada %}
+              <br>
+              <h4>PAGADA</h4>
+            {% endif %}
+            {% if ordenCompra.estado == 3 %}
+              <h4>RECIBIDA</h4>
+            {% endif %}
+            <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
+              {{ ordenCompra.descripcion }}
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="lead"></p>
+            <div class="table-responsive">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <th style="width:50%">Subtotal:</th>
+                    <td class="text-right">{{ ordenCompra.valor }}</td>
+                  </tr>
+                  <tr>
+                    <th>Impuesto ({{ ordenCompra.impuesto }}%)</th>
+                    <td class="text-right">{{ ordenCompra.valorImpuesto }}</td>
+                  </tr>
+                  <tr>
+                    <th>Total:</th>
+                    <td class="text-right">{{ ordenCompra.valorTotal }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="row no-print">
+          <div class="col-12">
+            <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a>
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              {% if ordenCompra.estado == 1 %}
+              <a href="{{ path('ordencompra_aceptar', { 'id': ordenCompra.id }) }}" class="btn btn-success float-right ml-1"><i class="fas fa-check"></i>
+                Aceptar
+              </a>
+              {% endif %}
+              {% if ordenCompra.estado == 2 or ordenCompra.estado == 1 %}
+              <a href="{{ path('ordencompra_rechazar', { 'id': ordenCompra.id }) }}" class="btn btn-danger float-right ml-1"><i class="fas fa-times"></i>
+                Rechazar
+              </a>
+              {% endif %}
+            {% endif %}
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') or is_granted('ROLE_INVENTARIO') %}
+              {% if ordenCompra.estado == 2 or ordenCompra.estado == 3 %}
+              <a href="#!" class="btn btn-success float-right modal-pagos"><i class="far fa-credit-card"></i> Agregar/ver
+                pagos
+              </a>
+              {% endif %}
+            {% endif %}
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') or is_granted('ROLE_DESIGN') %}
+              {% if ordenCompra.estado == 1 %}
+              <a href="{{ path('ordencompra_edit', { 'id': ordenCompra.id }) }}" class="btn btn-primary float-right" style="margin-right: 5px;">
+                <i class="fas fa-edit"></i> Editar
+              </a>
+              {% endif %}
+            {% endif %}
+            <a href="{{ path('ordencompra_index') }}" class="btn btn-default float-right" style="margin-right: 5px;">
+              <i class="fas fa-chevron-left"></i> Regresar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 no-print">
+      {{ render(controller(
+        'AppBundle:OrdenCompraNovedad:index',
+        { 'id': ordenCompra.id }
+      )) }}
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-pagos" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pagos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   $('.modal-pagos').click(function(){
+     $('#modal-pagos .modal-body').load("{{ path('ordencomprapago_index',{id: ordenCompra.id}) }}", function(){
+       $('#modal-pagos .modal-title').html('Pagos');
+       $('#modal-pagos').modal('show');
+     });
+   });
+
+   $('.inventario-item').click(function(){
+     let pago = "{{ pago }}";
+     if(pago == "false"){
+       alert("Primero debes agregar un pago");
+       return;
+     }
+     var iden = $(this).data('id');
+     $('#modal-pagos .modal-body').load("/admin/zona_almacen/inventario/"+iden+"/new", function(){
+       $('#modal-pagos .modal-title').html('Ingresar a inventario');
+       $('#modal-pagos').modal('show');
+     });
+   });
+
+   $('.parcial-item').click(function(){
+     var iden = $(this).data('id');
+     $('#modal-pagos .modal-body').load("/admin/item/ordencompra/"+iden+"/parcial", function(){
+       $('#modal-pagos .modal-title').html('Ingresar a inventario con anotaciones');
+       $('#modal-pagos').modal('show');
+     });
+   });
+
+   $('.rechazar-item').click(function(){
+     var iden = $(this).data('id');
+     $('#modal-pagos .modal-body').load("/admin/item/ordencompra/"+iden+"/rechazar_modal", function(){
+       $('#modal-pagos .modal-title').html('Rechazar item');
+       $('#modal-pagos').modal('show');
+     });
+   });
+   $('.resolver-novedad').click(function(){
+      var iden = $(this).data('id');
+      $('#modal-resolver-novedad .modal-body').load("/admin/novedad/ordencompra/"+iden+"/resolver_modal", function(){
+        $('#modal-resolver-novedad .modal-title').html('Resolver novedad #'+iden);
+        $('#modal-resolver-novedad').modal('show');
+      });
+    });
+  </script>
+{% endblock %}

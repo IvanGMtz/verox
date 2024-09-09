@@ -1,0 +1,15 @@
+ordencomprapago_index:
+    path:     /{id}/index
+    defaults: { _controller: "AppBundle:OrdenCompraPago:index" }
+    methods:  [GET, POST]
+
+ordencomprapago_new:
+    path:     /{id}/new
+    defaults: { _controller: "AppBundle:OrdenCompraPago:new" }
+    methods:  [GET, POST]
+
+ordencomprapago_anular:
+    path:     /{id}/anular
+    defaults: { _controller: "AppBundle:OrdenCompraPago:anular" }
+    methods:  [GET, POST]
+

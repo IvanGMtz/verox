@@ -1,0 +1,17 @@
+{{ form_start(edit_form, {'attr':{'action': path('almacenzona_edit', {'id': almacen.id}) }}) }}
+<div class="row">
+   <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        {{ form_widget(edit_form) }}
+      </div>
+      <div class="card-footer">
+        <input type="submit" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+      </div>
+    </div>
+  </div>
+</div>
+{{ form_end(edit_form) }}

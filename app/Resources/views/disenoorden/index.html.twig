@@ -1,0 +1,90 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Ordenes Diseño{% endblock %}
+{% block avanzu_page_title %}Ordenes Diseño{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de ordenes de Diseño</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+
+        <form class="form-inline pull-left" method="POST">    <div class="form-group ml-sm-1">
+              <label for="referencia" class="sr-only">referencia</label>
+              <input type="text" class="form-control" id="referencia" name="q[referencia]" placeholder="Referencia" {% if q and q.referencia %}value="{{ q.referencia }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="estado" class="sr-only">estado</label>
+              <select class="form-control" id="estado" name="q[estado]" placeholder="Estado" {% if q and q.estado %}value="{{ (q.estado == 1) ? "En Proceso" : "Terminado" }}"{% endif %}>
+                <option selected disabled>Estado</option>
+                <option value="1">En Proceso</option>
+                <option value="2">Terminado</option>
+              </select>
+            </div>
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('disenoorden_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="m-1 row">
+        {% for disenoOrden in disenoOrdens %}
+        <div class="col col-4">
+          <div class="card text-white {{ (disenoOrden.estado == 1) ? 'bg-secondary' : 'bg-success' }} mb-3">
+            <div class="card-header"><a style="color:white;font-size:large" href="{{ path('diseno_index', { 'id': disenoOrden.id }) }}">{{ disenoOrden.referencia }} - {{ (disenoOrden.estado == 1) ? 'En Proceso' : 'Terminada' }}</a></div>
+              <div class="card-body">
+                <span class="fs-6">Fecha de creación: {% if disenoOrden.fechaCreacion %}{{ disenoOrden.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</span><br>
+                {% if disenoOrden.fechaFinalizacion %}
+                  <span class="fs-6">Fecha finalización: {% if disenoOrden.fechaFinalizacion %}{{ disenoOrden.fechaFinalizacion|date('d-m-Y h:i:s a') }}{% endif %}</span><br>
+                  <span class="fs-6">Duración: Dias: {{ ( (disenoOrden.duracion / 60) / 24 > 1 ) ? ((disenoOrden.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((disenoOrden.duracion / 60 / 24) - (disenoOrden.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ (((disenoOrden.duracion / 60) - (disenoOrden.duracion / 60)|round(0, 'floor'))*60)|round }}</span>
+                {% endif %}
+                <p class="card-text">Diseños requeridos: {{ disenoOrden.cantidad }}<br>
+                  Notas importantes: {{ disenoOrden.notas }}
+                </p>
+              </div>
+              {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              <a class="btn btn-primary btn-xs float-end" title="Editar item" href="{{ path('disenoorden_edit', { 'id': disenoOrden.id }) }}"><i class="fa fa-edit"></i></a>
+              {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="navigation mt-4">
+        {{ knp_pagination_render(pagination) }}
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+
+  </script>
+{% endblock %}

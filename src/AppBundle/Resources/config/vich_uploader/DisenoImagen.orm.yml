@@ -1,0 +1,4 @@
+AppBundle\Entity\DisenoImagen:
+    foto:
+        mapping:           diseno_imagen
+        filename_property: imagen

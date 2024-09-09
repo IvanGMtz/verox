@@ -1,0 +1,143 @@
+AppBundle\Entity\InventarioOrdenDescarga:
+    type: entity
+    table: inventario_orden_descarga
+    indexes:
+        almacen_zona:
+            columns:
+                - almacen_zona
+        inventario_orden:
+            columns:
+                - inventario_orden
+        estado:
+            columns:
+                - estado
+        almacen:
+            columns:
+                - almacen
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        material:
+            columns:
+                - material
+        almacen_zona_inventario:
+            columns:
+                - almacen_zona_inventario
+        inventario_orden_item:
+            columns:
+                - inventario_orden_item
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+        valorUnitario:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_unitario
+        valorTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_total
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+    manyToOne:
+        almacen:
+            targetEntity: Almacen
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen:
+                    referencedColumnName: id
+            orphanRemoval: false
+        almacenZona:
+            targetEntity: AlmacenZona
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen_zona:
+                    referencedColumnName: id
+            orphanRemoval: false
+        almacenZonaInventario:
+            targetEntity: InventarioCosto
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen_zona_inventario:
+                    referencedColumnName: id
+            orphanRemoval: false
+        inventarioOrden:
+            targetEntity: InventarioOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: descargas
+            inversedBy: descargas
+            joinColumns:
+                inventario_orden:
+                    referencedColumnName: id
+            orphanRemoval: false
+        inventarioOrdenItem:
+            targetEntity: InventarioOrdenItem
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: descargas
+            inversedBy: descargas
+            joinColumns:
+                inventario_orden_item:
+                    referencedColumnName: id
+            orphanRemoval: false
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

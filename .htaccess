@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^admin.veroxcloset.com$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^admin.veroxcloset.com$
+RewriteCond %{REQUEST_URI} !subdirectory/
+RewriteRule (.*) /web/$1 [L]

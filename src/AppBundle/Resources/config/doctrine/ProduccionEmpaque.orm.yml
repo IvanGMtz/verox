@@ -1,0 +1,74 @@
+AppBundle\Entity\ProduccionEmpaque:
+    type: entity
+    table: produccion_empaque
+    indexes:
+        fk_empaque_diseno:
+            columns:
+                - diseno
+        fk_empaque_orden:
+            columns:
+                - orden_produccion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        caja:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        marca:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        notas:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        curva:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+    manyToOne:
+        diseno:
+            targetEntity: ProduccionDiseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

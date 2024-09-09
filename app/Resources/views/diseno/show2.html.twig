@@ -1,0 +1,1815 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Diseño{% endblock %}
+{% block avanzu_page_title %}Detalle Diseño{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle diseno</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+
+<div class="card card-solid">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-12 col-sm-6 col-xl-4">
+        <h3 class="d-inline-block d-sm-none">{{ diseno.nombre }}</h3>
+        <div class="col-12">
+          {% if diseno.imagenes|length %}
+          <div id="carousel{{ diseno.id }}" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+              {% for imagen in diseno.imagenes %}
+              <div class="carousel-item {% if loop.index0 == 0%}active{% endif %}">
+                <img style="height:354px; width: auto; margin: 0 auto" class="d-block" src="{{ vich_uploader_asset(imagen, 'foto') }}" alt="Imagen {{ loop.index0 }}">
+              </div>
+              {% endfor %}
+            </div>
+            <a class="carousel-control-prev" href="#carousel{{ diseno.id }}" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carousel{{ diseno.id }}" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+          {% else %}
+          <img style="height:354px" class="product-image" src="/bundles/appbundle/images/no-image.jpg" alt="Photo">
+          {% endif %}
+        </div>
+        <div class="col-12 product-image-thumbs">
+          {% if diseno.imagenes|length %}
+            {% for imagen in diseno.imagenes %}
+            <div data-target="#carousel{{ diseno.id }}" data-slide-to="{{ loop.index0 }}" class="product-image-thumb {% if loop.index0 == 0%}active{% endif %}">
+              <img src="{{ vich_uploader_asset(imagen, 'foto') }}" alt="Imagen {{ loop.index0 }}">
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="product-image-thumb active"><img src="/bundles/appbundle/images/no-image.jpg" alt="Product Image"></div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-8">
+        <h3 class="my-3">{{ diseno.nombre }}</h3>
+        <hr>
+        <h4>Detalles</h4>
+        <table class="table table-sm table-bordered table-hover">
+          <tbody>
+              <tr>
+                  <th>Referencia</th>
+                  <td>{{ diseno.referencia }}</td>
+              </tr>
+              <tr>
+                  <th>Nombre</th>
+                  <td>{{ diseno.nombre }}</td>
+              </tr>
+              <tr>
+                  <th>Categoria</th>
+                  <td>{{ diseno.categoria }}</td>
+              </tr>
+              <tr>
+                  <th>Fecha de creación</th>
+                  <td>{% if diseno.fechaCreacion %}{{ diseno.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+              </tr>
+              <tr>
+                  <th>Proceso Actual</th>
+                  {% if proceso_actual != "" %}
+                    <td>{{ proceso_actual.proceso }} // Estado: {% if proceso_actual.status == 1 %}En Proceso{% elseif proceso_actual.status == 0 %}Tarea Paralela En Proceso{% elseif proceso_actual.status == 2 %}Terminado{% endif %} </td>
+                  {% else %}
+                    <td>No hay procesos en curso</td>
+                  {% endif %}
+              </tr>
+          </tbody>
+        </table>
+
+
+        {%  if diseno.estado == 1 %}
+          <div class="bg-gray py-2 px-3 mt-4">
+            <h2 class="mb-0">
+              PENDIENTE APROBACIÓN
+            </h2>
+          </div>
+        {% elseif diseno.estado == 2 %}
+          <div class="bg-green py-2 px-3 mt-4">
+            <h2 class="mb-0">
+              APROBADO
+            </h2>
+          </div>
+        {% elseif diseno.estado == 0 %}
+          <div class="bg-red py-2 px-3 mt-4">
+            <h2 class="mb-0">
+              RECHAZADO
+            </h2>
+          </div>
+        {% else %}
+          <div class="bg-gray py-2 px-3 mt-4">
+            <h2 class="mb-0">
+              {{ diseno.estado }}
+            </h2>
+          </div>
+        {% endif %}
+
+
+        <div class="mt-4">
+
+          {% if diseno.estado == 1 %}
+
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              <a href="{{ path('diseno_aprobar',{id: diseno.id}) }}" class="btn btn-success btn-lg btn-flat m-1">
+                <i class="fa fa-check-circle fa-lg mr-2"></i>
+                Aprobar
+              </a>
+
+              <a href="{{ path('diseno_rechazar',{id: diseno.id}) }}" class="btn btn-danger btn-lg btn-flat m-1">
+                <i class="fa fa-times-circle fa-lg mr-2"></i>
+                Rechazar
+              </a>
+            {% endif %}
+            {% if is_granted('ROLE_DESIGN') and proceso_actual == "DISEÑO" %}
+            <a href="{{ path('diseno_edit',{id: diseno.id}) }}" class="btn btn-warning btn-lg btn-flat float-right m-1">
+              <i class="fa fa-edit fa-lg mr-2"></i>
+              Editar
+            </a>
+            {% endif %}
+          {% endif %}
+          {% if inventarioOrden != null %}
+          <a href="{{ path('inventarioorden_show',{id: inventarioOrden.id}) }}" class="btn btn-info btn-lg btn-flat float-right m-1">
+            <i class="fa fa-cubes fa-lg mr-2"></i>
+              Ver orden de inventario generada
+          </a>
+          {% else %}
+          <a href="{{ path('inventarioorden_newfromdiseno',{id: diseno.id}) }}" class="btn btn-info btn-lg btn-flat float-right m-1">
+            <i class="fa fa-cubes fa-lg mr-2"></i>
+              Generar Orden de Inventario
+          </a>
+          {% endif %}
+          {% if diseno.estado < 3 %}
+            {% if proceso_actual != "" %}
+              {% if proceso_actual.status == 1 and (is_granted('ROLE_' ~ proceso_actual.proceso) or proceso_actual == "DISEÑO") %}
+                {% set total = 0 %}
+                {% for area in asignacion %}
+                  {% if area.proceso.id == proceso_actual.id %}
+                    {% if proceso_actual == "CONFECCION" and area.talla != 0 %}
+                      {% set total = total + area.cantidad %}
+                    {% elseif proceso_actual != "CONFECCION" %}
+                      {% set total = total + area.cantidad %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if proceso_actual == "PRETERMINADOS" %}
+                  {% set total = total / 3 %}
+                {% endif %}
+                {% if proceso_actual == "TERMINADOS" %}
+                  {% set materialQty = 0 %}
+                  {% for material in orden_items %}
+                    {% if material.material.categoria == "PLACA" or material.material.categoria == "TACHE" or material.material.categoria == "GARRA" or material.material.categoria == "BOTON" %}
+                      {% set materialQty = materialQty + 1 %}
+                    {% endif %}
+                  {% endfor %}
+                  {% set total = total / materialQty %}
+                {% endif %}
+                {% if total < proceso_actual.cantidad %}
+                  <a onclick="iniciar_proceso('asignar')" href="#!" id="asignar-trabajo" href="#!" class="btn btn-secondary btn-lg btn-flat float-right m-1">
+                    <i class="fa fa-cubes fa-lg mr-2"></i>
+                    Asignar trabajo
+                  </a>
+                {% else %}
+                  {% if siguiente_proceso[0] == "FIN" %}
+                  <a onclick="asignar_cajas('asignar')" href="#!" class="btn btn-warning btn-lg btn-flat float-right m-1">
+                    <i class="fa fa-cubes fa-lg mr-2"></i>
+                    Asignar Cajas
+                  </a>
+                  {% else %}
+                  <a onclick="iniciar_proceso('terminar')" href="#!" class="btn btn-warning btn-lg btn-flat float-right m-1">
+                    <i class="fa fa-cubes fa-lg mr-2"></i>
+                    Terminar proceso {{ proceso_actual.proceso }}
+                  </a>
+                  {% endif %}
+                {% endif %}
+              {% elseif proceso_actual.status == 2 and proceso_actual.proceso == "EMPAQUE" %}
+                <a href="{{ path('produccionempaque_index',{produccionOrden: orden_produccion.id}) }}" class="btn btn-secondary btn-lg btn-flat float-right m-1">
+                  <i class="fas fa-list-alt fa-lg mr-2"></i>
+                  Ver lista de Empaque
+                </a>
+              {% endif %}
+              {% if proceso_actual.proceso == "EMPAQUE" %}
+                <a onclick="crear_codigos()" href="#!" class="btn btn-dark btn-lg btn-flat float-right m-1">
+                    <i class="fas fa-barcode fa-lg mr-2"></i>
+                    Crear Codigos de Barras
+                  </a>
+              {% endif %}
+            {% else %}
+              {% if siguiente_proceso|length < 2 %}
+                <a onclick="iniciar_proceso('pasar')" href="#!" class="btn btn-info btn-lg btn-flat float-right m-1">
+                  <i class="fas fa-cubes fa-lg mr-2"></i>
+                  Pasar a {{ siguiente_proceso[0] }}
+                </a>
+                <span style="display:none" class="{{ siguiente_proceso[0] }}" id="proceso_ref">proceso nuevo</span>
+              {% endif %}
+            {% endif %}
+            {% if proceso_actual.proceso == "CONFECCION" and is_granted('ROLE_CONFECCION') %}
+              <a href="#!" onclick="confeccionSubproceso('bordado');enviar_bordado()" class="btn btn-warning btn-lg btn-flat float-right m-1">
+                <i class="fas fa-list-alt fa-lg mr-2"></i>
+                Enviar piezas a Bordado
+              </a>
+              <a href="#!" onclick="confeccionSubproceso('pretinas');asignar_pretinas()" class="btn btn-dark btn-lg btn-flat float-right m-1">
+                <i class="fas fa-list-alt fa-lg mr-2"></i>
+                Asignar Pretinas
+              </a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <nav class="w-100">
+        <div class="nav nav-tabs" id="product-tab" role="tablist">
+          <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">Materiales</a>
+          <a class="nav-item nav-link" id="product-qty-tab" data-toggle="tab" href="#product-qty" role="tab" aria-controls="product-qty" aria-selected="true">Unidades/Talla</a>
+          <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">Registro</a>
+          <a class="nav-item nav-link" id="product-asign-tab" data-toggle="tab" href="#product-asign" role="tab" aria-controls="product-asign" aria-selected="false">Asignación</a>
+          <a class="nav-item nav-link" id="product-procesos-tab" data-toggle="tab" href="#product-procesos" role="tab" aria-controls="product-procesos" aria-selected="false">Resumen Procesos</a>
+          <a class="nav-item nav-link" id="product-notas-tab" data-toggle="tab" href="#product-notas" role="tab" aria-controls="product-notas" aria-selected="false">Observaciones</a>
+        </div>
+      </nav>
+      <div class="tab-content p-3 w-100" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <div class="row">
+              {% if orden_items != null %}
+                {% for material in orden_items %}
+                <div class="col col-3 border border-1" style="min-width:200px">
+                  <span style="font-weight:bolder">Nombre:</span> {{ material.material.nombre }}
+                  <br>
+                  <span style="font-weight:bolder">Cantidad:</span> {{ material.cantidad }}
+                  <br>
+                  <span style="font-weight:bolder">Color:</span> {{ material.material.color }}
+                  <br>
+                  <span style="font-weight:bolder">Medida:</span> {{ material.material.medida }}
+                  <br>
+                  <span style="font-weight:bolder">Marca:</span> {{ material.material.marca }}
+                  <br>
+                  {% for item in diseno.materiales %}
+                    {% if item.material.id == material.material.id and material.entregado == 0 %}
+                      <span style="font-weight:bolder">Proceso: </span>{{ item.proceso.nombre }}<br>
+                      <div class="badge badge-warning">
+                        Material no entregado
+                      </div>
+                    {% elseif item.material.id == material.material.id and material.entregado == 1 %}
+                      <span style="font-weight:bolder">Proceso: </span>{{ item.proceso.nombre }}<br>
+                      <div class="badge badge-success">
+                        Material entregado
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                  </div>
+                {% endfor %}
+              {% else %}
+                {% for material in diseno.materiales %}
+                <div class="col col-3 border border-1" style="min-width:200px">
+                  <span style="font-weight:bolder">Nombre:</span> {{ material.material.nombre }}
+                  <br>
+                  <span style="font-weight:bolder">Cantidad:</span> {{ material.cantidad }}
+                  <br>
+                  <span style="font-weight:bolder">Color:</span> {{ material.material.color }}
+                  <br>
+                  <span style="font-weight:bolder">Medida:</span> {{ material.material.medida }}
+                  <br>
+                  <span style="font-weight:bolder">Marca:</span> {{ material.material.marca }}
+                </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="product-qty" role="tabpanel" aria-labelledby="product-qty-tab">
+              {% for item in tallas %}
+              <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-default text-center">
+                  <span style="font-weight:bolder;font-size:large">Talla {{ item.talla }}</span><br>
+                  <span>Unidades: {{ (item.cantidad > item.cantidadConfirmada) ? item.cantidadConfirmada : item.cantidad }}</span>
+                </label>
+              </div>
+              {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-comments-tab">
+
+          <div class="card card-widget">
+            <div class="card-footer card-comments">
+              {% for novedad in diseno.novedades %}
+                {% if novedad.ref1 == 'PRODUCCION' and novedad.ref2 == orden_produccion.id %}
+                  <div class="card-comment">
+                    <div class="">
+                      <span class="username">
+                        {{ novedad.usuarioCreacion }}
+                        <span class="text-muted float-right">{{ novedad.fechaCreacion|date('d-m-Y h:i a') }}</span>
+                      </span>
+                        {% if novedad.tipo == 'RESOLUCION NOVEDAD' %}
+                          <i class="fa fa-check"></i>&nbsp;
+                        {% elseif novedad.tipo == 'ITEM RECHAZADO INVENTARIO' or novedad.tipo == 'PAGO ANULADO'%}
+                          <i class="fa fa-times"></i>&nbsp;
+                        {% elseif novedad.tipo == 'ITEM INGRESADO PARCIALMENTE INVENTARIO' or novedad.tipo == 'ITEM INGRESO INVENTARIO' %}
+                          <i class="fa fa-cubes"></i>&nbsp;
+                        {% elseif novedad.tipo == 'PAGO GENERADO' %}
+                          <i class="fa fa-cash-register"></i>&nbsp;
+                        {% elseif novedad.tipo == 'CREADA' %}
+                          <i class="fa fa-envelope"></i>&nbsp;
+                        {% elseif novedad.tipo == 'EDITADA' %}
+                          <i class="fa fa-edit"></i>&nbsp;
+                        {% elseif novedad.tipo == 'ACEPTADA' %}
+                          <i class="fa fa-check-circle"></i>&nbsp;
+                        {% elseif novedad.tipo == 'RECHAZADA' %}
+                          <i class="fa fa-reply"></i>&nbsp;
+                        {% elseif novedad.tipo == 'CERRADA' %}
+                          <i class="fa fa-sign-language"></i>&nbsp;
+                        {% endif %}
+                        {{ novedad.descripcion }}<br>
+                        {% if novedad.tienePendientes %}
+                        <a href="#!" class="resolver-novedad" data-id="{{ novedad.id }}">
+                          <div class="badge badge-warning">
+                            Requiere revisión.
+                          </div>
+                        </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="modal" id="modal-resolver-novedad" tabindex="-1" role="dialog">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Pagos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="product-asign" role="tabpanel" aria-labelledby="product-asign-tab">
+            <div class="card card-widget">
+              <div class="card-footer card-comments">
+                {% if asignacion == null %}
+                  No hay asignación por el momento
+                {% else %}
+                  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                    {% for persona_asignada in asignacion %}
+                      {% if persona_asignada.proceso.tipoOrden == "PRODUCCION" %}
+                        <div class="card-comment asignacion" data-proceso="{{ persona_asignada.enProceso }}">
+                          <span class="username">
+                            {{ persona_asignada.personaAsignada.nombre }}
+                            <span class="text-muted float-right">Fecha asignación: {{ persona_asignada.fechaAsignacion|date('d-m-Y h:i a') }}</span>
+                            {% if persona_asignada.fechaFinalizacion != null %}
+                              <br><span class="text-muted float-right">Fecha finalización: {{ persona_asignada.fechaFinalizacion|date('d-m-Y h:i a') }}</span><br>
+                              <span class="text-muted float-right">Duración: Dias: {{ ( (persona_asignada.duracion / 60) / 24 > 1 ) ? ((persona_asignada.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((persona_asignada.duracion / 60 / 24) - (persona_asignada.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ ((persona_asignada.duracion / 60) - (persona_asignada.duracion / 60)|round(0, 'floor'))*60 }}</span>
+                            {% endif %}
+                          </span>
+                          Prendas Asignadas: {{ persona_asignada.cantidad }} <br>
+                          {% if persona_asignada.talla != "0" and persona_asignada.cantidadMaterial == null %}Talla asignada: {{ persona_asignada.talla }}
+                          {% elseif persona_asignada.talla == "0" and persona_asignada.cantidadMaterial != null %}
+                          Material Asignado: {{ persona_asignada.material|split('-')[0] }}<br>
+                          Cantidad de material entregado: {{ persona_asignada.cantidadMaterial }}
+                          {% elseif persona_asignada.talla == "0" and persona_asignada.cantidadMaterial == null %}
+                          Tarea Asignada: {{ persona_asignada.material|split('-')[0] }}
+                          {% endif %}
+                          <a class="btn btn-primary btn-xs float-right m-1" title="Editar item" href="{{ path('procesoencargado_edit', { 'id': persona_asignada.id }) }}"><i class="fa fa-edit"></i></a>
+                          {% if persona_asignada.enProceso == 1 %}
+                            <a class="btn btn-success btn-xs float-right m-1" title="Terminar trabajo" href="{{ path('procesoencargado_terminar_trabajo', { procesoEncargado: persona_asignada.id,diseno:diseno.id }) }}"><i class="fa fa-check"></i></a>
+                          {% endif %}
+                          <span style="background-color:{{ persona_asignada.enProceso == 1 ? '#ffc107' : '#17a2b8;color:white' }};font-size:small;padding:5px" class="float-right m-1">{{ persona_asignada.enProceso == 1 ? "En Proceso" : "Terminado" }}</span><br>
+                          Proceso Asignado: {{ persona_asignada.proceso.proceso }}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    {% set bordado = 0 %}
+                    {% for proceso in procesos %}
+                      {% if proceso.proceso == "DISEÑO" %}
+                        {% if is_granted('ROLE_DESIGN') %}
+                          {% for persona_asignada in asignacion %}
+                            {% if persona_asignada.proceso.proceso == proceso.proceso and persona_asignada.proceso.tipoOrden == "PRODUCCION" %}
+                              <div class="card-comment asignacion" data-proceso="{{ persona_asignada.enProceso }}">
+                                <span class="username">
+                                  {{ persona_asignada.personaAsignada.nombre }}
+                                  <span class="text-muted float-right">Fecha asignación: {{ persona_asignada.fechaAsignacion|date('d-m-Y h:i a') }}</span>
+                                  {% if persona_asignada.fechaFinalizacion != null %}
+                                    <br><span class="text-muted float-right">Fecha finalización: {{ persona_asignada.fechaFinalizacion|date('d-m-Y h:i a') }}</span><br>
+                                    <span class="text-muted float-right">Duración: Dias: {{ ( (persona_asignada.duracion / 60) / 24 > 1 ) ? ((persona_asignada.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((persona_asignada.duracion / 60 / 24) - (persona_asignada.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ ((persona_asignada.duracion / 60) - (persona_asignada.duracion / 60)|round(0, 'floor'))*60 }}</span>
+                                  {% endif %}
+                                </span>
+                                Prendas Asignadas: {{ persona_asignada.cantidad }} <br>
+                                {% if persona_asignada.talla != 0 %}Talla asignada: {{ persona_asignada.talla }}
+                                {% elseif persona_asignada.talla == 0 and persona_asignada.cantidadMaterial != null %}
+                                Material Asignado: {{ persona_asignada.material|split('-')[0] }}<br>
+                                Cantidad de material entregado: {{ persona_asignada.cantidadMaterial }}
+                                {% endif %}
+                                {% if persona_asignada.enProceso == 1 %}
+                                  <a class="btn btn-success btn-xs float-right m-1" title="Terminar trabajo" href="{{ path('procesoencargado_terminar_trabajo', { procesoEncargado: persona_asignada.id,diseno:diseno.id }) }}"><i class="fa fa-check"></i></a>
+                                {% endif %}
+                                <span style="background-color:{{ persona_asignada.enProceso == 1 ? '#ffc107' : '#17a2b8;color:white' }};font-size:small;padding:5px" class="float-right m-1">{{ persona_asignada.enProceso == 1 ? "En Proceso" : "Terminado" }}</span><br>
+                                Proceso Asignado: {{ persona_asignada.proceso.proceso }}
+                              </div>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+                      {% elseif proceso.proceso == "CONFECCION" %}
+                        {% if is_granted('ROLE_' ~ proceso.proceso) %}
+                          {% for persona_asignada in asignacion %}
+                            {% if persona_asignada.proceso.proceso == proceso.proceso or persona_asignada.proceso.proceso == "BORDADO" and persona_asignada.proceso.tipoOrden == "PRODUCCION" %}
+                              <div class="card-comment asignacion" data-proceso="{{ persona_asignada.enProceso }}">
+                                <span class="username">
+                                  {{ persona_asignada.personaAsignada.nombre }}
+                                  <span class="text-muted float-right">Fecha asignación: {{ persona_asignada.fechaAsignacion|date('d-m-Y h:i a') }}</span>
+                                  {% if persona_asignada.fechaFinalizacion != null %}
+                                    <br><span class="text-muted float-right">Fecha finalización: {{ persona_asignada.fechaFinalizacion|date('d-m-Y h:i a') }}</span><br>
+                                    <span class="text-muted float-right">Duración: Dias: {{ ( (persona_asignada.duracion / 60) / 24 > 1 ) ? ((persona_asignada.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((persona_asignada.duracion / 60 / 24) - (persona_asignada.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ ((persona_asignada.duracion / 60) - (persona_asignada.duracion / 60)|round(0, 'floor'))*60 }}</span>
+                                  {% endif %}
+                                </span>
+                                Prendas Asignadas: {{ persona_asignada.cantidad }} <br>
+                                {% if persona_asignada.talla != 0 %}Talla asignada: {{ persona_asignada.talla }}
+                                {% elseif persona_asignada.talla == 0 and persona_asignada.cantidadMaterial != null %}
+                                Material Asignado: {{ persona_asignada.material|split('-')[0] }}<br>
+                                Cantidad de material entregado: {{ persona_asignada.cantidadMaterial }}
+                                {% elseif persona_asignada.talla == 0 and persona_asignada.cantidadMaterial == null %}
+                                Tarea Asignada: {{ persona_asignada.material|split('-')[0] }}
+                                {% endif %}
+                                {% if persona_asignada.enProceso == 1 and persona_asignada.proceso.proceso != "BORDADO" %}
+                                  <a class="btn btn-success btn-xs float-right m-1" title="Terminar trabajo" href="{{ path('procesoencargado_terminar_trabajo', { procesoEncargado: persona_asignada.id,diseno:diseno.id }) }}"><i class="fa fa-check"></i></a>
+                                {% endif %}
+                                <span style="background-color:{{ persona_asignada.enProceso == 1 ? '#ffc107' : '#17a2b8;color:white' }};font-size:small;padding:5px" class="float-right m-1">{{ persona_asignada.enProceso == 1 ? "En Proceso" : "Terminado" }}</span><br>
+                                Proceso Asignado: {{ persona_asignada.proceso.proceso }}
+                              </div>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+                      {% else %}
+                      {% if is_granted('ROLE_' ~ proceso.proceso) %}
+                        {% for persona_asignada in asignacion %}
+                          {% if persona_asignada.proceso.proceso == proceso.proceso and persona_asignada.proceso.tipoOrden == "PRODUCCION" and bordado < 1 %}
+                            <div class="card-comment asignacion" data-proceso="{{ persona_asignada.enProceso }}">
+                              <span class="username">
+                                {{ persona_asignada.personaAsignada.nombre }}
+                                <span class="text-muted float-right">Fecha asignación: {{ persona_asignada.fechaAsignacion|date('d-m-Y h:i a') }}</span>
+                                {% if persona_asignada.fechaFinalizacion != null %}
+                                  <br><span class="text-muted float-right">Fecha finalización: {{ persona_asignada.fechaFinalizacion|date('d-m-Y h:i a') }}</span><br>
+                                  <span class="text-muted float-right">Duración: Dias: {{ ( (persona_asignada.duracion / 60) / 24 > 1 ) ? ((persona_asignada.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((persona_asignada.duracion / 60 / 24) - (persona_asignada.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ ((persona_asignada.duracion / 60) - (persona_asignada.duracion / 60)|round(0, 'floor'))*60 }}</span>
+                                {% endif %}
+                              </span>
+                              Prendas Asignadas: {{ persona_asignada.cantidad }} <br>
+                              {% if persona_asignada.talla != "0" or persona_asignada.talla != 0 %}Talla asignada: {{ persona_asignada.talla }}
+                              {% elseif persona_asignada.talla == "0" and persona_asignada.cantidadMaterial != null %}
+                              Material Asignado: {{ persona_asignada.material|split('-')[0] }}<br>
+                              Cantidad de material entregado: {{ persona_asignada.cantidadMaterial }}
+                              {% elseif persona_asignada.talla == "0" and persona_asignada.cantidadMaterial == null %}
+                              Tarea Asignada: {{ persona_asignada.material|split('-')[0] }}
+                              {% endif %}
+                              {% if persona_asignada.enProceso == 1 %}
+                                <a class="btn btn-success btn-xs float-right m-1" title="Terminar trabajo" href="{{ path('procesoencargado_terminar_trabajo', { procesoEncargado: persona_asignada.id,diseno:diseno.id }) }}"><i class="fa fa-check"></i></a>
+                              {% endif %}
+                              <span style="background-color:{{ persona_asignada.enProceso == 1 ? '#ffc107' : '#17a2b8;color:white' }};font-size:small;padding:5px" class="float-right m-1">{{ persona_asignada.enProceso == 1 ? "En Proceso" : "Terminado" }}</span><br>
+                              Proceso Asignado: {{ persona_asignada.proceso.proceso }}
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                      {% endif %}
+                      {% if proceso.proceso == "BORDADO" %}{% set bordado = bordado + 1 %}{% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="product-procesos" role="tabpanel" aria-labelledby="product-procesos-tab">
+            <div class="card card-widget">
+              <div class="card-footer card-comments">
+                {% if procesos != null %}
+                  <table class="table table-sm table-bordered table-hover">
+                  <thead>
+                      <tr>
+                          <th class="nowrap">
+                            Cantidad Total
+                          </th>
+                          <th class="nowrap">
+                            Proceso
+                          </th>
+                          <th class="nowrap">
+                            Fecha Inicio
+                          </th>
+                          <th class="nowrap">
+                            Estado
+                          </th>
+                          <th class="nowrap">
+                            Fecha Finalización
+                          </th>
+                          <th class="nowrap">
+                            Duración Proceso
+                          </th>
+                          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                          <th class="nowrap"></th>{% endif %}
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for proceso in procesos %}
+                      <tr>
+                          <td class="nowrap">{{ proceso.cantidad }}</td>
+                          <td class="nowrap">{{ proceso.proceso }}</td>
+                          <td class="nowrap" data-sort-value="{% if proceso.fechaInicio %}{{ proceso.fechaInicio|date('U') }}{% endif %}">{% if proceso.fechaInicio %}{{ proceso.fechaInicio|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                          <td class="nowrap">{% if proceso.status == 1 %}En Proceso{% elseif proceso.status == 0 %}En Proceso{% elseif proceso.status == 2 %}Terminado{% endif %}</td>
+                          <td class="nowrap" data-sort-value="{% if proceso.fechaFinalizacion %}{{ proceso.fechaFinalizacion|date('U') }}{% endif %}">{% if proceso.fechaFinalizacion %}{{ proceso.fechaFinalizacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                          <td class="nowrap">Dias: {{ ( (proceso.duracion / 60) / 24 > 1 ) ? ((proceso.duracion / 60) / 24)|round(0, 'floor') : 0 }} / Hrs: {{ (((proceso.duracion / 60 / 24) - (proceso.duracion / 60 / 24)|round(0, 'floor')) * 24)|round(0, 'floor') }} / Min: {{ (((proceso.duracion / 60) - (proceso.duracion / 60)|round(0, 'floor'))*60)|round(0, 'floor') }}</td>
+                          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+                            <td class="nowrap text-center">
+                                <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('proceso_edit', { 'id': proceso.id }) }}"><i class="fa fa-edit"></i></a>
+                            </td>
+                          {% endif %}
+                      </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+                {% else %}
+                  No Hay procesos registrados para este diseño
+                {% endif %}
+              </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="product-notas" role="tabpanel" aria-labelledby="product-notas-tab">
+          <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <div class="card-footer card-comments">
+                {% for nota in notas %}
+                  {% if nota.proceso.tipoOrden == 'PRODUCCION' and nota.notas != "" %}
+                    <div class="card-comment">
+                      <span class="username">
+                        {{ nota.usuario }}<br>
+                        <span class="text-muted"> {{ nota.notas }}</span>
+                      </span>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="modal-cantidad" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" {% if proceso_actual == "TERMINADOS" or proceso_actual == "PRETERMINADOS"  %}style="min-width:80%"{% endif %} role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingrese los datos correspondientes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" id="crear_proceso" method="POST">
+        <input class="m-0 p-0" type="text" name="tipo_orden" value="PRODUCCION" style="visibility:hidden">
+        <input "m-0 p-0" type="text" name="orden_produccion" value="{{ orden_produccion.id }}" style="visibility:hidden">
+        <div class="modal-body">
+          {% set total = 0 %}
+          {% set asign = false %}
+          {% for area in asignacion %} 
+            {% if area.proceso.id == proceso_actual.id %}
+              {% if proceso_actual == "CONFECCION" and area.talla != 0 %}
+                {% set total = total + area.cantidad %}
+                {% set asign = true %}
+              {% elseif proceso_actual != "CONFECCION" %}
+                {% set total = total + area.cantidad %}
+                {% set asign = true %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% if proceso_actual == "PRETERMINADOS" %}
+            {% set total = total / 3 %}
+          {% endif %}
+          {% if proceso_actual == "TERMINADOS" %}
+            {% set materialQty = 0 %}
+            {% for material in orden_items %}
+              {% if material.material.categoria == "PLACA" or material.material.categoria == "TACHE" or material.material.categoria == "GARRA" or material.material.categoria == "BOTON" %}
+                {% set materialQty = materialQty + 1 %}
+              {% endif %}
+            {% endfor %}
+            {% set total = total / materialQty %}
+          {% endif %}
+          {% if total >= proceso_actual.cantidad %}
+            <label for="escoger_proceso">Siguiente Proceso</label>
+            <select class="form-select form-select-sm form-control m-1" name="proceso_seleccionado" id="proceso_seleccionado">
+              <option selected disabled>Escoger proceso</option>
+              {% for proceso in siguiente_proceso %}
+                <option value="{{ proceso }}">{{ proceso }}</option>
+              {% endfor %}
+            </select>
+            <label>Confirmar cantidades y tallas que vas a entregar</label>
+            <div class="row p-2">
+              {% for talla in tallas %}
+              <div class="col col-3 border border-1">
+                <span class="talla-qty" id="T-{{ talla.talla }}-{{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}">Talla {{ talla.talla }} <br> Unidades: {{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}</span><br>
+                <a  data-toggle="collapse" href="#Cambiar-{{ talla.talla }}" role="button" aria-expanded="false" aria-controls="Cambiar-{{ talla.talla }}">
+                  Cambiar Cantidad
+                </a>
+                <div class="collapse" id="Cambiar-{{ talla.talla }}">
+                  <input class="cambiarCantidad" type="number" name="oCoC-{{ talla.talla }}" id="CC-{{ talla.talla }}" value="{{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}">
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% if proceso_actual == "PRETERMINADOS" %}
+              <div class="row">
+                <div class="col-6">
+                  <label>Cantidad de presillas / Unidad</label>
+                  <input id="qty_presillas" type="number" class="form-control qty" name="presillas_qty" value=""/>
+                </div>
+                <div class="col-6">
+                  <label>Cantidad de ojales / Unidad</label>
+                  <input id="qty_ojales" type="number" class="form-control qty" name="ojales_qty" value=""/>
+                </div>
+              </div>
+            {% endif %}
+            {% if proceso_actual == "CONFECCION" %}
+              <div class="row p-2">
+                <label for="puntadas">Confirmar la cantidad de puntadas / Unidad</label>
+                <input class="form-control" type="number" name="puntadas" id="puntadas" value="">
+              </div>
+            {% endif %}
+            <div class="p-2">
+              <label for="proceso_notas">Observaciones</label>
+              <textarea class="form-control" name="notas" placeholder="" id="proceso_notas" style="height: 100px"></textarea>
+            </div>
+          {% else %}
+            <label>Confirmar cantidades y tallas recibidas ({{ proceso_actual.cantidad }})</label>
+            <div class="row p-2">
+              {% for talla in tallas %}
+                <div class="col col-3 border border-1">
+                  <span class="talla-qty" id="T-{{ talla.talla }}-{{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}">Talla {{ talla.talla }} <br> Unidades: {{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}</span><br>
+                  <input {{ (asign == true ? "checked disabled") }} type="checkbox" onchange="set_zero(this.id,{{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }})" class="confirmacion" name="C-{{ talla.talla }}" id="C-{{ talla.talla }}" value="">
+                  <label style="font-size:small" for="C-{{ talla.talla }}">Confirmar</label><br>
+                  <a  data-toggle="collapse" href="#Cambiar-{{ talla.talla }}" role="button" aria-expanded="false" aria-controls="Cambiar-{{ talla.talla }}">
+                    Cambiar Cantidad
+                  </a>
+                  <div class="collapse" id="Cambiar-{{ talla.talla }}">
+                    <input {{ (asign == true ? "disabled") }} class="mb-1" onchange="check_false(this.id)" type="number" name="CC-{{ talla.talla }}" id="CC-{{ talla.talla }}" value="{{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}">
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="table-responsive">
+              {% if proceso_actual == "TERMINADOS" %}
+                <table class="table table-striped" id="main_table">
+                  <thead>
+                    <tr>
+                      <th>Cantidad Prendas</th>
+                      <th>Material</th>
+                      <th>Costo</th>
+                      <th>Cantidad Material</th>
+                      <th>Responsable</th>
+                      <th></th>
+                    </tr>
+                    {% for persona in asignacion %}
+                      {% if persona.personaAsignada.area == proceso_actual %}
+                        <tr class="qty-asignada" data-info="{{ persona.material|split('-')[0] }}-{{ persona.cantidad }}">
+                          <td>{{ persona.cantidad }}</td>
+                          <td>{{ persona.material|split('-')[0] }}</td>
+                          <td>{{ persona.material|split('-')[1] }}</td>
+                          <td>{{ persona.cantidadMaterial }}</td>
+                          <td>{{ persona.personaAsignada.nombre }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    <tr class="proceso" id="{{ proceso_actual }}-0">
+                      <td><input type="number" value="0" class="form-control qty" name="Q-0" aria-label="Cantidad Prendas"/></td>
+                      <td>
+                        <select onchange="getPrice(this.id)" class="custom-select form-control" name="MT-0" id="MT-0" aria-label="Tipo Material">
+                          <option value="" disabled selected>Seleccionar</option>
+                          {% for material in orden_items %}
+                            {% if material.material.categoria == "PLACA" or material.material.categoria == "TACHE" or material.material.categoria == "GARRA" or material.material.categoria == "BOTON" %}
+                              <option class="material-option" value="{{ material.material.categoria }}-
+                              {% if material.material.categoria == "TACHE" %}
+                                {{ costos[0].costo }}
+                              {% elseif material.material.categoria == "PLACA" %}
+                                {{ costos[0].costo2 }}
+                              {% elseif material.material.categoria == "GARRA" %}
+                                {{ costos[0].costo3 }}
+                              {% elseif material.material.categoria == "BOTON" %}
+                                {{ costos[0].costo4 }}
+                              {% endif %}-0">{{ material.material.nombre}}</option>
+                            {% endif %}
+                          {% endfor %}
+                          {% set total = total / materialQty %}
+                        </select>
+                      </td>
+                      <td id="price-0"></td>
+                      <td><input type="number" class="form-control" name="MQ0-0" aria-label="Cantidad Material"/></td>
+                      <td>
+                        <select name="P-0" class="form-control" aria-label="Responsable">
+                          {% for persona in encargados %}
+                            <option class="persona_option0" value="{{ persona.id }}">{{ persona.nombre }} - {{ persona.area }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              {% elseif proceso_actual == "PRETERMINADOS" %}
+                <table class="table table-striped" id="main_table">
+                  <thead>
+                    <tr>
+                      <th>Cantidad Prendas</th>
+                      <th>Tarea</th>
+                      <th>Costo</th>
+                      <th>Responsable</th>
+                      <th></th>
+                    </tr>
+                    {% for persona in asignacion %}
+                      {% if persona.personaAsignada.area == proceso_actual %}
+                        <tr class="qty-asignada" data-info="{{ persona.material|split('-')[0] }}-{{ persona.cantidad }}">
+                          <td>{{ persona.cantidad }}</td>
+                          <td>{{ persona.material|split('-')[0] }}</td>
+                          <td>{{ persona.material|split('-')[1] }}</td>
+                          <td>{{ persona.personaAsignada.nombre }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    <tr class="proceso" id="{{ proceso_actual }}-0">
+                      <td><input type="number" value="0" class="form-control qty" name="Q-0" aria-label="Cantidad Prendas"/></td>
+                      <td>
+                        <select onchange="getCosto(this.id)" class="custom-select form-control" name="T-0" id="T-0" aria-label="Tarea">
+                          <option value="" disabled selected>Seleccionar</option>
+                          <option class="tarea-option" value="Presillas-{{ costos[0].costo }}-0">Presillas</option>
+                          <option class="tarea-option" value="Ojales-{{ costos[0].costo2 }}-0">Ojales</option>
+                          <option class="tarea-option" value="Despeluzado-{{ costos[0].costo3 }}-0">Despeluzado Crudo</option>
+                        </select>
+                      </td>
+                      <td id="costo-0"></td>
+                      <td>
+                        <select name="P-0" class="form-control" aria-label="Responsable">
+                          {% for persona in encargados %}
+                            <option class="persona_option0" value="{{ persona.id }}">{{ persona.nombre }} - {{ persona.area }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              {% elseif proceso_actual == "EMPAQUE" %}
+                <table class="table table-striped" id="main_table">
+                  <thead>
+                    <tr>
+                      <th>Cantidad asignada</th>
+                      <th>Responsable</th>
+                      <th></th>
+                    </tr>
+                    {% for persona in asignacion %}
+                      {% if persona.personaAsignada.area == proceso_actual %}
+                        <tr class="qty-asignada" data-info="{{ persona.cantidad }}">
+                          <td>{{ persona.cantidad }}</td>
+                          <td>{{ persona.personaAsignada.nombre }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    <tr class="proceso" id="{{ proceso_actual }}-0">
+                      <td><input type="number" class="form-control qty" name="Q-0"/></td>
+                      <td>
+                        <select name="P-0" class="form-control" aria-label="Responsable">
+                          {% for persona in encargados %}
+                            <option class="persona_option0" value="{{ persona.id }}">{{ persona.nombre }} - {{ persona.area }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              {% else %}
+                <table class="table table-striped" id="main_table">
+                  <thead>
+                    <tr>
+                      <th>Cantidad asignada</th>
+                      <th>Talla</th>
+                      <th>Responsable</th>
+                      <th></th>
+                    </tr>
+                    {% for persona in asignacion %}
+                      {% if persona.personaAsignada.area == proceso_actual and persona.talla != 0 %}
+                        <tr class="qty-asignada" data-info="{{ persona.talla }}-{{ persona.cantidad }}">
+                          <td>{{ persona.cantidad }}</td>
+                          <td>{{ persona.talla }}</td>
+                          <td>{{ persona.personaAsignada.nombre }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    <tr class="proceso" id="{{ proceso_actual }}-0">
+                      <td><input type="number" class="form-control qty" name="Q-0"/></td>
+                      <td>
+                        <select id="T-0" name="T-0" class="form-control" aria-label="Talla">
+                          {% for item in tallas %}
+                              <option class="talla_option" value="{{ item.talla }}">{{ item.talla }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <td>
+                        <select name="P-0" class="form-control" aria-label="Responsable">
+                          {% for persona in encargados %}
+                            <option class="persona_option0" value="{{ persona.id }}">{{ persona.nombre }} - {{ persona.area }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              {% endif %}
+              <button class="btn btn-primary float-end" type="button" name="add_responsable" id="new_responsable">Agregar Asignación</button>
+              <div class="p-2">
+                <label for="proceso_notas">Observaciones</label>
+                <textarea class="form-control" name="notas" placeholder="" id="proceso_notas" style="height: 100px"></textarea>
+              </div>
+              <input class="m-0 p-0" type="text" name="tipo_orden" value="PRODUCCION" style="visibility:hidden">
+              <input "m-0 p-0" type="text" name="orden_produccion" value="{{ orden_produccion.id }}" style="visibility:hidden">
+            </div>
+          {% endif %}
+        </div>
+      </form>
+      <div class="modal-footer">
+        {% set ok = true %}
+        {% for item in orden_items %}
+          {% for material in diseno.materiales %}
+            {% if item.material.id == material.material.id and material.proceso.nombre == proceso_actual %}
+              {% if item.entregado == 0 %}
+                {% set ok = false %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {% if ok == true %}
+          {% if total >= proceso_actual.cantidad %}
+            <button class="btn btn-primary" onclick="pasar_siguiente_proceso()">OK</button>
+          {% else %}
+            {% if inventarioOrden == null %}
+              <div class="alert alert-danger" role="alert">
+                Primero debes generar la orden de inventario para este diseño
+              </div>
+            {% else %}
+              <button class="btn btn-primary" onclick="asignar_personas()">OK</button>
+            {% endif %}
+          {% endif %}
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+          Hay materiales necesarios para iniciar este proceso que aun no se han entregado, revisa la orden de inventario para más información.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal-pretinas" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Asignar confección de Pretinas</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" id="crear_pretina_proceso" method="POST">
+        <input class="m-0 p-0" type="text" name="tipo_orden" value="PRODUCCION" style="visibility:hidden">
+        <input "m-0 p-0" type="text" name="orden_produccion" value="{{ orden_produccion.id }}" style="visibility:hidden">
+        <div class="modal-body">
+          {% set total = 0 %}
+          {% set asign = false %}
+          {% for area in asignacion %} 
+            {% if area.proceso.id == proceso_actual.id and area.material == "PRETINAS" %}
+              {% set total = total + area.cantidad %}
+              {% set asign = true %}
+            {% endif %}
+          {% endfor %}
+          {% if total == proceso_actual.cantidad %}
+            <label>Ya se han asignado todas las pretinas según la cantidad de prendas</label>
+          {% else %}
+            <label>Total de prendas ({{ proceso_actual.cantidad }})</label>
+            <div class="table-responsive">
+              <table class="table table-striped" id="main_table">
+                <thead>
+                  <tr>
+                    <th>Cantidad asignada</th>
+                    <th>Responsable</th>
+                    <th></th>
+                  </tr>
+                  {% for persona in asignacion %}
+                    {% if persona.personaAsignada.area == proceso_actual and persona.talla == 0 %}
+                      <tr class="qty-asignada-pretinas" data-info="{{ persona.talla }}-{{ persona.cantidad }}">
+                        <td>{{ persona.cantidad }}</td>
+                        <td>{{ persona.personaAsignada.nombre }}</td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                  <tr class="proceso" id="{{ proceso_actual }}-0">
+                    <td><input type="number" class="form-control qty-p" name="Q-0"/></td>
+                    <td>
+                      <select name="P-0" class="form-control" aria-label="Responsable">
+                        {% for persona in encargados %}
+                          <option class="persona_option" value="{{ persona.id }}">{{ persona.nombre }} - {{ persona.area }}</option>
+                        {% endfor %}
+                      </select>
+                    </td>
+                  </tr>
+                </thead>
+              </table>
+              <button class="btn btn-primary float-end" type="button" name="add_responsable" id="new_responsable">Agregar Asignación</button>
+              <div class="p-2">
+                <label for="proceso_notas">Observaciones</label>
+                <textarea class="form-control" name="notas" placeholder="" id="proceso_notas" style="height: 100px"></textarea>
+              </div>
+              <input class="m-0 p-0" type="text" name="tipo_orden" value="PRODUCCION" style="visibility:hidden">
+              <input "m-0 p-0" type="text" name="orden_produccion" value="{{ orden_produccion.id }}" style="visibility:hidden">
+            </div>
+          {% endif %}
+        </div>
+      </form>
+      <div class="modal-footer">
+        {% set ok = true %}
+        {% for item in orden_items %}
+          {% for material in diseno.materiales %}
+            {% if item.material.id == material.material.id and material.proceso.nombre == proceso_actual %}
+              {% if item.entregado == 0 %}
+                {% set ok = false %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {% if ok == true %}
+          {% if total != proceso_actual.cantidad %}
+            <button class="btn btn-primary" onclick="asignar_personas()">OK</button>
+          {% endif %}
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+          Hay materiales necesarios para iniciar este proceso que aun no se han entregado, revisa la orden de inventario para más información.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modal-cajas">
+  <div class="modal-dialog modal-lg" style="min-width:80%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingrese los datos correspondientes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="" id="form-cajas" action="{{ path('proceso_terminar_procesos', {diseno: diseno.id,proceso:proceso_actual.id}) }}" method="post">
+          <input "m-0 p-0" type="text" name="orden_produccion" value="{{ orden_produccion.id }}" style="visibility:hidden">
+          <input class="m-0 p-0" type="text" name="tipo_orden" value="PRODUCCION" style="visibility:hidden"><br>
+          <label>Cantidad total para empacar ({{ proceso_actual.cantidad }} Prendas)</label><br>
+          <label>Cantidad Empacada (<span style="color:green" id="qty-empacada">0</span> Prendas)</label>
+          <table class="table" id="table_cajas">
+            <thead>
+              <tr>
+                <th>Caja</th>
+                <th>Referencia</th>
+                <th>Cantidad</th>
+                <th>Marca</th>
+                <th>Curva</th>
+                <th>Notas</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="t-body">
+              <tr class="caja-row" id="cajaRow-{{ (ultima_caja == null) ? 1 : ultima_caja.caja + 1 }}">
+                <td>{{ (ultima_caja == null) ? 1 : ultima_caja.caja + 1 }}</td>
+                <td>{{ diseno.referencia }} - {{ diseno.nombre }}</td>
+                <td><input type="number" class="form-control caja-qty" onchange="empacado_subtotal()" name="Q-{{ (ultima_caja == null) ? 1 : ultima_caja.caja + 1 }}" value="0"/></td>
+                <td>
+                  <input class="form-control" type="text" name="marca-{{ (ultima_caja == null) ? 1 : ultima_caja.caja + 1 }}" value="">
+                </td>
+                <td>
+                  <input class="form-control" type="text" name="curva-{{ (ultima_caja == null) ? 1 : ultima_caja.caja + 1 }}" value="">
+                </td>
+                <td>
+                  <input type="text" class="form-control" name="nota-{{ (ultima_caja == null) ? 1 : ultima_caja.caja + 1 }}" value="">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary" style="float:left" type="button" name="add_caja" id="new_caja">Agregar Caja</button><br><br>
+          <div class="p-2">
+            <label for="proceso_notas">Observaciones</label>
+            <textarea class="form-control" name="notas" placeholder="" id="proceso_notas" style="height: 100px"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" style="float:right" type="button" id="submit_cajas">Enviar y terminar empaque</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modal-bordado">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ingrese los datos correspondientes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="" id="form-bordado" action="{{ path('proceso_pasar_bordado', {diseno: diseno.id,proceso:proceso_actual.id}) }}" method="post">
+          <input "m-0 p-0" type="text" name="orden_produccion" value="{{ orden_produccion.id }}" style="visibility:hidden">
+          <input class="m-0 p-0" type="text" name="tipo_orden" value="PRODUCCION" style="visibility:hidden"><br>
+          <table class="table" id="table_cajas">
+            <thead>
+              <tr>
+                <th>Cantidad</th>
+                <th>Tipo de pieza</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="b-body">
+              <tr class="bordado-row" id="bordadoRow0">
+                <td><input type="number" class="form-control bordado-qty" name="Q-0" value="0"/></td>
+                <td>
+                  <input class="form-control" type="text" name="tipo-0" value="">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary" style="float:left" type="button" name="add_pieza" id="new_pieza">Agregar Pieza</button><br><br>
+          <div class="p-2">
+            <label for="proceso_notas">Observaciones</label>
+            <textarea class="form-control" name="notas" placeholder="" id="bordado_notas" style="height: 100px"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" style="float:right" type="button" id="submit_piezas">Enviar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modal-codigos">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Generar Códigos de Barras</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                  <th class="nowrap text-center">Talla</th>
+                  <th class="nowrap text-center">Cantidad</th>
+                  <th class="nowrap text-center">Código de Barras</th>
+                </tr>
+                {% for talla in tallas %}
+                  <tr>
+                    <td class="nowrap text-center">Talla {{ talla.talla }}</td>
+                    <td class="nowrap text-center">{{ (talla.cantidad > talla.cantidadConfirmada) ? talla.cantidadConfirmada : talla.cantidad }}</td>
+                    <td class="nowrap text-center"><a class="btn btn-default btn-flat btn-sm" title="Crear Código" 
+                    onclick="barCodeGerenate(`{{ diseno.referencia }}`,`{{ talla.talla }}`)"><i class="fas fa-barcode"></i></a></td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="barcode_container" class="text-center p-5">
+          <div id="code" class="text-center">
+            <div id="barcode" class="m-auto">Código de barras no generado</div>
+          </div>
+          <a id="print_code" href="#!" onClick="printDiv();" rel="noopener" style="display:none" class="btn btn-default mt-2 no-print"><i class="fas fa-print"></i> Imprimir Código</a>  
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script type="text/javascript" src="/bundles/appbundle/js/jquery-barcode.js"></script>
+  <script>
+    var row_counter = 1;
+    var row_counter_bordado = 1;
+    var row_counter_caja = {{ (ultima_caja == null) ? 2 : ultima_caja.caja + 2 }};
+    var nuevo_proceso = $('#proceso_ref').attr('class');
+    var procesoActual = "{{ proceso_actual }}";
+    var confeccion_subproceso = "";
+    var total_prendas = "{{ proceso_actual.cantidad }}";
+    $('#proceso_seleccionado').change(
+      function(){
+        nuevo_proceso = $('#proceso_seleccionado').val();
+      }
+    );
+    function barCodeGerenate(ref,talla){
+      $("#barcode").barcode(ref.toString()+"-"+talla.toString(),"code128",{barWidth:2, barHeight:50});
+      $("#print_code").show();
+    }
+    function crear_codigos(){
+      $('#modal-codigos').modal('show');
+    }
+    function printDiv(){
+      var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+      mywindow.document.write('<html><head><title></title>');
+      mywindow.document.write('</head><body >');
+      mywindow.document.write('<div style="text-align:center">');
+      mywindow.document.write(document.getElementById("code").innerHTML);
+      mywindow.document.write('</div>');
+      mywindow.document.write('</body></html>');
+
+      mywindow.document.close(); // necessary for IE >= 10
+      mywindow.focus(); // necessary for IE >= 10*/
+
+      mywindow.print();
+      mywindow.close();
+
+      return true;
+    }
+    function asignar_pretinas(){
+      $('#modal-pretinas').modal('show');
+    }
+    function confeccionSubproceso(type){
+      confeccion_subproceso = type;
+    }
+    function iniciar_proceso(tipo){
+      if(tipo == "terminar"){
+        var asignaciones = document.getElementsByClassName('asignacion');
+        for (var i = 0; i < asignaciones.length; i++) {
+          if(asignaciones[i].dataset.proceso == "1"){
+            alert('Aun hay personas que no han terminado el trabajo asignado, para mas información revisar la pestaña "Asignación"');
+            return;
+          }
+        }
+        $('#modal-cantidad').modal('show');
+      }
+      else{
+        $('#modal-cantidad').modal('show');
+      }
+    }
+    function asignar_cajas(){
+      var asignaciones = document.getElementsByClassName('asignacion');
+      for (var i = 0; i < asignaciones.length; i++) {
+        if(asignaciones[i].dataset.proceso == "1"){
+          alert('Aun hay personas que no han terminado el trabajo asignado, para mas información revisar la pestaña "Asignación"');
+          return;
+        }
+      }
+      $('#modal-cajas').modal('show');
+    }
+    function enviar_bordado(){
+      $('#modal-bordado').modal('show');
+    }
+    function delete_row(id){
+      row_counter--;
+      var row = document.getElementById("{{ proceso_actual }}-"+id.split('-')[1]);
+      row.parentNode.removeChild(row);
+      if(row_counter==1){
+        $('#ETH-'+(row_counter).toString()).append('<span style="color:red;cursor:pointer;font-size:large" id="D-'+(row_counter).toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>');
+      }
+      else{
+        $('#ETH-'+(row_counter-1).toString()).append('<span style="color:red;cursor:pointer;font-size:large" id="D-'+(row_counter-1).toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>');
+      }
+    }
+    function delete_row_caja(id){
+      row_counter_caja--;
+      var row = document.getElementById("cajaRow-"+id.split('-')[1]);
+      row.parentNode.removeChild(row);
+      if(row_counter_caja==2){
+        $('#ECH-'+(row_counter_caja).toString()).append('<span style="color:red;cursor:pointer;font-size:large" id="DC-'+(row_counter_caja).toString()+'" onclick="delete_row_caja(this.id)"><i class="fas fa-window-close"></i></span>');
+      }
+      else{
+        $('#ECH-'+(row_counter_caja-1).toString()).append('<span style="color:red;cursor:pointer;font-size:large" id="DC-'+(row_counter_caja-1).toString()+'" onclick="delete_row_caja(this.id)"><i class="fas fa-window-close"></i></span>');
+      }
+      empacado_subtotal();
+    }
+    function delete_row_bordado(id){
+      row_counter_bordado--;
+      var row = document.getElementById("bordadoRow-"+id.split('-')[1]);
+      row.parentNode.removeChild(row);
+      if(row_counter_bordado==1){
+        $('#EBH-'+(row_counter_bordado).toString()).append('<span style="color:red;cursor:pointer;font-size:large" id="DB-'+(row_counter_bordado).toString()+'" onclick="delete_row_bordado(this.id)"><i class="fas fa-window-close"></i></span>');
+      }
+      else{
+        $('#EBH-'+(row_counter_bordado-1).toString()).append('<span style="color:red;cursor:pointer;font-size:large" id="DB-'+(row_counter_bordado-1).toString()+'" onclick="delete_row_bordado(this.id)"><i class="fas fa-window-close"></i></span>');
+      }
+    }
+    $('#new_responsable').click(function(){
+      if(procesoActual == "TERMINADOS"){
+        var personas = document.getElementsByClassName('persona_option0');
+        var materiales = document.getElementsByClassName('material-option');
+        var materialesHTML = '<option value="" disabled selected>Seleccionar</option>';
+        var personaHTML="";
+        for (var i = 0; i < materiales.length; i++) {
+          materialesHTML+='<option class="material_option1" value='+'"'+materiales[i].value+'">'+materiales[i].innerHTML+'</option>'
+        }
+        for (var i = 0; i < personas.length; i++) {
+          personaHTML+='<option class="persona_option1" value='+personas[i].value+'>'+personas[i].innerHTML+'</option>'
+        }
+        var input_qty = '<input type="number" class="form-control qty" name="Q-'+row_counter.toString()+'" value="0"/>';
+        var select_material = '<select id="MT-'+row_counter.toString()+'" name="MT-'+row_counter.toString()+'" class="form-control" onchange="getPrice(this.id)" aria-label="Material">';
+        var select_persona = '<select name="P-'+row_counter.toString()+'" class="form-control" aria-label="Responsable">';
+        var delete_button="";
+        for (var i = 1; i < row_counter; i++) {
+          $('#D-'+i.toString()).html('');
+        }
+        var delete_button = '<span style="color:red;cursor:pointer;font-size:large" id="D-'+row_counter.toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>';
+        $("#main_table").append('<tr class="proceso" id="{{ proceso_actual }}-'+row_counter.toString()+'"><td>'+input_qty+
+        '</td><td>'+select_material+materialesHTML +'</select></td><td id="price-'+row_counter.toString()+'"></td><td><input type="number" class="form-control" name="MQ0-'+row_counter.toString()+'" aria-label="Cantidad Material"/></td><td>'+select_persona+personaHTML+'</select></td><td id="ETH-'+row_counter.toString()+'">'+delete_button+'</td>');
+        row_counter++;
+      }
+      else if (procesoActual == "PRETERMINADOS") {
+        var personas = document.getElementsByClassName('persona_option0');
+        var tareas = document.getElementsByClassName('tarea-option');
+        var tareasHTML = '<option value="" disabled selected>Seleccionar</option>';
+        var personaHTML="";
+        for (var i = 0; i < tareas.length; i++) {
+          tareasHTML+='<option class="tarea_option1" value='+tareas[i].value+'>'+tareas[i].innerHTML+'</option>'
+        }
+        for (var i = 0; i < personas.length; i++) {
+          personaHTML+='<option class="persona_option1" value='+personas[i].value+'>'+personas[i].innerHTML+'</option>'
+        }
+        var input_qty = '<input type="number" class="form-control qty" name="Q-'+row_counter.toString()+'" value="0"/>';
+        var select_tarea = '<select id="T-'+row_counter.toString()+'" name="T-'+row_counter.toString()+'" class="form-control" onchange="getCosto(this.id)" aria-label="Tarea">';
+        var select_persona = '<select name="P-'+row_counter.toString()+'" class="form-control" aria-label="Responsable">';
+        var delete_button="";
+        for (var i = 1; i < row_counter; i++) {
+          $('#D-'+i.toString()).html('');
+        }
+        var delete_button = '<span style="color:red;cursor:pointer;font-size:large" id="D-'+row_counter.toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>';
+        $("#main_table").append('<tr class="proceso" id="{{ proceso_actual }}-'+row_counter.toString()+'"><td>'+input_qty+
+        '</td><td>'+select_tarea+tareasHTML +'</select></td><td id="costo-'+row_counter.toString()+'"></td><td>'+select_persona+personaHTML+'</select></td><td id="ETH-'+row_counter.toString()+'">'+delete_button+'</td>');
+        row_counter++;
+      }
+      else if(procesoActual == "EMPAQUE"){
+        var personas = document.getElementsByClassName('persona_option0');
+        var personaHTML="";
+        for (var i = 0; i < personas.length; i++) {
+          personaHTML+='<option class="persona_option1" value='+personas[i].value+'>'+personas[i].innerHTML+'</option>'
+        }
+        var input_qty = '<input type="number" class="form-control qty" name="Q-'+row_counter.toString()+'" value="0"/>';
+        var select_persona = '<select name="P-'+row_counter.toString()+'" class="form-control" aria-label="Responsable">';
+        var delete_button="";
+        for (var i = 1; i < row_counter; i++) {
+          $('#D-'+i.toString()).html('');
+        }
+        var delete_button = '<span style="color:red;cursor:pointer;font-size:large" id="D-'+row_counter.toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>';
+        $("#main_table").append('<tr class="proceso" id="{{ proceso_actual }}-'+row_counter.toString()+'"><td>'+input_qty+
+        '</td><td>'+select_persona+personaHTML+'</select></td><td id="ETH-'+row_counter.toString()+'">'+delete_button+'</td>');
+        row_counter++;
+      }
+      else{
+        var tallas = document.getElementsByClassName('talla_option');
+        var personas = document.getElementsByClassName('persona_option0');
+        var tallaHTML = "";
+        var personaHTML="";
+        for (var i = 0; i < tallas.length; i++) {
+          tallaHTML+='<option class="talla_option1" value='+tallas[i].value+'>'+tallas[i].value+'</option>'
+        }
+        for (var i = 0; i < personas.length; i++) {
+          personaHTML+='<option class="persona_option1" value='+personas[i].value+'>'+personas[i].innerHTML+'</option>'
+        }
+        var input_qty = '<input type="number" class="form-control qty" name="Q-'+row_counter.toString()+'" value="0"/>';
+        var select_talla = '<select id="T-'+row_counter.toString()+'" name="T-'+row_counter.toString()+'" class="form-control" aria-label="Talla">';
+        var select_persona = '<select name="P-'+row_counter.toString()+'" class="form-control" aria-label="Responsable">';
+        var delete_button="";
+        for (var i = 1; i < row_counter; i++) {
+          $('#D-'+i.toString()).html('');
+        }
+        var delete_button = '<span style="color:red;cursor:pointer;font-size:large" id="D-'+row_counter.toString()+'" onclick="delete_row(this.id)"><i class="fas fa-window-close"></i></span>';
+        $("#main_table").append('<tr class="proceso" id="{{ proceso_actual }}-'+row_counter.toString()+'"><td>'+input_qty+
+        '</td><td>'+select_talla+tallaHTML +'</select></td><td>'+select_persona+personaHTML+'</select></td><td id="ETH-'+row_counter.toString()+'">'+delete_button+'</td>');
+        row_counter++;
+      }
+    });
+    $('#new_caja').click(function(){
+      var delete_button="";
+      for (var i = 1; i < row_counter_caja; i++) {
+        $('#DC-'+i.toString()).html('');
+      }
+      var delete_button = '<span style="color:red;cursor:pointer;font-size:large" id="DC-'+row_counter_caja.toString()+'" onclick="delete_row_caja(this.id)"><i class="fas fa-window-close"></i></span>';
+      $("#t-body").append('<tr class="caja-row" id="cajaRow-'+row_counter_caja.toString()+'"><td>'+row_counter_caja.toString()+
+      '</td><td>{{ diseno.referencia }} - {{ diseno.nombre }}</td><td><input type="number" class="form-control caja-qty" onchange="empacado_subtotal()" value="0" name="Q-'+row_counter_caja.toString()+
+      '"/></td><td><input class="form-control" type="text" name="marca-'+row_counter_caja.toString()+'" value=""></td><td><input type="text" class="form-control" name="curva-'+row_counter_caja.toString()+'" value=""></td>'+
+      '<td><input class="form-control" type="text" name="nota-'+row_counter_caja.toString()+'" value=""></td><td id="ECH-'+row_counter_caja.toString()+'">'+delete_button+'</td>');
+      row_counter_caja++;
+    });
+    $('#new_pieza').click(function(){
+      var delete_button="";
+      for (var i = 1; i < row_counter_bordado; i++) {
+        $('#DB-'+i.toString()).html('');
+      }
+      var delete_button = '<span style="color:red;cursor:pointer;font-size:large" id="DB-'+row_counter_bordado.toString()+'" onclick="delete_row_bordado(this.id)"><i class="fas fa-window-close"></i></span>';
+      $("#b-body").append('<tr class="bordado-row" id="bordadoRow-'+row_counter_bordado.toString()+'"><td><input type="number" class="form-control bordado-qty" value="0" name="Q-'+row_counter_bordado.toString()+
+      '"/></td><td><input class="form-control" type="text" name="tipo-'+row_counter_bordado.toString()+'" value=""></td><td id="EBH-'+row_counter_bordado.toString()+'">'+delete_button+'</td></tr>');
+      row_counter_bordado++;
+    });
+    $('#submit_piezas').click(function(){
+      $('#form-bordado').submit();
+    });
+    function empacado_subtotal(){
+      var total_unidades = parseInt("{{ proceso_actual.cantidad }}");
+      var unidades = document.getElementsByClassName('caja-qty');
+      var subtotal = 0;
+      for (var i = 0; i < unidades.length; i++) {
+        subtotal += parseInt(unidades[i].value);
+      }
+      $('#qty-empacada').html(subtotal);
+      if (total_unidades < subtotal) {
+        $('#qty-empacada').css("color", "red");
+      }
+      else{
+        $('#qty-empacada').css("color", "green");
+      }
+    }
+    $('#submit_cajas').click(function(){
+      var total_unidades = parseInt("{{ proceso_actual.cantidad }}");
+      var total_empacado = 0;
+      var unidades = document.getElementsByClassName('caja-qty');
+      for (var i = 0; i < unidades.length; i++) {
+        total_empacado += parseInt(unidades[i].value);
+      }
+      var asignaciones = document.getElementsByClassName('asignacion');
+      if(total_empacado > total_unidades){
+        alert("La cantidad empacada en las cajas es mayor a la cantidad total de prendas entregadas");
+      }
+      else{
+        $('#form-cajas').submit();
+      }
+    });
+    function getPrice(id){
+      var price = $('#'+id).val().split("-")[1];
+      $('#price-'+id.split("-")[1]).html(price);
+    }
+    function getCosto(id){
+      var costo = $('#'+id).val().split("-")[1];
+      $('#costo-'+id.split("-")[1]).html(costo);
+    }
+    function check_false(id){
+      document.getElementById('C-'+id.split("-")[1]).checked = false;
+    }
+    function set_zero(id,qty){
+      if(document.getElementById('C-'+id.split("-")[1]).checked){
+        $('#CC-'+id.split("-")[1]).val(qty);
+      }
+    }
+    function pasar_siguiente_proceso(){
+      var asignaciones = document.getElementsByClassName('asignacion');
+      var tallaQty = document.getElementsByClassName('talla-qty');
+      var totales = {};
+      for (var i = 0; i < tallaQty.length; i++) {
+        totales["T-"+tallaQty[i].id.split("-")[1]]=parseInt(tallaQty[i].id.split("-")[2]);
+      }
+      for (var i = 0; i < Object.keys(totales).length; i++) {
+        if(totales[Object.keys(totales)[i]] > $('#CC-'+Object.keys(totales)[i].split("-")[1]).val()){
+          $('#CC-'+Object.keys(totales)[i].split("-")[1]).attr('name','CC-'+Object.keys(totales)[i].split("-")[1]);
+        }
+      }
+      if(procesoActual == "CONFECCION" && ($("#puntadas").val()=="" || $("#puntadas").val()==0)){
+        alert("No has confirmado la cantidad de Puntadas para la producción de este modelo");
+        return;
+      }
+      if(procesoActual == "PRETERMINADOS" && $("#qty_presillas").val()=="" ||$("#qty_ojales").val()==""){
+        alert("Debes confirmar la cantidad de Presillas y Ojales");
+        return;
+      } 
+      if(nuevo_proceso=="TRAZO" && procesoActual == "DISEÑO"){
+        var orden_inventario = "{{ (inventarioOrden == null) ? 'null' : inventarioOrden.id }}";
+        if(orden_inventario == "null"){
+          alert("Primero debes generar la orden de inventario");
+        }
+        else{
+          $('#crear_proceso').attr('action', "{{ path('proceso_pasar_trazo', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+          $('#crear_proceso').submit();
+        }
+      }
+      else if(nuevo_proceso=="CORTE"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_corte', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="BORDADO"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_bordado', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="TRAZO"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_trazo', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="CONFECCION"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_confeccion', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="LAVANDERIA"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_lavanderia', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="PRETERMINADOS"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_preterminados', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="TERMINADOS"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_terminados', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+      else if(nuevo_proceso=="EMPAQUE"){
+        $('#crear_proceso').attr('action', "{{ path('proceso_pasar_empaque', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+        $('#crear_proceso').submit();
+      }
+    }
+    function asignar_personas(){
+      if(procesoActual !=""){ //ASIGNAR PERSONAS
+        if(procesoActual == "CORTE" || procesoActual == "BORDADO" || procesoActual == "CONFECCION"
+          || procesoActual == "LAVANDERIA" || procesoActual == "TERMINADOS" || procesoActual == "PRETERMINADOS"
+          || procesoActual == "EMPAQUE" || procesoActual == "DISEÑO" || procesoActual == "TRAZO"){
+          var confirmations = document.getElementsByClassName('confirmacion');
+          var totales = {};
+          var asignado_terminados = 0;
+          var total_terminados= 0;
+          var asignado = {};
+          var ok = false;
+          var tallaQty = document.getElementsByClassName('talla-qty');
+          for (var i = 0; i < tallaQty.length; i++) {
+            totales["T-"+tallaQty[i].id.split("-")[1]]=parseInt(tallaQty[i].id.split("-")[2]);
+          }
+          if(procesoActual == "EMPAQUE"){
+            var tallaQty = document.getElementsByClassName('talla-qty');
+            for (var i = 0; i < tallaQty.length; i++) {
+              total_terminados+=parseInt(tallaQty[i].id.split("-")[2]);
+            }
+            var qty_inputs = document.getElementsByClassName('qty');
+            for (var i = 0; i < qty_inputs.length; i++) {
+              asignado_terminados+=parseInt(qty_inputs[i].value);
+            }
+            for (var i = 0; i < confirmations.length; i++) {
+              var talla = confirmations[i].id.split("-")[1];
+              if(!confirmations[i].checked){
+                if ($('#CC-'+talla).val() < totales["T-"+talla]) {
+                  total_terminados -= totales["T-"+talla] - $('#CC-'+talla).val();
+                }
+                else if($('#CC-'+talla).val() == totales["T-"+talla]){
+                  alert("No has confirmado las cantidades recibidas para la talla "+talla);
+                  return;
+                }
+                else{
+                  alert("No puedes cambiar la cantidad de una talla a un número mayor al establecido en Producción");
+                  return;
+                }
+              }
+            }
+            var qty_asignada =  document.getElementsByClassName('qty-asignada');
+            for (var i = 0; i < qty_asignada.length; i++) {
+              let cantidad = qty_asignada[i].dataset.info;
+              asignado_terminados +=  parseInt(cantidad);
+            }
+            if(asignado_terminados > total_terminados){
+              alert('La cantidad de prendas asignadas no puede ser mayor que la cantidad a procesar');
+              return;
+            }
+            else{
+              ok=true;
+            }
+          }
+          else if (procesoActual == "TERMINADOS") {
+            var taches = 0;
+            var placas = 0;
+            var garras = 0;
+            var botones = 0;
+            var tallaQty = document.getElementsByClassName('talla-qty');
+            for (var i = 0; i < tallaQty.length; i++) {
+              total_terminados+=parseInt(tallaQty[i].id.split("-")[2]);
+            }
+            var qty_inputs = document.getElementsByClassName('qty');
+            for (var i = 0; i < qty_inputs.length; i++) {
+              if($('#MT-'+i.toString()).val().split('-')[0] == "TACHE"){
+                taches += parseInt(qty_inputs[i].value);
+              }
+              else if ($('#MT-'+i.toString()).val().split('-')[0] == "PLACA") {
+                placas += parseInt(qty_inputs[i].value);
+              }
+              else if ($('#MT-'+i.toString()).val().split('-')[0] == "GARRA") {
+                garras += parseInt(qty_inputs[i].value);
+              }
+              else if ($('#MT-'+i.toString()).val().split('-')[0] == "BOTON") {
+                botones += parseInt(qty_inputs[i].value);
+              }
+              asignado_terminados+=parseInt(qty_inputs[i].value);
+            }
+            for (var i = 0; i < confirmations.length; i++) {
+              var talla = confirmations[i].id.split("-")[1];
+              if(!confirmations[i].checked){
+                if ($('#CC-'+talla).val() < totales["T-"+talla]) {
+                  total_terminados -= totales["T-"+talla] - $('#CC-'+talla).val();
+                }
+                else if($('#CC-'+talla).val() == totales["T-"+talla]){
+                  alert("No has confirmado las cantidades recibidas para la talla "+talla);
+                  return;
+                }
+                else{
+                  alert("No puedes cambiar la cantidad de una talla a un número mayor al establecido en Producción");
+                  return;
+                }
+              }
+            }
+            var qty_asignada =  document.getElementsByClassName('qty-asignada');
+            for (var i = 0; i < qty_asignada.length; i++) {
+              let material = qty_asignada[i].dataset.info.split("-")[0];
+              let cantidad = qty_asignada[i].dataset.info.split("-")[1];
+              if(material == "TACHE"){
+                taches +=  parseInt(cantidad);
+              }
+              else if(material == "PLACA"){
+                placas += parseInt(cantidad); 
+              }
+              else if(material == "BOTON"){
+                botones += parseInt(cantidad); 
+              }
+              else{
+                garras += parseInt(cantidad);
+              }
+            }
+            if(taches != 0 && taches > total_terminados){
+              alert('La cantidad de prendas asignadas para TACHES no puede ser mayor que la cantidad a procesar');
+              return;
+            }
+            else{
+              ok=true;
+            }
+            if(placas != 0 && placas > total_terminados){
+              alert('La cantidad de prendas asignadas para PLACAS no puede ser mayor que la cantidad a procesar');
+              return;
+            }
+            else{
+              ok=true;
+            }
+            if(garras != 0 && garras > total_terminados){
+              alert('La cantidad de prendas asignadas para GARRAS no puede ser mayor que la cantidad a procesar');
+              return;
+            }
+            else{
+              ok=true;
+            }
+            if(botones != 0 && botones > total_terminados){
+              alert('La cantidad de prendas asignadas para BOTON no puede ser mayor que la cantidad a procesar');
+              return;
+            }
+            else{
+              ok=true;
+            }
+          }
+          else if (procesoActual == "PRETERMINADOS") {
+            var ojal = 0;
+            var presilla = 0;
+            var despeluzado = 0;
+            var tallaQty = document.getElementsByClassName('talla-qty');
+            for (var i = 0; i < tallaQty.length; i++) {
+              total_terminados+=parseInt(tallaQty[i].id.split("-")[2]);
+            }
+            for (var i = 0; i < confirmations.length; i++) {
+              var talla = confirmations[i].id.split("-")[1];
+              if(!confirmations[i].checked){
+                if ($('#CC-'+talla).val() < totales["T-"+talla]) {
+                  total_terminados -= totales["T-"+talla] - $('#CC-'+talla).val();
+                }
+                else if($('#CC-'+talla).val() == totales["T-"+talla]){
+                  alert("No has confirmado las cantidades recibidas para la talla "+talla);
+                  return;
+                }
+                else{
+                  alert("No puedes cambiar la cantidad de una talla a un número mayor al establecido en Producción");
+                  return;
+                }
+              }
+            }
+            var qty_asignada =  document.getElementsByClassName('qty-asignada');
+            for (var i = 0; i < qty_asignada.length; i++) {
+              let tarea = qty_asignada[i].dataset.info.split("-")[0];
+              let cantidad = qty_asignada[i].dataset.info.split("-")[1];
+              if(tarea == "Presillas"){
+                presilla +=  parseInt(cantidad);
+              }
+              else if(tarea == "Ojales"){
+                ojal += parseInt(cantidad); 
+              }
+              else{
+                despeluzado += parseInt(cantidad);
+              }
+            }
+            var qty_inputs = document.getElementsByClassName('qty');
+            for (var i = 0; i < qty_inputs.length; i++) {
+              if($('#T-'+i.toString()).val().split('-')[0] == "Presillas"){
+                presilla += parseInt(qty_inputs[i].value);
+              }
+              else if ($('#T-'+i.toString()).val().split('-')[0] == "Ojales") {
+                ojal += parseInt(qty_inputs[i].value);
+              }
+              else if ($('#T-'+i.toString()).val().split('-')[0] == "Despeluzado") {
+                despeluzado += parseInt(qty_inputs[i].value);
+              }
+              if(ojal != 0 && ojal > total_terminados){
+                alert('La cantidad de prendas asignadas para OJALES no puede ser mayor que la cantidad a procesar');
+                return;
+              }
+              else{
+                ok=true;
+              }
+              if(presilla != 0 && presilla > total_terminados){
+                alert('La cantidad de prendas asignadas para PRESILLAS no puede ser mayor que la cantidad a procesar');
+                return;
+              }
+              else{
+                ok=true;
+              }
+              if(despeluzado != 0 && despeluzado > total_terminados){
+                alert('La cantidad de prendas asignadas para DESPELUZADO no puede ser mayor que la cantidad a procesar');
+                return;
+              }
+              else{
+                ok=true;
+              }
+            }
+          }
+          else if (procesoActual == "CONFECCION"){
+            if(confeccion_subproceso == "pretinas"){
+              let asignado = 0;
+              let total = parseInt(total_prendas);
+              let asignado_anteriormente = 0;
+              var qty_inputs = document.getElementsByClassName('qty-p');
+              for (var i = 0; i < qty_inputs.length; i++) {
+                asignado+=parseInt(qty_inputs[i].value);
+              }
+              var qty_asignada =  document.getElementsByClassName('qty-asignada-pretinas');
+              for (var i = 0; i < qty_asignada.length; i++) {
+                let cantidad = qty_asignada[i].dataset.info.split("-")[1];
+                asignado_anteriormente+=parseInt(cantidad);
+              }
+              console.log(total,asignado);
+              if(total < asignado + asignado_anteriormente){
+                alert("No puedes asignar un número mayor de Pretinas que la cantidad total de prendas");
+              }
+              else{
+                ok=true;
+              }
+            }
+            else{
+              var qty_inputs = document.getElementsByClassName('qty');
+              for (var i = 0; i < qty_inputs.length; i++) {
+                if("T-"+$('#T-'+i.toString()).val().toString() in asignado){
+                  asignado["T-"+$('#T-'+i.toString()).val().toString()]+=parseInt(qty_inputs[i].value);
+                }
+                else{
+                  asignado["T-"+$('#T-'+i.toString()).val().toString()]=parseInt(qty_inputs[i].value);
+                }
+              }
+              var qty_asignada =  document.getElementsByClassName('qty-asignada');
+              for (var i = 0; i < qty_asignada.length; i++) {
+                let talla = qty_asignada[i].dataset.info.split("-")[0];
+                let cantidad = qty_asignada[i].dataset.info.split("-")[1];
+                asignado["T-"+talla.toString()]+=parseInt(cantidad);
+              }
+              console.log(asignado);
+              for (var i = 0; i < Object.keys(asignado).length; i++) {
+                if(asignado[Object.keys(asignado)[i]] > totales[Object.keys(asignado)[i]]){
+                  alert("La asignacion de la talla: "+Object.keys(asignado)[i]+" es mayor que el total a procesar");
+                  return
+                }
+                else{
+                  ok=true;
+                }
+              }
+              for (var i = 0; i < confirmations.length; i++) {
+                var talla = confirmations[i].id.split("-")[1];
+                if(!confirmations[i].checked){
+                  if ($('#CC-'+talla).val() < totales["T-"+talla]) {
+                    totales["T-"+talla] = $('#CC-'+talla).val();
+                  }
+                  else if($('#CC-'+talla).val() == totales["T-"+talla]){
+                    alert("No has confirmado las cantidades recibidas para la talla "+talla);
+                    return;
+                  }
+                  else{
+                    alert("No puedes cambiar la cantidad de una talla a un número mayor al establecido en Producción");
+                    return;
+                  }
+                }
+              }
+            }
+          }
+          else{
+            var qty_inputs = document.getElementsByClassName('qty');
+            for (var i = 0; i < qty_inputs.length; i++) {
+              if("T-"+$('#T-'+i.toString()).val().toString() in asignado){
+                asignado["T-"+$('#T-'+i.toString()).val().toString()]+=parseInt(qty_inputs[i].value);
+              }
+              else{
+                asignado["T-"+$('#T-'+i.toString()).val().toString()]=parseInt(qty_inputs[i].value);
+              }
+            }
+            var qty_asignada =  document.getElementsByClassName('qty-asignada');
+            for (var i = 0; i < qty_asignada.length; i++) {
+              let talla = qty_asignada[i].dataset.info.split("-")[0];
+              let cantidad = qty_asignada[i].dataset.info.split("-")[1];
+              asignado["T-"+talla.toString()]+=parseInt(cantidad);
+            }
+            for (var i = 0; i < Object.keys(asignado).length; i++) {
+              /*if(asignado[Object.keys(asignado)[i]] < totales[Object.keys(asignado)[i]]){
+                alert("La asignacion de la talla: "+Object.keys(asignado)[i]+" es menor que el total a procesar");
+                return
+              }*/
+              if(asignado[Object.keys(asignado)[i]] > totales[Object.keys(asignado)[i]]){
+                alert("La asignacion de la talla: "+Object.keys(asignado)[i]+" es mayor que el total a procesar");
+                return
+              }
+              else{
+                ok=true;
+              }
+            }
+            for (var i = 0; i < confirmations.length; i++) {
+              var talla = confirmations[i].id.split("-")[1];
+              if(!confirmations[i].checked){
+                if ($('#CC-'+talla).val() < totales["T-"+talla]) {
+                  totales["T-"+talla] = $('#CC-'+talla).val();
+                }
+                else if($('#CC-'+talla).val() == totales["T-"+talla]){
+                  alert("No has confirmado las cantidades recibidas para la talla "+talla);
+                  return;
+                }
+                else{
+                  alert("No puedes cambiar la cantidad de una talla a un número mayor al establecido en Producción");
+                  return;
+                }
+              }
+            }
+          }
+          if(ok){
+            if(procesoActual == "CORTE"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_corte', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="DISEÑO"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_diseno', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="TRAZO"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_trazo', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="BORDADO"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_bordado', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="CONFECCION"){
+              if(confeccion_subproceso=="pretinas"){
+                $('#crear_pretina_proceso').attr('action', "{{ path('proceso_asignar_confeccion', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+                $('#crear_pretina_proceso').submit();
+              }
+              else{
+                $('#crear_proceso').attr('action', "{{ path('proceso_asignar_confeccion', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+                $('#crear_proceso').submit();
+              }
+              
+            }
+            else if(procesoActual=="LAVANDERIA"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_lavanderia', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="PRETERMINADOS"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_preterminados', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="TERMINADOS"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_terminados', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+            else if(procesoActual=="EMPAQUE"){
+              $('#crear_proceso').attr('action', "{{ path('proceso_asignar_empaque', {diseno: diseno.id,proceso:proceso_actual.id}) }}");
+              $('#crear_proceso').submit();
+            }
+          }
+        }
+      }
+    };
+  </script>
+{% endblock %}

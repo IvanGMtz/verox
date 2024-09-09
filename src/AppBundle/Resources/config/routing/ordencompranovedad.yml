@@ -1,0 +1,39 @@
+ordencompranovedad_index:
+    path:     /{id}/index
+    defaults: { _controller: "AppBundle:OrdenCompraNovedad:index" }
+    methods:  [GET, POST]
+
+ordencompranovedad_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:OrdenCompraNovedad:show" }
+    methods:  GET
+
+ordencompranovedad_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:OrdenCompraNovedad:new" }
+    methods:  [GET, POST]
+
+ordencompranovedad_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:OrdenCompraNovedad:edit" }
+    methods:  [GET, POST]
+    
+ordencompranovedad_resolver:
+    path:     /{id}/resolver
+    defaults: { _controller: "AppBundle:OrdenCompraNovedad:resolver" }
+    methods:  [GET, POST]
+    
+ordencompranovedad_resolver_modal:
+    path:     /{id}/resolver_modal
+    defaults: { _controller: "AppBundle:OrdenCompraNovedad:resolverModal" }
+    methods:  GET
+
+#ordencompranovedad_delete:
+#    path:     /{id}/delete
+#    defaults: { _controller: "AppBundle:OrdenCompraNovedad:delete" }
+#    methods:  DELETE
+#
+#ordencompranovedad_erase:
+#    path:     /{id}/erase
+#    defaults: { _controller: "AppBundle:OrdenCompraNovedad:erase" }
+#    methods:  GET

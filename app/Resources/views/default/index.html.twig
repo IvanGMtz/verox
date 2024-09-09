@@ -1,0 +1,14 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-default.html.twig' %}
+{% block avanzu_document_title %}INICIO{% endblock %}
+{% block avanzu_page_title %}INICIO{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block avanzu_page_content %}
+  <h1>Hello index</h1>
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   $(function(){
+    });
+  </script>
+{% endblock %}
+

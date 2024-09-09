@@ -1,0 +1,71 @@
+AppBundle\Entity\DisenoMaterial:
+    type: entity
+    table: diseno_material
+    indexes:
+        material:
+            columns:
+                - material
+        estado:
+            columns:
+                - estado
+        diseno:
+            columns:
+                - diseno
+        proceso:
+            columns:
+                - proceso
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+    manyToOne:
+        diseno:
+            targetEntity: Diseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: materiales
+            inversedBy: materiales
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+        proceso:
+            targetEntity: ProcesoNombre
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proceso:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

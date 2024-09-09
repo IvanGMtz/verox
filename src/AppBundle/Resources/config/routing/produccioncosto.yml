@@ -1,0 +1,29 @@
+produccioncosto_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionCosto:index" }
+    methods:  [GET, POST]
+
+produccioncosto_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionCosto:show" }
+    methods:  GET
+
+produccioncosto_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProduccionCosto:new" }
+    methods:  [GET, POST]
+
+produccioncosto_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionCosto:edit" }
+    methods:  [GET, POST]
+
+produccioncosto_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProduccionCosto:delete" }
+    methods:  DELETE
+
+produccioncosto_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionCosto:erase" }
+    methods:  GET

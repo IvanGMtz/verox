@@ -1,0 +1,479 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * Payment
+ */
+class Payment
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $orderDate;
+
+    /**
+     * @var float
+     */
+    private $amount;
+
+    /**
+     * @var int
+     */
+    private $state = '1';
+
+    /**
+     * @var \DateTime|null
+     */
+    private $paymentDate;
+
+    /**
+     * @var string|null
+     */
+    private $paymentType;
+
+    /**
+     * @var string|null
+     */
+    private $extra1;
+
+    /**
+     * @var string|null
+     */
+    private $extra2;
+
+    /**
+     * @var int|null
+     */
+    private $extra3;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $cycles;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $orderUser;
+
+    /**
+     * @var \AppBundle\Entity\Plan
+     */
+    private $plan;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->cycles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set orderDate.
+     *
+     * @param \DateTime $orderDate
+     *
+     * @return Payment
+     */
+    public function setOrderDate($orderDate)
+    {
+        $this->orderDate = $orderDate;
+
+        return $this;
+    }
+
+    /**
+     * Get orderDate.
+     *
+     * @return \DateTime
+     */
+    public function getOrderDate()
+    {
+        return $this->orderDate;
+    }
+
+    /**
+     * Set amount.
+     *
+     * @param float $amount
+     *
+     * @return Payment
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return Payment
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set paymentDate.
+     *
+     * @param \DateTime|null $paymentDate
+     *
+     * @return Payment
+     */
+    public function setPaymentDate($paymentDate = null)
+    {
+        $this->paymentDate = $paymentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getPaymentDate()
+    {
+        return $this->paymentDate;
+    }
+
+    /**
+     * Set paymentType.
+     *
+     * @param string|null $paymentType
+     *
+     * @return Payment
+     */
+    public function setPaymentType($paymentType = null)
+    {
+        $this->paymentType = $paymentType;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentType.
+     *
+     * @return string|null
+     */
+    public function getPaymentType()
+    {
+        return $this->paymentType;
+    }
+
+    /**
+     * Set extra1.
+     *
+     * @param string|null $extra1
+     *
+     * @return Payment
+     */
+    public function setExtra1($extra1 = null)
+    {
+        $this->extra1 = $extra1;
+
+        return $this;
+    }
+
+    /**
+     * Get extra1.
+     *
+     * @return string|null
+     */
+    public function getExtra1()
+    {
+        return $this->extra1;
+    }
+
+    /**
+     * Set extra2.
+     *
+     * @param string|null $extra2
+     *
+     * @return Payment
+     */
+    public function setExtra2($extra2 = null)
+    {
+        $this->extra2 = $extra2;
+
+        return $this;
+    }
+
+    /**
+     * Get extra2.
+     *
+     * @return string|null
+     */
+    public function getExtra2()
+    {
+        return $this->extra2;
+    }
+
+    /**
+     * Set extra3.
+     *
+     * @param int|null $extra3
+     *
+     * @return Payment
+     */
+    public function setExtra3($extra3 = null)
+    {
+        $this->extra3 = $extra3;
+
+        return $this;
+    }
+
+    /**
+     * Get extra3.
+     *
+     * @return int|null
+     */
+    public function getExtra3()
+    {
+        return $this->extra3;
+    }
+
+    /**
+     * Add cycle.
+     *
+     * @param \AppBundle\Entity\Cycle $cycle
+     *
+     * @return Payment
+     */
+    public function addCycle(\AppBundle\Entity\Cycle $cycle)
+    {
+        $this->cycles[] = $cycle;
+
+        return $this;
+    }
+
+    /**
+     * Remove cycle.
+     *
+     * @param \AppBundle\Entity\Cycle $cycle
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeCycle(\AppBundle\Entity\Cycle $cycle)
+    {
+        return $this->cycles->removeElement($cycle);
+    }
+
+    /**
+     * Get cycles.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCycles()
+    {
+        return $this->cycles;
+    }
+
+    /**
+     * Set orderUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $orderUser
+     *
+     * @return Payment
+     */
+    public function setOrderUser(\AppBundle\Entity\FosUser $orderUser = null)
+    {
+        $this->orderUser = $orderUser;
+
+        return $this;
+    }
+
+    /**
+     * Get orderUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getOrderUser()
+    {
+        return $this->orderUser;
+    }
+
+    /**
+     * Set plan.
+     *
+     * @param \AppBundle\Entity\Plan|null $plan
+     *
+     * @return Payment
+     */
+    public function setPlan(\AppBundle\Entity\Plan $plan = null)
+    {
+        $this->plan = $plan;
+
+        return $this;
+    }
+
+    /**
+     * Get plan.
+     *
+     * @return \AppBundle\Entity\Plan|null
+     */
+    public function getPlan()
+    {
+        return $this->plan;
+    }
+    /**
+     * @var bool
+     */
+    private $agree = false;
+
+
+    /**
+     * Set agree.
+     *
+     * @param bool $agree
+     *
+     * @return Payment
+     */
+    public function setAgree($agree)
+    {
+        $this->agree = $agree;
+
+        return $this;
+    }
+
+    /**
+     * Get agree.
+     *
+     * @return bool
+     */
+    public function getAgree()
+    {
+        return $this->agree;
+    }
+    /**
+     * @var string|null
+     */
+    private $currency;
+
+
+    /**
+     * Set currency.
+     *
+     * @param string|null $currency
+     *
+     * @return Payment
+     */
+    public function setCurrency($currency = null)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * Get currency.
+     *
+     * @return string|null
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+    /**
+     * @var string|null
+     */
+    private $orderId;
+
+
+    /**
+     * Set orderId.
+     *
+     * @param string|null $orderId
+     *
+     * @return Payment
+     */
+    public function setOrderId($orderId = null)
+    {
+        $this->orderId = $orderId;
+
+        return $this;
+    }
+
+    /**
+     * Get orderId.
+     *
+     * @return string|null
+     */
+    public function getOrderId()
+    {
+        return $this->orderId;
+    }
+    /**
+     * @var string|null
+     */
+    private $response;
+
+
+    /**
+     * Set response.
+     *
+     * @param string|null $response
+     *
+     * @return Payment
+     */
+    public function setResponse($response = null)
+    {
+        $this->response = $response;
+
+        return $this;
+    }
+
+    /**
+     * Get response.
+     *
+     * @return string|null
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+}

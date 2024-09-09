@@ -1,0 +1,144 @@
+AppBundle\Entity\InventarioMovimiento:
+    type: entity
+    table: inventario_movimiento
+    indexes:
+        almacen_zona_inventario:
+            columns:
+                - almacen_zona_inventario
+        estado:
+            columns:
+                - estado
+        almacen_zona:
+            columns:
+                - almacen_zona
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        almacen:
+            columns:
+                - almacen
+        tipo:
+            columns:
+                - tipo
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+        tipo:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        descripcion:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        ref1:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        ref2:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        ref3:
+            type: float
+            nullable: true
+            precision: 25
+            scale: 2
+        valorUnitario:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_unitario
+        valorTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: 0
+            column: valor_total
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+    manyToOne:
+        almacen:
+            targetEntity: Almacen
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen:
+                    referencedColumnName: id
+            orphanRemoval: false
+        almacenZona:
+            targetEntity: AlmacenZona
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen_zona:
+                    referencedColumnName: id
+            orphanRemoval: false
+        almacenZonaInventario:
+            targetEntity: AlmacenZonaInventario
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen_zona_inventario:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

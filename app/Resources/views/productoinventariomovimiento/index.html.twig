@@ -1,0 +1,121 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Productoinventariomovimientos{% endblock %}
+{% block avanzu_page_title %}Productoinventariomovimientos{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de productoInventarioMovimientos</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="producto" class="sr-only">producto</label>
+              <input type="text" class="form-control" id="producto" name="q[producto]" placeholder="Producto" {% if q and q.producto %}value="{{ q.producto }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="color" class="sr-only">color</label>
+              <input type="text" class="form-control" id="color" name="q[color]" placeholder="Color" {% if q and q.color %}value="{{ q.color }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="movimiento" class="sr-only">movimiento</label>
+              <input type="text" class="form-control" id="movimiento" name="q[movimiento]" placeholder="Movimiento" {% if q and q.movimiento %}value="{{ q.movimiento }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="cantidad" class="sr-only">cantidad</label>
+              <input type="text" class="form-control" id="cantidad" name="q[cantidad]" placeholder="Cantidad" {% if q and q.cantidad %}value="{{ q.cantidad }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="bodega" class="sr-only">bodega</label>
+              <input type="text" class="form-control" id="bodega" name="q[bodega]" placeholder="Bodega" {% if q and q.bodega %}value="{{ q.bodega }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="informacion" class="sr-only">informacion</label>
+              <input type="text" class="form-control" id="informacion" name="q[informacion]" placeholder="Informacion" {% if q and q.informacion %}value="{{ q.informacion }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="usuario" class="sr-only">usuario</label>
+              <input type="text" class="form-control" id="usuario" name="q[usuario]" placeholder="Usuario" {% if q and q.usuario %}value="{{ q.usuario }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.producto') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Producto', 'a.producto') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.color') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Color', 'a.color') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.movimiento') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Movimiento', 'a.movimiento') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.cantidad') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Cantidad', 'a.cantidad') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.bodega') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Bodega', 'a.bodega') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.informacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Informacion', 'a.informacion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.usuario') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Usuario', 'a.usuario') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fecha') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fecha', 'a.fecha') }}
+                  </th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for productoInventarioMovimiento in productoInventarioMovimientos %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('productoinventariomovimiento_show', { 'id': productoInventarioMovimiento.id }) }}">{{ productoInventarioMovimiento.id }}</a></td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.producto }}</td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.color }}</td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.movimiento }}</td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.cantidad }}</td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.bodega }}</td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.informacion }}</td>
+                  <td class="nowrap">{{ productoInventarioMovimiento.usuario }}</td>
+                  <td class="nowrap" data-sort-value="{% if productoInventarioMovimiento.fecha %}{{ productoInventarioMovimiento.fecha|date('U') }}{% endif %}">{% if productoInventarioMovimiento.fecha %}{{ productoInventarioMovimiento.fecha|date('d-m-Y h:i:s a') }}{% endif %}</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

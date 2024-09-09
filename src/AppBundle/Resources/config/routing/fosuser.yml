@@ -1,0 +1,25 @@
+fosuser_index:
+    path:     /
+    defaults: { _controller: "AppBundle:FosUser:index" }
+    methods:  GET
+
+fosuser_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:FosUser:show" }
+    methods:  GET
+
+fosuser_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:FosUser:new" }
+    methods:  [GET, POST]
+
+fosuser_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:FosUser:edit" }
+    methods:  [GET, POST]
+
+fosuser_change_state:
+    path:     /{id}/change_state
+    defaults: { _controller: "AppBundle:FosUser:changeState" }
+    methods:  GET
+    

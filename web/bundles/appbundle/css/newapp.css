@@ -1,0 +1,61 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26/04/2021, 02:15:33 AM
+    Author     : dilem
+*/
+
+.vich-image img{
+  width: 100%;
+}
+
+.vich-image img{
+  max-width: 300px;
+}
+
+.select2-container{
+  width: 100% !important;
+}
+
+.list-group-item {
+    padding: .25rem 1.25rem;
+}
+
+.nowrap{
+  white-space: nowrap;
+}
+
+.separator{
+  display: block;
+  height: 10px;
+  clear: both;
+}
+
+@media (min-width: 992px){
+  .modal-lg {
+      width: 80%;
+  }
+}
+
+.select2-selection .select2-selection--single,
+.select2-container--default .select2-selection--single,
+.selection .select2-selection,
+.text-sm .select2-container--default .select2-selection--single,
+select.form-control-sm~.select2-container--default .select2-selection--single{
+    height: 38px;
+}
+
+table,
+.table-responsive>.table-bordered{
+  border-top: 2px solid #dee2e6;
+}
+
+table tr td,
+table tr th,
+.table tr td,
+.table tr th{
+  vertical-align: middle;
+}

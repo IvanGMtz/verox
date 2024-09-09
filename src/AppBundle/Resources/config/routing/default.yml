@@ -1,0 +1,29 @@
+#default_academia:
+#    path:     /academia
+#    defaults: { _controller: "AppBundle:Default:academia" }
+#    methods:  GET
+#
+#default_servicios:
+#    path:     /servicios
+#    defaults: { _controller: "AppBundle:Default:servicios" }
+#    methods:  GET
+#
+#default_empresa:
+#    path:     /empresa
+#    defaults: { _controller: "AppBundle:Default:empresa" }
+#    methods:  GET
+#    
+#default_grafica:
+#    path:     /grafica
+#    defaults: { _controller: "AppBundle:Default:grafica" }
+#    methods:  GET
+#    
+#default_contactanos:
+#    path:     /contactanos
+#    defaults: { _controller: "AppBundle:Default:contactanos" }
+#    methods:  [GET, POST]
+    
+#default_test_email:
+#    path:     /test_email
+#    defaults: { _controller: "AppBundle:Default:testEmail" }
+#    methods:  [GET, POST]

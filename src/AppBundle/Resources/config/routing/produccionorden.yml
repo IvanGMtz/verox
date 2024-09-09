@@ -1,0 +1,34 @@
+produccionorden_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionOrden:index" }
+    methods:  [GET, POST]
+
+produccionorden_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionOrden:show" }
+    methods:  GET
+
+produccionorden_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProduccionOrden:new" }
+    methods:  [GET, POST]
+
+produccionorden_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionOrden:edit" }
+    methods:  [GET, POST]
+
+produccionorden_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProduccionOrden:delete" }
+    methods:  DELETE
+
+produccionorden_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionOrden:erase" }
+    methods:  GET
+
+produccionorden_lanzar:
+    path:     /{id}/lanzar
+    defaults: { _controller: "AppBundle:ProduccionOrden:lanzar" }
+    methods:  GET

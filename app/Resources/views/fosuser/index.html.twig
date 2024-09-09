@@ -1,0 +1,89 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}USUARIOS{% endblock %}
+{% block avanzu_page_title %}USUARIOS{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de usuarios</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          {#<ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard v2</li>
+          </ol>#}
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('fosuser_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover dataTable">
+          <thead>
+              <tr>
+                  <th data-sortable="false" data-filterable="false"></th>
+{#                  <th data-type="number">Código</th>#}
+                  <th>Usuario</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th data-sortable="false" data-filterable="false"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for fosUser in fosUsers %}
+              <tr>
+                  <td class="text-center">
+                    {% if fosUser.enabled %}
+                      <a href="{{ path('fosuser_change_state',{id: fosUser.id}) }}"><i class="fa fa-power-off text-green" title="Deshabilitar"></i></a>
+                    {% else %}
+                      <a href="{{ path('fosuser_change_state',{id: fosUser.id}) }}"><i class="fa fa-power-off text-red" title="Habilitar"></i></a>
+                    {% endif %}
+                  </td>
+{#                  <td class="nowrap">{{ fosUser.serial }}</td>#}
+                  <td class="nowrap">{{ fosUser.username }}</td>
+                  <td class="">{{ fosUser.name }}</td>
+                  <td class="nowrap">{{ fosUser.email }}</td>
+                  <td class="nowrap text-center">
+                    <a class="btn btn-success btn-xs" title="Detalle del usuario" href="{{ path('fosuser_show', { 'id': fosUser.id }) }}"><i class="fa fa-eye"></i></a>
+                    <a class="btn btn-primary btn-xs" title="Editar usuario" href="{{ path('fosuser_edit', { 'id': fosUser.id }) }}"><i class="fa fa-edit"></i></a>
+                  </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+  </script>
+{% endblock %}

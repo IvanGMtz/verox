@@ -1,0 +1,43 @@
+producto_index:
+    path:     /
+    defaults: { _controller: "AppBundle:Producto:index" }
+    methods:  [GET, POST]
+
+producto_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:Producto:show" }
+    methods:  GET
+
+producto_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:Producto:new" }
+    methods:  [GET, POST]
+
+producto_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:Producto:edit" }
+    methods:  [GET, POST]
+
+producto_copy:
+    path:     /{id}/copy
+    defaults: { _controller: "AppBundle:Producto:copy" }
+    methods:  [GET, POST]
+
+producto_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:Producto:delete" }
+    methods:  DELETE
+
+producto_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:Producto:erase" }
+    methods:  GET
+
+producto_search_product:
+    path:     /search_product
+    defaults: { _controller: "AppBundle:Producto:search_product" }
+    methods:  GET
+producto_change_etiquetas:
+    path:     /change_etiquetas
+    defaults: { _controller: "AppBundle:Producto:change_etiquetas" }
+    methods:  POST

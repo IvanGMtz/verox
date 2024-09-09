@@ -1,0 +1,182 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Despachoordens{% endblock %}
+{% block avanzu_page_title %}Despachoordens{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Ordenes de despacho</h1> 
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="clienteId" class="sr-only">clienteEmail</label>
+              <input type="text" class="form-control" id="clienteId" name="q[clienteId]" placeholder="Clienteid" {% if q and q.clienteId %}value="{{ q.clienteId }}"{% endif %}>
+            </div>        
+            <div class="form-group ml-sm-1">
+              <label for="clienteId" class="sr-only">clienteNombre</label>
+              <input type="text" class="form-control" id="clienteNombre" name="q[nombre]" placeholder="ClienteNombre" {% if q and q.nombre %}value="{{ q.nombre }}"{% endif %}>
+            </div>
+            <div class="form-group ml-sm-1">
+              <label for="clienteId" class="sr-only">clienteApellido</label>
+              <input type="text" class="form-control" id="clienteApellidos" name="q[apellidos]" placeholder="ClienteApellidos" {% if q and q.apellidos %}value="{{ q.apellidos }}"{% endif %}>
+            </div>    
+            <div class="form-group ml-sm-1">
+              <label for="clienteTipo" class="sr-only">clienteTipo</label>
+              <input type="text" class="form-control" id="clienteTipo" name="q[clienteTipo]" placeholder="Clientetipo" {% if q and q.clienteTipo %}value="{{ q.clienteTipo }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="direccionEnvio" class="sr-only">direccionEnvio</label>
+              <input type="text" class="form-control" id="direccionEnvio" name="q[direccionEnvio]" placeholder="Direccionenvio" {% if q and q.direccionEnvio %}value="{{ q.direccionEnvio }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="tipoPago" class="sr-only">tipoPago</label>
+              <input type="text" class="form-control" id="tipoPago" name="q[tipoPago]" placeholder="Tipopago" {% if q and q.tipoPago %}value="{{ q.tipoPago }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="statusPago" class="sr-only">statusPago</label>
+              <input type="text" class="form-control" id="statusPago" name="q[statusPago]" placeholder="Statuspago" {% if q and q.statusPago %}value="{{ q.statusPago }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="statusOrden" class="sr-only">statusOrden</label>
+              <input type="text" class="form-control" id="statusOrden" name="q[statusOrden]" placeholder="Statusorden" {% if q and q.statusOrden %}value="{{ q.statusOrden }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              {# <a href="{{ path('despachoorden_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>             #}
+              <a href="{{ path('despachoordenitem_index') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Buscador de Items
+              </a>            
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.clienteId') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'ClienteEmail', 'a.clienteId') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.nombre') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'ClienteNombre', 'a.nombre') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.apellidos') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'ClienteApellidos', 'a.apellidos') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.clienteTipo') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'ClienteTipo', 'a.clienteTipo') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.direccionEnvio') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'DireccionEnvio', 'a.direccionEnvio') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.tipoPago') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'TipoPago', 'a.tipoPago') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.statusPago') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'StatusPago', 'a.statusPago') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.statusOrden') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'StatusOrden', 'a.statusOrden') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.costoEnvio') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'CostoEnvio', 'a.costoEnvio') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.total') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Total', 'a.total') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.notas') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Notas', 'a.notas') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaCreacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'FechaCreacion', 'a.fechaCreacion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaDespacho') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'FechaDespacho', 'a.fechaDespacho') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for despachoOrden in despachoOrdens %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('despachoorden_show', { 'id': despachoOrden.id }) }}">{{ despachoOrden.id }}</a></td>
+                  <td class="nowrap">{{ despachoOrden.clienteId }}</td>
+                  <td class="nowrap">{{ despachoOrden.clienteId.nombre }}</td>
+                  <td class="nowrap">{{ despachoOrden.clienteId.apellidos }}</td>
+                  <td class="nowrap">{{ despachoOrden.clienteTipo }}</td>
+                  <td class="nowrap">{{ despachoOrden.direccionEnvio }}</td>
+                  <td class="nowrap">{{ despachoOrden.tipoPago }}</td>
+                  <td class="nowrap">
+                      {% if despachoOrden.statusPago == 1 %}
+                        PENDIENTE
+                      {% elseif despachoOrden.statusPago == 2 %}
+                        CONFIRMADO
+                      {% elseif despachoOrden.statusPago == 3 %}
+                        RECHAZADO O ANULADO
+                      {% endif %}
+                  <td class="nowrap">
+                    {% if despachoOrden.statusOrden == 1 %}
+                      POR DESPACHAR
+                    {% else %}
+                      DESPACHADA
+                    {% endif %}</td>
+                  </td>
+                  <td class="nowrap">{{ despachoOrden.costoEnvio }}</td>
+                  <td class="nowrap">{{ despachoOrden.total }}</td>
+                  <td class="nowrap">{{ despachoOrden.notas }}</td>
+                  <td class="nowrap" data-sort-value="{% if despachoOrden.fechaCreacion %}{{ despachoOrden.fechaCreacion|date('U') }}{% endif %}">{% if despachoOrden.fechaCreacion %}{{ despachoOrden.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap" data-sort-value="{% if despachoOrden.fechaDespacho %}{{ despachoOrden.fechaDespacho|date('U') }}{% endif %}">{% if despachoOrden.fechaDespacho %}{{ despachoOrden.fechaDespacho|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('despachoorden_show', { 'id': despachoOrden.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

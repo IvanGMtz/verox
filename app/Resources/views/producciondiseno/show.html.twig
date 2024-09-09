@@ -1,0 +1,67 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Producciondiseno{% endblock %}
+{% block avanzu_page_title %}Detalle Producciondiseno{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle produccionDiseno</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ produccionDiseno.id }}</td>
+                </tr>
+                <tr>
+                    <th>Cantidad</th>
+                    <td>{{ produccionDiseno.cantidad }}</td>
+                </tr>
+                <tr>
+                    <th>Fechacreacion</th>
+                    <td>{% if produccionDiseno.fechaCreacion %}{{ produccionDiseno.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Fechafinalizacion</th>
+                    <td>{% if produccionDiseno.fechaFinalizacion %}{{ produccionDiseno.fechaFinalizacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Duracion</th>
+                    <td>{{ produccionDiseno.duracion }}</td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td>{{ produccionDiseno.estado }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+      </div>
+      <div class="card-footer clearfix">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('producciondiseno_index') }}">Regresar</a>&nbsp;<a class="btn btn-warning btn-flat btn-sm" href="{{ path('producciondiseno_edit', { 'id': produccionDiseno.id }) }}">Editar</a>&nbsp;  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}{{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+AppBundle\Entity\ProductoComplemento:
+    type: entity
+    table: producto_complemento
+    indexes:
+        fk_producto_productoID:
+            columns:
+                - producto
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    manyToOne:
+        complemento:
+            targetEntity: Producto
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: Producto
+            inversedBy: complemento
+            joinColumns:
+                complemento:
+                    referencedColumnName: id
+            orphanRemoval: false
+        producto:
+            targetEntity: Producto
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: Producto
+            inversedBy: producto
+            joinColumns:
+                producto:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

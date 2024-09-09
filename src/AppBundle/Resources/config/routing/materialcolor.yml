@@ -1,0 +1,29 @@
+materialcolor_index:
+    path:     /
+    defaults: { _controller: "AppBundle:MaterialColor:index" }
+    methods:  [GET, POST]
+
+materialcolor_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:MaterialColor:show" }
+    methods:  GET
+
+materialcolor_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:MaterialColor:new" }
+    methods:  [GET, POST]
+
+materialcolor_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:MaterialColor:edit" }
+    methods:  [GET, POST]
+
+materialcolor_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:MaterialColor:delete" }
+    methods:  DELETE
+
+materialcolor_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:MaterialColor:erase" }
+    methods:  GET

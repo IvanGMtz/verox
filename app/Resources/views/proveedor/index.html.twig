@@ -1,0 +1,112 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Proveedors{% endblock %}
+{% block avanzu_page_title %}Proveedors{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de proveedores</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+  
+  
+<div class="card card-solid">
+  <div class="card-header">
+    <form class="form-inline pull-left" method="POST">            
+        <div class="form-group ml-sm-1">
+          <label for="nombre" class="sr-only">nombre</label>
+          <input type="text" class="form-control" id="nombre" name="q[nombre]" placeholder="Nombre" {% if q and q.nombre %}value="{{ q.nombre }}"{% endif %}>
+        </div>            
+        <div class="form-group ml-sm-1">
+          <label for="nit" class="sr-only">nit</label>
+          <input type="text" class="form-control" id="nit" name="q[nit]" placeholder="Nit" {% if q and q.nit %}value="{{ q.nit }}"{% endif %}>
+        </div>            
+        <div class="form-group ml-sm-1">
+          <label for="nombreContacto" class="sr-only">Nombre Contacto</label>
+          <input type="text" class="form-control" id="nombreContacto" name="q[nombreContacto]" placeholder="Nombre contacto" {% if q and q.nombreContacto %}value="{{ q.nombreContacto }}"{% endif %}>
+        </div>            
+        <div class="form-group ml-sm-1">
+          <label for="telefonoContacto" class="sr-only">Teléfono Contacto</label>
+          <input type="text" class="form-control" id="telefonoContacto" name="q[telefonoContacto]" placeholder="Teléfono contacto" {% if q and q.telefonoContacto %}value="{{ q.telefonoContacto }}"{% endif %}>
+        </div>            
+      <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+    </form>
+
+    <div class="card-tools pull-right">
+      <div class="btn-group">
+        <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+          <i class="fas fa-wrench"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" role="menu">
+          <a href="{{ path('proveedor_new') }}" class="dropdown-item" title="Nuevo">
+            <i class="fa fa-plus"></i>&nbsp;Nuevo
+          </a>            </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body pb-0">
+    <div class="row">
+      {% for proveedor in proveedors %}
+      <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+        <div class="card bg-light d-flex flex-fill">
+          <div class="card-header text-muted border-bottom-0">
+            <a href="{{ path('proveedor_show', { 'id': proveedor.id }) }}">{{ proveedor.id }} Proveedor</a>
+          </div>
+          <div class="card-body pt-0">
+            <div class="row">
+              <div class="col-7">
+                <h2 class="lead"><b>{{ proveedor.nombre }}</b></h2>
+                <p class="text-muted text-sm"><b>{{ proveedor.nit }}</b></p>
+                <ul class="ml-4 mb-0 fa-ul text-muted">
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Dirección: {{ proveedor.direccion }}</li>
+                  <li class="small"><span class="fa-li"></span>{{ proveedor.ciudad }} / {{ proveedor.pais }}</li>
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono #: {{ proveedor.telefono1 }}</li>
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: {{ proveedor.email }}</li>
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-user"></i></span> Contacto #: {{ proveedor.nombreContacto }}</li>
+                  <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono: {{ proveedor.telefonoContacto }}</li>
+                </ul>
+              </div>
+              <div class="col-5 text-center">
+                <img src="/bundles/appbundle/images/avatar.png" alt="user-avatar" class="img-circle img-fluid">
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="text-right">
+              <a href="{{ path('proveedor_show', { 'id': proveedor.id }) }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-user"></i> Ver detalles
+              </a>
+              <a href="{{ path('proveedor_edit', { 'id': proveedor.id }) }}" class="btn btn-sm bg-teal">
+                <i class="fas fa-edit"></i> Editar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- /.card-body -->
+  <div class="card-footer">
+    {{ knp_pagination_render(pagination) }}
+  </div>
+  <!-- /.card-footer -->
+</div>
+  
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

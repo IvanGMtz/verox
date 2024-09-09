@@ -1,0 +1,29 @@
+produccionnovedad_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionNovedad:index" }
+    methods:  [GET, POST]
+
+produccionnovedad_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionNovedad:show" }
+    methods:  GET
+
+produccionnovedad_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProduccionNovedad:new" }
+    methods:  [GET, POST]
+
+produccionnovedad_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionNovedad:edit" }
+    methods:  [GET, POST]
+
+produccionnovedad_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProduccionNovedad:delete" }
+    methods:  DELETE
+
+produccionnovedad_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionNovedad:erase" }
+    methods:  GET

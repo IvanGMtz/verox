@@ -1,0 +1,113 @@
+AppBundle\Entity\Diseno:
+    type: entity
+    table: diseno
+    indexes:
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        orden:
+            columns:
+                - orden
+        categoria:
+            columns:
+                - categoria
+        estado:
+            columns:
+                - estado
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        referencia:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        nombre:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        talla:
+            type: string
+            nullable: false
+            length: 5
+            options:
+                fixed: false
+        costoCorte:
+            type: string
+            nullable: false
+            length: 11
+            options:
+                fixed: false
+        categoria:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+                default: 'DEFAULT'
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+        presillas:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 0
+        ojales:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 0       
+    oneToMany:
+        imagenes:
+            targetEntity: DisenoImagen
+            mappedBy: diseno
+            cascade:  [persist]
+        materiales:
+            targetEntity: DisenoMaterial
+            mappedBy: diseno
+            cascade:  [persist]
+        novedades:
+            targetEntity: DisenoNovedad
+            mappedBy: diseno
+    manyToOne:
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        orden:
+            targetEntity: DisenoOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

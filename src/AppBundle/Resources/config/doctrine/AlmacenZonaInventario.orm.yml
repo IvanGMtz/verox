@@ -1,0 +1,93 @@
+AppBundle\Entity\AlmacenZonaInventario:
+    type: entity
+    table: almacen_zona_inventario
+    indexes:
+        almacen:
+            columns:
+                - almacen
+        material:
+            columns:
+                - material
+        almacen_zona:
+            columns:
+                - almacen_zona
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        ingresoTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+            column: ingreso_total
+        egresoTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+            column: egreso_total
+        cantidadActual:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+            column: cantidad_actual
+        fechaUltimoIngreso:
+            type: datetime
+            nullable: true
+            column: fecha_ultimo_ingreso
+        fechaUltimoEgreso:
+            type: datetime
+            nullable: true
+            column: fecha_ultimo_egreso
+        anotaciones:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+    manyToOne:
+        almacen:
+            targetEntity: Almacen
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen:
+                    referencedColumnName: id
+            orphanRemoval: false
+        almacenZona:
+            targetEntity: AlmacenZona
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: inventario
+            inversedBy: inventario
+            joinColumns:
+                almacen_zona:
+                    referencedColumnName: id
+            orphanRemoval: false
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: zonas
+            inversedBy: zonas
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

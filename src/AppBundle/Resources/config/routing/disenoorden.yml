@@ -1,0 +1,29 @@
+disenoorden_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DisenoOrden:index" }
+    methods:  [GET, POST]
+
+disenoorden_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DisenoOrden:show" }
+    methods:  GET
+
+disenoorden_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DisenoOrden:new" }
+    methods:  [GET, POST]
+
+disenoorden_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DisenoOrden:edit" }
+    methods:  [GET, POST]
+
+disenoorden_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DisenoOrden:delete" }
+    methods:  DELETE
+
+disenoorden_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DisenoOrden:erase" }
+    methods:  GET

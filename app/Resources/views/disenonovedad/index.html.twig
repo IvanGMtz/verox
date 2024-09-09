@@ -1,0 +1,129 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Disenonovedads{% endblock %}
+{% block avanzu_page_title %}Disenonovedads{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de disenoNovedads</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="descripcion" class="sr-only">descripcion</label>
+              <input type="text" class="form-control" id="descripcion" name="q[descripcion]" placeholder="Descripcion" {% if q and q.descripcion %}value="{{ q.descripcion }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="tipo" class="sr-only">tipo</label>
+              <input type="text" class="form-control" id="tipo" name="q[tipo]" placeholder="Tipo" {% if q and q.tipo %}value="{{ q.tipo }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="ref1" class="sr-only">ref1</label>
+              <input type="text" class="form-control" id="ref1" name="q[ref1]" placeholder="Ref1" {% if q and q.ref1 %}value="{{ q.ref1 }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="ref2" class="sr-only">ref2</label>
+              <input type="text" class="form-control" id="ref2" name="q[ref2]" placeholder="Ref2" {% if q and q.ref2 %}value="{{ q.ref2 }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="anotaciones" class="sr-only">anotaciones</label>
+              <input type="text" class="form-control" id="anotaciones" name="q[anotaciones]" placeholder="Anotaciones" {% if q and q.anotaciones %}value="{{ q.anotaciones }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('disenonovedad_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaCreacion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fechacreacion', 'a.fechaCreacion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.descripcion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Descripcion', 'a.descripcion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.tipo') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Tipo', 'a.tipo') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.ref1') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Ref1', 'a.ref1') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.ref2') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Ref2', 'a.ref2') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.tienePendientes') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Tienependientes', 'a.tienePendientes') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.anotaciones') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Anotaciones', 'a.anotaciones') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for disenoNovedad in disenoNovedads %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('disenonovedad_show', { 'id': disenoNovedad.id }) }}">{{ disenoNovedad.id }}</a></td>
+                  <td class="nowrap" data-sort-value="{% if disenoNovedad.fechaCreacion %}{{ disenoNovedad.fechaCreacion|date('U') }}{% endif %}">{% if disenoNovedad.fechaCreacion %}{{ disenoNovedad.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap">{{ disenoNovedad.descripcion }}</td>
+                  <td class="nowrap">{{ disenoNovedad.tipo }}</td>
+                  <td class="nowrap">{{ disenoNovedad.ref1 }}</td>
+                  <td class="nowrap">{{ disenoNovedad.ref2 }}</td>
+                  <td class="nowrap">{% if disenoNovedad.tienePendientes %}Si{% else %}No{% endif %}</td>
+                  <td class="nowrap">{{ disenoNovedad.anotaciones }}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('disenonovedad_show', { 'id': disenoNovedad.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('disenonovedad_edit', { 'id': disenoNovedad.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

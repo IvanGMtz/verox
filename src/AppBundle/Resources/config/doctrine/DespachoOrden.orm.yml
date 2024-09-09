@@ -1,0 +1,107 @@
+AppBundle\Entity\DespachoOrden:
+    type: entity
+    table: despacho_orden
+    indexes:
+        usuarioCreacion:
+            columns:
+                - usuario_creacion
+        clienteId:
+            columns:
+                - cliente_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        clienteTipo:
+            type: string
+            nullable: false
+            length: 120
+            options:
+                fixed: false
+            column: cliente_tipo
+        direccionEnvio:
+            type: string
+            nullable: false
+            length: 500
+            options:
+                fixed: false
+            column: direccion_envio
+        tipoPago:
+            type: string
+            nullable: false
+            length: 120
+            options:
+                fixed: false
+            column: tipo_pago
+        statusPago:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+            column: status_pago
+        statusOrden:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '1'
+            column: status_orden
+        costoEnvio:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: costo_envio
+        total:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        notas:
+            type: text
+            nullable: true
+            length: 65535
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        fechaDespacho:
+            type: datetime
+            nullable: true
+            column: fecha_despacho
+    oneToMany: 
+        items:
+            targetEntity: DespachoOrdenItem
+            mappedBy: despachoOrden
+            cascade:  [persist]
+    manyToOne:
+        clienteId:
+            targetEntity: StoreUsuarios
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                cliente_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,29 @@
+inventarioordendescarga_index:
+    path:     /
+    defaults: { _controller: "AppBundle:InventarioOrdenDescarga:index" }
+    methods:  [GET, POST]
+
+inventarioordendescarga_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:InventarioOrdenDescarga:show" }
+    methods:  GET
+
+inventarioordendescarga_new:
+    path:     /{id}/new
+    defaults: { _controller: "AppBundle:InventarioOrdenDescarga:new" }
+    methods:  [GET, POST]
+
+inventarioordendescarga_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:InventarioOrdenDescarga:edit" }
+    methods:  [GET, POST]
+
+inventarioordendescarga_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:InventarioOrdenDescarga:delete" }
+    methods:  DELETE
+
+inventarioordendescarga_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:InventarioOrdenDescarga:erase" }
+    methods:  GET

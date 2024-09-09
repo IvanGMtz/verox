@@ -1,0 +1,789 @@
+<?php
+
+namespace AppBundle\Entity;
+use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File as File;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="material")
+ * @Vich\Uploadable
+ */
+class Material
+{
+    /**
+    * @ORM\Id
+    * @ORM\Column(type="integer")
+    * @ORM\GeneratedValue(strategy="AUTO")
+    */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $nombre;
+
+    /**
+     * @var string
+     */
+    private $referencia;
+
+    /**
+     * @var string|null
+     */
+    private $descripcion;
+
+    /**
+     * @var string|null
+     */
+    private $imagen;
+
+    /**
+     * @var string|null
+     */
+    private $color;
+
+    /**
+     * @var float|null
+     */
+    private $peso;
+
+    /**
+     * @var float|null
+     */
+    private $alto;
+
+    /**
+     * @var float|null
+     */
+    private $ancho;
+
+    /**
+     * @var float|null
+     */
+    private $largo;
+
+    /**
+     * @var string|null
+     */
+    private $composicion;
+
+    /**
+     * @var float|null
+     */
+    private $costoActual;
+
+    /**
+     * @var int|null
+     */
+    private $unidades;
+
+    /**
+     * @var string|null
+     */
+    private $presentacion;
+
+    /**
+     * @var \DateTime
+     */
+    private $fechaCreacion;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $fechaActualizacion;
+
+    /**
+     * @var int
+     */
+    private $estado = '1';
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $usuarioCreacion;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set nombre.
+     *
+     * @param string $nombre
+     *
+     * @return Material
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    /**
+     * Get nombre.
+     *
+     * @return string
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Set referencia.
+     *
+     * @param string $referencia
+     *
+     * @return Material
+     */
+    public function setReferencia($referencia)
+    {
+        $this->referencia = $referencia;
+
+        return $this;
+    }
+
+    /**
+     * Get referencia.
+     *
+     * @return string
+     */
+    public function getReferencia()
+    {
+        return $this->referencia;
+    }
+
+    /**
+     * Set descripcion.
+     *
+     * @param string|null $descripcion
+     *
+     * @return Material
+     */
+    public function setDescripcion($descripcion = null)
+    {
+        $this->descripcion = $descripcion;
+
+        return $this;
+    }
+
+    /**
+     * Get descripcion.
+     *
+     * @return string|null
+     */
+    public function getDescripcion()
+    {
+        return $this->descripcion;
+    }
+
+    /**
+     * Set imagen.
+     *
+     * @param string|null $imagen
+     *
+     * @return Material
+     */
+    public function setImagen($imagen = null)
+    {
+        $this->imagen = $imagen;
+
+        return $this;
+    }
+
+    /**
+     * Get imagen.
+     *
+     * @return string|null
+     */
+    public function getImagen()
+    {
+        return $this->imagen;
+    }
+
+    /**
+     * Set color.
+     *
+     * @param string|null $color
+     *
+     * @return Material
+     */
+    public function setColor($color = null)
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    /**
+     * Get color.
+     *
+     * @return string|null
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * Set peso.
+     *
+     * @param float|null $peso
+     *
+     * @return Material
+     */
+    public function setPeso($peso = null)
+    {
+        $this->peso = $peso;
+
+        return $this;
+    }
+
+    /**
+     * Get peso.
+     *
+     * @return float|null
+     */
+    public function getPeso()
+    {
+        return $this->peso;
+    }
+
+    /**
+     * Set alto.
+     *
+     * @param float|null $alto
+     *
+     * @return Material
+     */
+    public function setAlto($alto = null)
+    {
+        $this->alto = $alto;
+
+        return $this;
+    }
+
+    /**
+     * Get alto.
+     *
+     * @return float|null
+     */
+    public function getAlto()
+    {
+        return $this->alto;
+    }
+
+    /**
+     * Set ancho.
+     *
+     * @param float|null $ancho
+     *
+     * @return Material
+     */
+    public function setAncho($ancho = null)
+    {
+        $this->ancho = $ancho;
+
+        return $this;
+    }
+
+    /**
+     * Get ancho.
+     *
+     * @return float|null
+     */
+    public function getAncho()
+    {
+        return $this->ancho;
+    }
+
+    /**
+     * Set largo.
+     *
+     * @param float|null $largo
+     *
+     * @return Material
+     */
+    public function setLargo($largo = null)
+    {
+        $this->largo = $largo;
+
+        return $this;
+    }
+
+    /**
+     * Get largo.
+     *
+     * @return float|null
+     */
+    public function getLargo()
+    {
+        return $this->largo;
+    }
+
+    /**
+     * Set composicion.
+     *
+     * @param string|null $composicion
+     *
+     * @return Material
+     */
+    public function setComposicion($composicion = null)
+    {
+        $this->composicion = $composicion;
+
+        return $this;
+    }
+
+    /**
+     * Get composicion.
+     *
+     * @return string|null
+     */
+    public function getComposicion()
+    {
+        return $this->composicion;
+    }
+
+    /**
+     * Set costoActual.
+     *
+     * @param float|null $costoActual
+     *
+     * @return Material
+     */
+    public function setCostoActual($costoActual = null)
+    {
+        $this->costoActual = $costoActual;
+
+        return $this;
+    }
+
+    /**
+     * Get costoActual.
+     *
+     * @return float|null
+     */
+    public function getCostoActual()
+    {
+        return $this->costoActual;
+    }
+
+    /**
+     * Set unidades.
+     *
+     * @param int|null $unidades
+     *
+     * @return Material
+     */
+    public function setUnidades($unidades = null)
+    {
+        $this->unidades = $unidades;
+
+        return $this;
+    }
+
+    /**
+     * Get unidades.
+     *
+     * @return int|null
+     */
+    public function getUnidades()
+    {
+        return $this->unidades;
+    }
+
+    /**
+     * Set presentacion.
+     *
+     * @param string|null $presentacion
+     *
+     * @return Material
+     */
+    public function setPresentacion($presentacion = null)
+    {
+        $this->presentacion = $presentacion;
+
+        return $this;
+    }
+
+    /**
+     * Get presentacion.
+     *
+     * @return string|null
+     */
+    public function getPresentacion()
+    {
+        return $this->presentacion;
+    }
+
+    /**
+     * Set fechaCreacion.
+     *
+     * @param \DateTime $fechaCreacion
+     *
+     * @return Material
+     */
+    public function setFechaCreacion($fechaCreacion)
+    {
+        $this->fechaCreacion = $fechaCreacion;
+
+        return $this;
+    }
+
+    /**
+     * Get fechaCreacion.
+     *
+     * @return \DateTime
+     */
+    public function getFechaCreacion()
+    {
+        return $this->fechaCreacion;
+    }
+
+    /**
+     * Set fechaActualizacion.
+     *
+     * @param \DateTime|null $fechaActualizacion
+     *
+     * @return Material
+     */
+    public function setFechaActualizacion($fechaActualizacion = null)
+    {
+        $this->fechaActualizacion = $fechaActualizacion;
+
+        return $this;
+    }
+
+    /**
+     * Get fechaActualizacion.
+     *
+     * @return \DateTime|null
+     */
+    public function getFechaActualizacion()
+    {
+        return $this->fechaActualizacion;
+    }
+
+    /**
+     * Set estado.
+     *
+     * @param int $estado
+     *
+     * @return Material
+     */
+    public function setEstado($estado)
+    {
+        $this->estado = $estado;
+
+        return $this;
+    }
+
+    /**
+     * Get estado.
+     *
+     * @return int
+     */
+    public function getEstado()
+    {
+        return $this->estado;
+    }
+
+    /**
+     * Set usuarioCreacion.
+     *
+     * @param \AppBundle\Entity\FosUser|null $usuarioCreacion
+     *
+     * @return Material
+     */
+    public function setUsuarioCreacion(\AppBundle\Entity\FosUser $usuarioCreacion = null)
+    {
+        $this->usuarioCreacion = $usuarioCreacion;
+
+        return $this;
+    }
+
+    /**
+     * Get usuarioCreacion.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getUsuarioCreacion()
+    {
+        return $this->usuarioCreacion;
+    }
+
+    /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     *
+     * @Vich\UploadableField(mapping="material_imagen", fileNameProperty="imagen")
+     *
+     * @var File
+     */
+    private $foto;
+
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $imagen
+     *
+     * @return Material
+     */
+    public function setFoto(File $imagen = null)
+    {
+        $this->foto = $imagen;
+
+        if ($imagen) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->fechaActualizacion = new \DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getFoto()
+    {
+        return $this->foto;
+    }
+
+
+
+
+
+
+
+
+
+    public function __toString() {
+      $resp = $this->nombre;
+      if($this->color){$resp .= ' '.$this->color;}
+      if($this->medida){$resp .= ' '.$this->medida;}
+      if($this->marca){$resp .= ' MARCA: '.$this->marca;}
+      if($this->presentacion){$resp .= ' REF: '.$this->presentacion;}
+      return $resp;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $zonas;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->zonas = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->inventario = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add zona.
+     *
+     * @param \AppBundle\Entity\AlmacenZonaInventario $zona
+     *
+     * @return Material
+     */
+    public function addZona(\AppBundle\Entity\AlmacenZonaInventario $zona)
+    {
+        $this->zonas[] = $zona;
+
+        return $this;
+    }
+
+    /**
+     * Remove zona.
+     *
+     * @param \AppBundle\Entity\AlmacenZonaInventario $zona
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeZona(\AppBundle\Entity\AlmacenZonaInventario $zona)
+    {
+        return $this->zonas->removeElement($zona);
+    }
+
+    /**
+     * Get zonas.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getZonas()
+    {
+        return $this->zonas;
+    }
+    /**
+     * @var string|null
+     */
+    private $marca;
+
+    /**
+     * @var string|null
+     */
+    private $medida;
+
+    /**
+     * @var string|null
+     */
+    private $unidad;
+
+    /**
+     * @var \AppBundle\Entity\MaterialCategoria
+     */
+    private $categoria;
+
+
+    /**
+     * Set marca.
+     *
+     * @param string|null $marca
+     *
+     * @return Material
+     */
+    public function setMarca($marca = null)
+    {
+        $this->marca = $marca;
+
+        return $this;
+    }
+
+    /**
+     * Get marca.
+     *
+     * @return string|null
+     */
+    public function getMarca()
+    {
+        return $this->marca;
+    }
+
+    /**
+     * Set medida.
+     *
+     * @param string|null $medida
+     *
+     * @return Material
+     */
+    public function setMedida($medida = null)
+    {
+        $this->medida = $medida;
+
+        return $this;
+    }
+
+    /**
+     * Get medida.
+     *
+     * @return string|null
+     */
+    public function getMedida()
+    {
+        return $this->medida;
+    }
+
+    /**
+     * Set unidad.
+     *
+     * @param string|null $unidad
+     *
+     * @return Material
+     */
+    public function setUnidad($unidad = null)
+    {
+        $this->unidad = $unidad;
+
+        return $this;
+    }
+
+    /**
+     * Get unidad.
+     *
+     * @return string|null
+     */
+    public function getUnidad()
+    {
+        return $this->unidad;
+    }
+
+    /**
+     * Set categoria.
+     *
+     * @param \AppBundle\Entity\MaterialCategoria|null $categoria
+     *
+     * @return Material
+     */
+    public function setCategoria(\AppBundle\Entity\MaterialCategoria $categoria = null)
+    {
+        $this->categoria = $categoria;
+
+        return $this;
+    }
+
+    /**
+     * Get categoria.
+     *
+     * @return \AppBundle\Entity\MaterialCategoria|null
+     */
+    public function getCategoria()
+    {
+        return $this->categoria;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $inventario;
+
+
+    /**
+     * Add inventario.
+     *
+     * @param \AppBundle\Entity\Inventario $inventario
+     *
+     * @return Material
+     */
+    public function addInventario(\AppBundle\Entity\Inventario $inventario)
+    {
+        $this->inventario[] = $inventario;
+
+        return $this;
+    }
+
+    /**
+     * Remove inventario.
+     *
+     * @param \AppBundle\Entity\Inventario $inventario
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeInventario(\AppBundle\Entity\Inventario $inventario)
+    {
+        return $this->inventario->removeElement($inventario);
+    }
+
+    /**
+     * Get inventario.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInventario()
+    {
+        return $this->inventario;
+    }
+}

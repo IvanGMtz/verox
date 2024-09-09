@@ -1,0 +1,70 @@
+AppBundle\Entity\ProduccionDiseno:
+    type: entity
+    table: produccion_diseno
+    indexes:
+        orden_produccion:
+            columns:
+                - orden_produccion
+        fk_produccion_diseno:
+            columns:
+                - diseno
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        puntadas:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        fechaFinalizacion:
+            type: datetime
+            nullable: true
+            column: fecha_finalizacion
+        duracion:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+    manyToOne:
+        diseno:
+            targetEntity: Diseno
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                diseno:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

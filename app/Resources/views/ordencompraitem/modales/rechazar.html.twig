@@ -1,0 +1,39 @@
+<form action="{{ path('ordencompraitem_rechazar', {'id': ordenCompraItem.id}) }}" method="POST">
+  <div class="row">
+     <div class="col-12">
+      <div class="card">
+        <div class="overlay" style="display:none">
+          <i class="fa fa-refresh fa-spin"></i>
+        </div>
+        <div class="card-body">
+          <div class="form-group ">
+            <label class="required" for="anotaciones">
+              Anotaciones    
+            </label>
+            <sup class="required" title="This is a mandatory field">
+                <i class="fa fa-asterisk"></i>
+            </sup>
+            <input type="text" name="anotaciones" id="anotaciones" class="form-control" required placeholder="Razón" value="Rechazado por..." />
+          </div>
+        </div>
+        <div class="card-footer">
+          <input type="submit" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{#<script>
+  $('#appbundle_almacenzonainventario_almacen').change(function(){
+    var almacen = $(this).find('option:selected', this).val();
+    $.get("/admin/zona/almacen/"+almacen+"/get_zonas", function(data){
+      var zonas = data.zonas;
+      var selector = $('#appbundle_almacenzonainventario_almacenZona');
+      selector.empty();
+      for(var i = 0; i < zonas.length; i++){
+        var opcion = $('<option value="'+zonas[i].id+'">'+zonas[i].tag+"</option>");
+        selector.append(opcion);
+      }
+    });
+  });
+</script>#}

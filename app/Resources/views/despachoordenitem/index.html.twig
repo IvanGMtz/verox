@@ -1,0 +1,111 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Despachoordenitems{% endblock %}
+{% block avanzu_page_title %}Despachoordenitems{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de despachoOrdenItems</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">
+            <div class="form-group ml-sm-1">
+              <label for="cantidad" class="sr-only">Referencia</label>
+              <input type="text" class="form-control" id="referencia" name="q[referencia]" placeholder="Referencia" {% if q and q.referencia %}value="{{ q.referencia }}"{% endif %}>
+            </div>            
+            <div class="form-group ml-sm-1">
+              <label for="cantidad" class="sr-only">Talla</label>
+              <input type="text" class="form-control" id="talla" name="q[talla]" placeholder="Talla" {% if q and q.talla %}value="{{ q.talla }}"{% endif %}>
+            </div>
+            <div class="form-group ml-sm-1">
+              <label for="cantidad" class="sr-only">Color</label>
+              <input type="text" class="form-control" id="color" name="q[color]" placeholder="Color" {% if q and q.color %}value="{{ q.color }}"{% endif %}>
+            </div>         
+            <div class="form-group ml-sm-1">
+              <label for="estatus" class="sr-only">estatus</label>
+              <input type="text" class="form-control" id="estatus" name="q[estatus]" placeholder="Estatus" {% if q and q.estatus %}value="{{ q.estatus }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('despachoordenitem_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.producto') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Producto', 'a.producto') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.color') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Color', 'a.color') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.producto.nombre') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Talla', 'a.producto.nombre') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.cantidad') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Cantidad', 'a.cantidad') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.ordenDespacho') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Orden Despacho', 'a.ordenDespacho') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.estatus') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Estatus', 'a.estatus') }}
+                  </th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for despachoOrdenItem in despachoOrdenItems %}
+              <tr>
+                  <td class="nowrap">{{ despachoOrdenItem.producto.producto.nombre }}</td>
+                  <td class="nowrap">{{ despachoOrdenItem.color }}</td>
+                  <td class="nowrap">{{ despachoOrdenItem.producto.nombre }}</td>
+                  <td class="nowrap">{{ despachoOrdenItem.cantidad }}</td>
+                  <td class="nowrap"><a href="{{ path('despachoorden_show', { 'id': despachoOrdenItem.ordenDespacho.id }) }}">{{ despachoOrdenItem.ordenDespacho.id }}</a></td>
+                  <td class="nowrap">{{ despachoOrdenItem.estatus == 2 ? 'DESPACHADO' : 'POR DESPACHAR' }}</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle de orden{% endblock %}
+{% block avanzu_page_title %}Detalle de orden{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle Orden de Diseño</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ disenoOrden.id }}</td>
+                </tr>
+                <tr>
+                    <th>Referencia</th>
+                    <td>{{ disenoOrden.referencia }}</td>
+                </tr>
+                <tr>
+                    <th>Diseños requeridos</th>
+                    <td>{{ disenoOrden.cantidad }}</td>
+                </tr>
+                <tr>
+                    <th>Notas importantes</th>
+                    <td>{{ disenoOrden.notas }}</td>
+                </tr>
+                <tr>
+                    <th>Fechacreacion</th>
+                    <td>{% if disenoOrden.fechaCreacion %}{{ disenoOrden.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td>{{ (disenoOrden.estado == 1) ? "Pendiente" : "Cerrada" }}</td>
+                </tr>
+                <tr>
+                    <th>Fechafinalizacion</th>
+                    <td>{% if disenoOrden.fechaFinalizacion %}{{ disenoOrden.fechaFinalizacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Duracion</th>
+                    <td>{{ disenoOrden.duracion }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+      </div>
+      <div class="card-footer clearfix">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ app.request.headers.get('referer') }}">Regresar</a>&nbsp;
+              {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              <a class="btn btn-warning btn-flat btn-sm" href="{{ path('disenoorden_edit', { 'id': disenoOrden.id }) }}">Editar</a>&nbsp;
+              {{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

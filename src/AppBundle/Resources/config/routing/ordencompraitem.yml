@@ -1,0 +1,49 @@
+ordencompraitem_index:
+    path:     /
+    defaults: { _controller: "AppBundle:OrdenCompraItem:index" }
+    methods:  [GET, POST]
+
+ordencompraitem_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:OrdenCompraItem:show" }
+    methods:  GET
+
+ordencompraitem_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:OrdenCompraItem:new" }
+    methods:  [GET, POST]
+
+ordencompraitem_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:OrdenCompraItem:edit" }
+    methods:  [GET, POST]
+    
+ordencompraitem_rechazar:
+    path:     /{id}/rechazar
+    defaults: { _controller: "AppBundle:OrdenCompraItem:rechazar" }
+    methods:  [GET, POST]
+    
+ordencompraitem_rechazar_modal:
+    path:     /{id}/rechazar_modal
+    defaults: { _controller: "AppBundle:OrdenCompraItem:rechazarModal" }
+    methods:  GET
+    
+ordencompraitem_parcial:
+    path:     /{id}/parcial
+    defaults: { _controller: "AppBundle:OrdenCompraItem:parcial" }
+    methods:  [GET, POST]
+    
+ordencompraitem_parcial_modal:
+    path:     /{id}/parcial_modal
+    defaults: { _controller: "AppBundle:OrdenCompraItem:parcialModal" }
+    methods:  GET
+    
+#ordencompraitem_inventario:
+#    path:     /{id}/inventario
+#    defaults: { _controller: "AppBundle:OrdenCompraItem:inventario" }
+#    methods:  [GET, POST]
+
+#ordencompraitem_erase:
+#    path:     /{id}/erase
+#    defaults: { _controller: "AppBundle:OrdenCompraItem:erase" }
+#    methods:  GET

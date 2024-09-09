@@ -1,0 +1,90 @@
+AppBundle\Entity\InventarioOrdenItem:
+    type: entity
+    table: inventario_orden_item
+    indexes:
+        entregado:
+            columns:
+                - entregado
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        inventario_orden:
+            columns:
+                - inventario_orden
+        estado:
+            columns:
+                - estado
+        material:
+            columns:
+                - material
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        cantidad:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+        entregado:
+            type: boolean
+            nullable: true
+            options:
+                default: 0
+        fechaEntregado:
+            type: datetime
+            nullable: true
+            column: fecha_entregado
+    oneToMany:
+        descargas:
+            targetEntity: InventarioOrdenDescarga
+            mappedBy: inventarioOrdenItem
+            cascade:  [persist]
+    manyToOne:
+        inventarioOrden:
+            targetEntity: InventarioOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: items
+            inversedBy: items
+            joinColumns:
+                inventario_orden:
+                    referencedColumnName: id
+            orphanRemoval: false
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

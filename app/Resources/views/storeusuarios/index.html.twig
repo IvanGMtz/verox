@@ -1,0 +1,146 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Storeusuarios{% endblock %}
+{% block avanzu_page_title %}Storeusuarios{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Usuarios Web</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">   
+              <a href="{{ path('storeusuarios_createreport') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Exportar a Excel
+              </a>       
+            </div>
+          </div>
+        </div>
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="email" class="sr-only">email</label>
+              <input type="text" class="form-control" id="email" name="q[email]" placeholder="Email" {% if q and q.email %}value="{{ q.email }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="nombre" class="sr-only">nombre</label>
+              <input type="text" class="form-control" id="nombre" name="q[nombre]" placeholder="Nombre" {% if q and q.nombre %}value="{{ q.nombre }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="apellidos" class="sr-only">apellidos</label>
+              <input type="text" class="form-control" id="apellidos" name="q[apellidos]" placeholder="Apellidos" {% if q and q.apellidos %}value="{{ q.apellidos }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="telefono" class="sr-only">telefono</label>
+              <input type="text" class="form-control" id="telefono" name="q[telefono]" placeholder="Telefono" {% if q and q.telefono %}value="{{ q.telefono }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="direccion" class="sr-only">direccion</label>
+              <input type="text" class="form-control" id="direccion" name="q[direccion]" placeholder="Direccion" {% if q and q.direccion %}value="{{ q.direccion }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="estado" class="sr-only">estado</label>
+              <input type="text" class="form-control" id="estado" name="q[estado]" placeholder="Estado" {% if q and q.estado %}value="{{ q.estado }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="tipo" class="sr-only">tipo</label>
+              <input type="text" class="form-control" id="tipo" name="q[tipo]" placeholder="Tipo" {% if q and q.tipo %}value="{{ q.tipo }}"{% endif %}>
+            </div>
+            <div class="form-group ml-sm-1">
+              <label for="asesor" class="sr-only">asesor</label>
+              <input type="text" class="form-control" id="asesor" name="q[asesor]" placeholder="Asesor" {% if q and q.asesor %}value="{{ q.asesor }}"{% endif %}>
+            </div>          
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.email') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Email', 'a.email') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.nombre') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Nombre', 'a.nombre') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.apellidos') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Apellidos', 'a.apellidos') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.telefono') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Telefono', 'a.telefono') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.birthday') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Cumpleaños', 'a.birthday') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.direccion') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Direccion', 'a.direccion') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.estado') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Estado', 'a.estado') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.tipo') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Tipo', 'a.tipo') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.asesor') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Asesor', 'a.asesor') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for storeUsuario in storeUsuarios %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('storeusuarios_show', { 'id': storeUsuario.id }) }}">{{ storeUsuario.id }}</a></td>
+                  <td class="nowrap">{{ storeUsuario.email }}</td>
+                  <td class="nowrap">{{ storeUsuario.nombre }}</td>
+                  <td class="nowrap">{{ storeUsuario.apellidos }}</td>
+                  <td class="nowrap">{{ storeUsuario.telefono }}</td>
+                  <td class="nowrap">{{ storeUsuario.birthday }}</td>
+                  <td class="nowrap">{{ storeUsuario.direccion }}</td>
+                  <td class="nowrap">{{ storeUsuario.estado }}</td>
+                  <td class="nowrap">{{ storeUsuario.tipo }}</td>
+                  <td class="nowrap">{{ storeUsuario.asesor }}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('storeusuarios_show', { 'id': storeUsuario.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('storeusuarios_edit', { 'id': storeUsuario.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

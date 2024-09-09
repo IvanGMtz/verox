@@ -1,0 +1,100 @@
+AppBundle\Entity\ProductoInventario:
+    type: entity
+    table: producto_inventario
+    indexes:
+        fk_color_inventario:
+            columns:
+                - color
+        fk_talla_inventario:
+            columns:
+                - producto
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        ingresoDetal:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            column: ingreso_detal
+        egresoDetal:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            column: egreso_detal
+        qtyActualDetal:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            column: qty_actual_detal
+        ultimoIngresoD:
+            type: datetime
+            nullable: true
+            column: ultimo_ingreso_d
+        ultimoEgresoD:
+            type: datetime
+            nullable: true
+            column: ultimo_egreso_d
+        ingresoMayorista:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            column: ingreso_mayorista
+        egresoMayorista:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            column: egreso_mayorista
+        qtyActualMayorista:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: '0'
+            column: qty_actual_mayorista
+        ultimoIngresoM:
+            type: datetime
+            nullable: true
+            column: ultimo_ingreso_m
+        ultimoEgresoM:
+            type: datetime
+            nullable: true
+            column: ultimo_egreso_m
+    manyToOne:
+        color:
+            targetEntity: ProductoColor
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                color:
+                    referencedColumnName: id
+            orphanRemoval: false
+        producto:
+            targetEntity: ProductoTalla
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                producto:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,115 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %} 
+{% block avanzu_document_title %}Nueva orden de inventario{% endblock %}
+{% block avanzu_page_title %}Nueva orden de inventario{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Nueva orden de inventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+{{ form_start(form) }}
+<div class="row">
+   <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        <div class="row invoice-info">
+          <div class="col-sm-8 invoice-col">
+            <address>
+              {{ form_row(form.descripcion) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+              {{ form_row(form.departamentoSolicita) }}
+            </address>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th style="width:10%">Qty</th>
+                <th>Material</th>
+                <th style="width:10%"></th>
+              </tr>
+              </thead>
+              <tbody class="items" data-prototype="{{('<td style="width:10%">' ~ form_widget(form.items.vars.prototype.cantidad) ~ '</td><td>' ~ form_widget(form.items.vars.prototype.material) ~ '</td>')|e('html_attr')}}">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div style="display:none">{{ form_rest(form) }}</div>
+        <input type="submit" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+      </div>
+    </div>
+  </div>
+</div>
+{{ form_end(form) }}
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script>
+        $(function () {
+            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+            $('select:not(.swal2-select)').select2();
+            $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+            $('[data-timepicker]').timepicker();
+            
+            var $collectionHolder;
+            $collectionHolder = $('tbody.items');
+            $collectionHolder.find('tr').each(function() {
+                $(this).find('select').select2();
+                addTagFormDeleteLink($(this));
+            });
+            function addTagFormDeleteLink($tagFormLi) {
+                var $removeFormButton = $('<td style="width:10%" class="text-right"><button type="button"><i class="fa fa-trash"></i></button></td>');
+                $tagFormLi.append($removeFormButton);
+                $removeFormButton.on('click', function(e) {
+                    $tagFormLi.remove();
+                });
+            }
+            function addTagForm($collectionHolder, $newLinkLi) {
+                var prototype = $collectionHolder.data('prototype');
+                var index = $collectionHolder.data('index');
+                var newForm = prototype;
+                newForm = newForm.replace(/__name__/g, index);
+                $collectionHolder.data('index', index + 1);
+                var $newFormLi = $('<tr></tr>').append(newForm);
+                $newFormLi.find('select').select2();
+                $newLinkLi.before($newFormLi);
+                addTagFormDeleteLink($newFormLi);
+            }
+            var $addTagButton = $('<td class="text-right"><button type="button" class="add_tag_link">Agregar item</button></td>');
+            var $newLinkLi = $('<tr><td></td><td></td></tr>').append($addTagButton);
+            $collectionHolder = $('tbody.items');
+            $collectionHolder.append($newLinkLi);
+            $collectionHolder.data('index', $collectionHolder.find('tr').length);
+            $addTagButton.on('click', function(e) {
+                addTagForm($collectionHolder, $newLinkLi);
+            });
+            
+        });
+    </script>
+{% endblock %}

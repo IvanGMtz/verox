@@ -1,0 +1,29 @@
+materialcategoria_index:
+    path:     /
+    defaults: { _controller: "AppBundle:MaterialCategoria:index" }
+    methods:  [GET, POST]
+
+materialcategoria_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:MaterialCategoria:show" }
+    methods:  GET
+
+materialcategoria_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:MaterialCategoria:new" }
+    methods:  [GET, POST]
+
+materialcategoria_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:MaterialCategoria:edit" }
+    methods:  [GET, POST]
+
+materialcategoria_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:MaterialCategoria:delete" }
+    methods:  DELETE
+
+materialcategoria_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:MaterialCategoria:erase" }
+    methods:  GET

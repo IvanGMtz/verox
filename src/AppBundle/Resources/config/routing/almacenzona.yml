@@ -1,0 +1,29 @@
+almacenzona_index:
+    path:     /{id}/index
+    defaults: { _controller: "AppBundle:AlmacenZona:index" }
+    methods:  [GET, POST]
+
+almacenzona_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:AlmacenZona:show" }
+    methods:  GET
+
+almacenzona_new:
+    path:     /{id}/new
+    defaults: { _controller: "AppBundle:AlmacenZona:new" }
+    methods:  [GET, POST]
+
+almacenzona_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:AlmacenZona:edit" }
+    methods:  [GET, POST]
+
+almacenzona_getzonas:
+    path:     /{id}/get_zonas
+    defaults: { _controller: "AppBundle:AlmacenZona:getZonas" }
+    methods:  GET
+
+#almacenzona_erase:
+#    path:     /{id}/erase
+#    defaults: { _controller: "AppBundle:AlmacenZona:erase" }
+#    methods:  GET

@@ -1,0 +1,335 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %} 
+{% block avanzu_document_title %}Editar Despachoorden{% endblock %}
+{% block avanzu_page_title %}Editar Despachoorden{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Editar Orden de despacho</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+   <div class="col-12">
+    <div class="card invoice p-3 mb-3">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <h4>
+        <i class="fas fa-globe"></i> VRX Group S.A.S
+      </h4>
+      <div class="card-body">
+       <form onsubmit="event.preventDefault(); request_product();">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="ref" placeholder="Agregar Referencia" aria-label="Agregar Referencia" aria-describedby="basic-addon2">
+          </div>
+        </form>
+        {{ form_start(edit_form) }}
+        <div class="row">
+          <div class="col-sm-4 invoice-col">
+            <address>
+              {{ form_row(edit_form.clienteId) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+              {{ form_row(edit_form.clienteTipo) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+            {{ form_row(edit_form.direccionEnvio) }}
+            </address>
+          </div>
+          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS')%}
+          <div class="col-sm-4 invoice-col">
+            <address>
+            {{ form_row(edit_form.statusPago) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+            {{ form_row(edit_form.statusOrden) }}
+            </address>
+          </div>
+          <div class="col-sm-4 invoice-col">
+            <address>
+            {{ form_row(edit_form.fechaCreacion) }}
+            </address>
+          </div>
+          {% endif %}
+        </div>
+        {% set subtotal = 0 %}
+        {% set items_array = {} %}
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered table-striped">
+            <thead>
+                <tr>
+                  <th class="nowrap">Referencia</th>
+                  <th class="nowrap">Nombre</th>
+                  <th class="nowrap">Talla</th>
+                  <th class="nowrap">Color</th>
+                  <th class="nowrap">Precio</th>
+                  <th class="nowrap">Cantidad</th>
+                  <th class="nowrap">Subtotal</th>
+                  <th class="nowrap"></th>
+                </tr>
+            </thead>
+            <tbody class="items" id="product_table">
+              {% for key,item in items %}
+              {% set items_array = items_array|merge({0:{'counter':key + 1}}) %}
+              {% set precio = item.precio %}
+              <tr id="product-{{ key + 1 }}">
+                <td>{{ item.producto.producto.referencia }}</td>
+                <td>{{ item.producto.producto.nombre }}</td>
+                <td>{{ item.producto.nombre }}</td>
+                <td>
+                  <select name="color-{{ item.id }}-{{ key + 1 }}" class="form-control color" id="color-{{ item.producto.id }}-{{ key + 1 }}">
+                    {% for key2,color in colors %}
+                      {% if color.producto_id  == item.producto.id %}
+                        <option id="{{ (color.nombre == item.color) ? 'prevReference_' : '' }}{{ item.producto.id  }}-{{ key + 1 }}" style="background-color:{{ color.hex }}" value="{{ color.nombre }}" {{ (color.nombre == item.color) ? "selected " : "" }} data-prevcolor="{{ (color.nombre == item.color) ? color.nombre : "" }}-{{ key + 1 }}">{{ color.nombre }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </td>
+                <td><input class="form-control precio" data-precios="{{ item.producto.producto.precioDetal }}-{{ item.producto.producto.precioMayorista }}" type="number" step="any" name="precio-{{ item.id }}-{{ key + 1 }}" value="{{ item.precio }}"></td>
+                <td class="d-flex"><span style="width:30%" class="my-1 stock" data-stock="{{ colors|json_encode() }}" id="stock-{{ item.producto.producto.id }}-{{ item.producto.nombre }}">Stock: </span><input style="width:70%" min="1" name="producto-{{item.id}}-{{ key + 1 }}" data-qty="{{ item.cantidad }}" class="form-control cantidad" id="qty-{{ item.producto.producto.id }}-{{ item.producto.nombre }}" value="{{ item.cantidad }}"></td>
+                <td class="subtotal">{{ item.cantidad * precio }}</td>
+                <td class="nowrap text-center"><button class="btn btn-danger" onclick="remove_row({{ key + 1 }})" type="button"><i class="fa fa-trash"></i></button></td>
+                {% set subtotal = subtotal + (item.cantidad * precio) %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div id="data_products" data-products='{{ items_array| json_encode | raw }}'></div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            {{ form_row(edit_form.tipoPago) }}
+            {{ form_row(edit_form.notas) }}
+          </div>
+          <div class="col-6">
+            {{ form_row(edit_form.costoEnvio) }}
+            {{ form_row(edit_form.total) }}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <input type="submit" id="confirm_btn" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+      </div>
+      {{ form_end(edit_form) }}
+    </div>
+  </div>
+</div>
+<div class="row" style="display:none">
+  <div class="col-12">
+    <div class="card card-danger">
+      <div class="card-body">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('despachoorden_index') }}">Regresar</a>&nbsp;  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') or is_granted('ROLE_VENDEDOR') or is_granted('ROLE_DESPACHOS') %}{{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+      <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+  {{ form_end(delete_form) }}{% endif %}
+</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script>
+        $(function () {
+            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+            $('select:not(.swal2-select)').select2();
+            $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+            $('[data-timepicker]').timepicker();
+        });
+        var products = $("#data_products").data('products');
+        var counter = parseInt("{{ items|length }}") + 1;
+        if(counter<2){$("#confirm_btn").prop('disabled', true);}
+        function remove_row(id){
+          counter--;
+          for(let i = 0;i< products.length;i++){
+              if(products[i].counter == id){
+                products.splice(i,1);
+              }
+            }
+          $("#product-"+id).remove();
+          if(counter<2){$("#confirm_btn").prop('disabled', true);}
+          calcular();
+        }
+        function request_product(){
+          let ref = $("#ref").val();
+          $.ajax({
+            url:"{{ app.request.getSchemeAndHttpHost() }}/admin/producto/search_product?ref="+ref, 
+            type:'GET',
+            success: function(result){
+              if(result.request == "success"){
+                result.counter = counter;
+                products.push(result);
+                let colores = "";
+                let clienteTipo = $("#appbundle_despachoorden_clienteTipo").val();
+                result.producto_color.forEach(color=>{
+                  colores += '<option id="" data-hex="'+color.hex+'" style="background-color:'+color.hex+'" value="'+color.nombre+'">'+color.nombre+'</option>';
+                });
+                let precio = $("#appbundle_despachoorden_clienteTipo").val()=="DETAL"?result.producto_precio_detal:result.producto_precio_mayorista;
+                $("#product_table").append(
+                  '<tr id="product-'+counter+'">'+
+                    '<td class="nowrap">'+result.producto_referencia+'</td>'+
+                    '<td class="nowrap">'+result.producto_nombre+'</td>'+
+                    '<td class="nowrap">'+result.producto_talla+'</td>'+
+                    '<td class="nowrap p-1"><select name="color-'+result.producto_talla_id+'-'+counter+'-new" data-prevcolor="'+result.producto_color[0].nombre+'" class="form-control color" id="color-'+result.producto_talla_id+'-'+counter+'">'+colores+'</select></td>'+
+                    '<td class="nowrap"><input data-precios="'+result.producto_precio_detal+'-'+result.producto_precio_mayorista+'" class="form-control precio" type="number" step="any" name="precio-'+result.producto_talla_id+'-'+counter+'-new" value="'+precio+'"></td>'+
+                    '<td class="d-flex"><span data-stock=\''+JSON.stringify(result.producto_color)+'\' style="width:30%" class="my-1 stock" id="stock-'+result.producto_id+'-'+result.producto_talla+'">Stock: '+result.producto_color[0][clienteTipo]+'</span><input style="width:70%" min="1" data-qty="0" name="producto-'+result.producto_talla_id+'-'+counter+'-new" class="form-control cantidad" id="qty-'+result.producto_id+'-'+result.producto_talla+'" value="1"></td>'+
+                    '<td class="nowrap subtotal">'+precio+'</td>'+
+                    '<td class="nowrap text-center"><button class="btn btn-danger" onclick="remove_row('+counter+')" type="button"><i class="fa fa-trash"></i></button></td>'+
+                  '</tr>'
+                );
+                $("#ref").val("");
+                $("#confirm_btn").prop('disabled', false);
+                counter ++;
+                calcular();
+              }
+            },
+            error:function(error){
+              console.error(error);
+            }
+          });
+        }
+        function cambiar_precio(){
+          $('tbody.items tr').each(function(){
+            var tr = $(this);
+            var valor_unitario = tr.find('.precio');
+            var stock = tr.find('.stock');
+            var colores = tr.find('.color');
+            var product_id = colores.attr('id').split("-")[1];
+            var coloresData = stock.data('stock');
+            if($("#appbundle_despachoorden_clienteTipo").val()=="DETAL"){
+              valor_unitario.val(valor_unitario.data('precios').split("-")[0]);
+              let qty = coloresData.filter(color=>color.nombre==colores.val() && color.producto_id==product_id)[0]["DETAL"];
+              stock.html("Stock: "+qty);
+            }
+            else{
+              valor_unitario.val(valor_unitario.data('precios').split("-")[1]); 
+              let qty = coloresData.filter(color=>color.nombre==colores.val() && color.producto_id==product_id)[0]["MAYORISTA"];
+              stock.html("Stock: "+qty);
+            }
+          });
+          calcular();
+        }
+        function pull_stock(){
+          $('tbody.items tr').each(function(){
+            var tr = $(this);
+            var stock = tr.find('.stock');
+            var colores = tr.find('.color');
+            var product_id = colores.attr('id').split("-")[1];
+            var coloresData = stock.data('stock');
+            if($("#appbundle_despachoorden_clienteTipo").val()=="DETAL"){
+              let qty = coloresData.filter(color=>color.nombre==colores.val() && color.producto_id==product_id)[0]["DETAL"];
+              stock.html("Stock: "+qty);
+            }
+            else{
+              let qty = coloresData.filter(color=>color.nombre==colores.val() && color.producto_id==product_id)[0]["MAYORISTA"];
+              stock.html("Stock: "+qty);
+            }
+          });
+          calcular();
+        }
+        var colores_cambiados = []
+        function cambiarColor(){
+          let key = 0;
+          $('tbody.items tr').each(function(){
+            key ++;
+            var tr = $(this);
+            var stock = tr.find('.stock');
+            var colores = tr.find('.color');
+            var product_id = colores.attr('id').split("-")[1];
+            var coloresData = stock.data('stock');
+            var prevcolor = $("#prevReference_"+product_id+"-"+key).data("prevcolor");
+            if(prevcolor){
+              if(colores.val()+"-"+key != prevcolor){
+                if(colores_cambiados.indexOf(product_id+"-"+key)==-1){
+                  colores_cambiados.push(product_id+"-"+key)
+                }
+              }
+              else{
+                let index = colores_cambiados.indexOf(product_id+"-"+key);
+                if (index > -1) { 
+                  colores_cambiados.splice(index, 1);
+                }
+              }
+            }
+            if($("#appbundle_despachoorden_clienteTipo").val()=="DETAL"){
+              let qty = coloresData.filter(color=>color.nombre==colores.val() && color.producto_id==product_id)[0]["DETAL"];
+              stock.html("Stock: "+qty);
+            }
+            else{
+              let qty = coloresData.filter(color=>color.nombre==colores.val() && color.producto_id==product_id)[0]["MAYORISTA"];
+              stock.html("Stock: "+qty);
+            }
+          });
+          calcular();
+        }
+        function calcular(){
+          var valor_sub_total = 0;
+          var disabled_form = false;
+          let key = 0;
+          $('tbody.items tr').each(function(){
+            key ++;
+            var tr = $(this);
+            var cantidad = tr.find('.cantidad');
+            var colores = tr.find('.color');
+            var product_id = colores.attr('id').split("-")[1];
+            var prev_qty =colores_cambiados.includes(product_id+"-"+key)? 0 : parseInt(cantidad.data("qty"));
+            var valor_unitario = tr.find('.precio');
+            var valor_total = tr.find('.subtotal');
+            var stock = parseInt(tr.find('.stock').html().split(": ")[1]);
+            valor_total.html('0');
+            
+            if(cantidad.val()){
+              var valor_t = parseFloat(cantidad.val()) * parseFloat(valor_unitario.val());
+              valor_total.html(valor_t.toFixed(2));
+              valor_sub_total += valor_t;
+              if(parseFloat(cantidad.val()) > stock + prev_qty){ 
+                cantidad.css("border-color","red");
+                disabled_form=true;
+              }
+              else{
+                cantidad.css("border-color","");
+              }
+              if(cantidad.val()<1){
+                cantidad.val(1);
+                calcular()
+              }
+            }
+          });
+          document.getElementById("confirm_btn").disabled = disabled_form;
+          $('#appbundle_despachoorden_total').attr('readonly', true);
+          $('#appbundle_despachoorden_total').val(valor_sub_total);
+          $('#appbundle_despachoorden_total').val((parseFloat($('#appbundle_despachoorden_total').val()) + parseFloat(!$('#appbundle_despachoorden_costoEnvio').val()?0:$('#appbundle_despachoorden_costoEnvio').val())).toFixed(2));
+
+        }
+        $('tbody.items').on('keyup', '.cantidad', calcular);
+        $('tbody.items').on('keyup', '.precio', calcular);
+        $('tbody.items').on('change', '.color', cambiarColor);
+        $('#appbundle_despachoorden_costoEnvio').keyup(calcular);
+        $('#appbundle_despachoorden_clienteTipo').change(cambiar_precio);
+        if($('#appbundle_despachoorden_costoEnvio').val()){
+          $('#appbundle_despachoorden_costoEnvio').val(parseFloat($('#appbundle_despachoorden_costoEnvio').val().toString().replace(',', '.')))
+        }
+        calcular();
+        pull_stock();
+    </script>
+{% endblock %}

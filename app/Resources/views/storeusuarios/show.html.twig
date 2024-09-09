@@ -1,0 +1,99 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Detalle Storeusuario{% endblock %}
+{% block avanzu_page_title %}Detalle Storeusuario{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle storeUsuario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ storeUsuario.id }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ storeUsuario.email }}</td>
+                </tr>
+                <tr>
+                    <th>Nombre</th>
+                    <td>{{ storeUsuario.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Apellidos</th>
+                    <td>{{ storeUsuario.apellidos }}</td>
+                </tr>
+                <tr>
+                    <th>Telefono</th>
+                    <td>{{ storeUsuario.telefono }}</td>
+                </tr>
+                <tr>
+                    <th>Direccion</th>
+                    <td>{{ storeUsuario.direccion }}</td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td>{{ storeUsuario.estado }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo</th>
+                    <td>{{ storeUsuario.tipo }}</td>
+                </tr>
+                <tr>
+                    <th>Asesor</th>
+                    <td>{{ storeUsuario.asesor }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="modal" tabindex="-1" role="dialog" id="modal-delete">
+          <div class="modal-dialog modal-md">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Eliminar Cliente</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body text-center">
+                <span style="font-size:medium;">Estás seguro que quieres eliminar este cliente?</span>
+              </div>
+              <div class="modal-footer">
+                {{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+                  <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Eliminar">
+                {{ form_end(delete_form) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer clearfix">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('storeusuarios_index') }}">Regresar</a>&nbsp;<a class="btn btn-warning btn-flat btn-sm" href="{{ path('storeusuarios_edit', { 'id': storeUsuario.id }) }}">Editar</a>&nbsp;  
+                {% if is_granted('ROLE_SUPER_ADMIN') or  is_granted('ROLE_ADMIN_VENTAS')%}
+                <a onclick="$('#modal-delete').modal('show');" class="btn btn-danger">Eliminar </a>
+                {% endif %}
+</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

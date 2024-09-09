@@ -1,0 +1,48 @@
+AppBundle\Entity\ProcesoNotas:
+    type: entity
+    table: proceso_notas
+    indexes:
+        usuario:
+            columns:
+                - usuario
+        proceso:
+            columns:
+                - proceso
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        notas:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+    manyToOne:
+        proceso:
+            targetEntity: Proceso
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proceso:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuario:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,199 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * Residual
+ */
+class Residual
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $paymentDate;
+
+    /**
+     * @var float
+     */
+    private $amount;
+
+    /**
+     * @var string
+     */
+    private $message;
+
+    /**
+     * @var \AppBundle\Entity\RecurrenceInvoice
+     */
+    private $invoice;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $paymentUser;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $user;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set paymentDate.
+     *
+     * @param \DateTime $paymentDate
+     *
+     * @return Residual
+     */
+    public function setPaymentDate($paymentDate)
+    {
+        $this->paymentDate = $paymentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentDate.
+     *
+     * @return \DateTime
+     */
+    public function getPaymentDate()
+    {
+        return $this->paymentDate;
+    }
+
+    /**
+     * Set amount.
+     *
+     * @param float $amount
+     *
+     * @return Residual
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set message.
+     *
+     * @param string $message
+     *
+     * @return Residual
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    /**
+     * Get message.
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * Set invoice.
+     *
+     * @param \AppBundle\Entity\RecurrenceInvoice|null $invoice
+     *
+     * @return Residual
+     */
+    public function setInvoice(\AppBundle\Entity\RecurrenceInvoice $invoice = null)
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    /**
+     * Get invoice.
+     *
+     * @return \AppBundle\Entity\RecurrenceInvoice|null
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * Set paymentUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $paymentUser
+     *
+     * @return Residual
+     */
+    public function setPaymentUser(\AppBundle\Entity\FosUser $paymentUser = null)
+    {
+        $this->paymentUser = $paymentUser;
+
+        return $this;
+    }
+
+    /**
+     * Get paymentUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getPaymentUser()
+    {
+        return $this->paymentUser;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param \AppBundle\Entity\FosUser|null $user
+     *
+     * @return Residual
+     */
+    public function setUser(\AppBundle\Entity\FosUser $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+}

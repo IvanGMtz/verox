@@ -1,0 +1,165 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: es
+
+framework:
+    #esi: ~
+    #translator: { fallbacks: ['%locale%'] }
+    translator: ~
+    secret: '%secret%'
+    router:
+        resource: '%kernel.project_dir%/app/config/routing.yml'
+        strict_requirements: ~
+    form: ~
+    csrf_protection: ~
+    validation: { enable_annotations: true }
+    default_locale: '%locale%'
+    trusted_hosts: ~
+    session:
+        handler_id: session.handler.native_file
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+        cookie_lifetime: 300000
+        gc_maxlifetime: 540000
+    fragments: ~
+    http_method_override: true
+    assets: ~
+    php_errors:
+        log: true
+    templating:
+        engines: ['twig']
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    form_themes: ['bootstrap_4_layout.html.twig', 'VichUploaderBundle:Form:fields.html.twig']
+    globals:
+        admin_skin: skin-black
+        kernelRootDir: "%kernel.root_dir%"
+    date:
+        timezone: America/Bogota
+    number_format:
+        decimals: 2
+        decimal_point: ','
+        thousands_separator: '.'
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        host: '%database_host%'
+        port: '%database_port%'
+        dbname: '%database_name%'
+        user: '%database_user%'
+        password: '%database_password%'
+        charset: UTF8
+        # if using pdo_sqlite as your database driver:
+        #   1. add the path in parameters.yml
+        #     e.g. database_path: '%kernel.project_dir%/var/data/data.sqlite'
+        #   2. Uncomment database_path in parameters.yml.dist
+        #   3. Uncomment next line:
+        #path: '%database_path%'
+
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    encryption: "%mailer_encryption%"
+    host:      "%mailer_host%"
+    port:      "%mailer_port%"
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"
+    auth_mode: "%mailer_auth_mode%"
+    spool:     { type: memory }
+
+fos_user:
+    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    firewall_name: main
+    user_class: AppBundle\Entity\FosUser
+    from_email:
+        address: notificaciones@unlimitedbit2.com
+        sender_name: notificaciones@unlimitedbit2.com
+    registration:
+        form:
+            type: AppBundle\Form\RegistrationType
+        confirmation:
+            enabled: true
+            from_email:
+                address: notificaciones@unlimitedbit2.com
+                sender_name: notificaciones@unlimitedbit2.com
+    resetting:
+        retry_ttl: 7200 # Value in seconds, logic will use as hours
+        token_ttl: 86400
+    service:
+        mailer: fos_user.mailer.twig_swift
+
+sensio_framework_extra:
+    router:
+        annotations: false
+
+avanzu_admin_theme:
+    bower_bin: 'C:\Users\Diego\AppData\Roaming\npm\bower.cmd'
+
+knp_paginator:
+    page_range: 5                       # number of links showed in the pagination menu (e.g: you have 10 pages, a page_range of 3, on the 5th page you'll see links to page 4, 5, 6)
+    default_options:
+        page_name: page                 # page query parameter name
+        sort_field_name: sort           # sort field query parameter name
+        sort_direction_name: direction  # sort direction query parameter name
+        distinct: true                  # ensure distinct results, useful when ORM queries are using GROUP BY statements
+        filter_field_name: filterField  # filter field query parameter name
+        filter_value_name: filterValue  # filter value query parameter name
+    template:
+        pagination: '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig'     # sliding pagination controls template
+        sortable: '@KnpPaginator/Pagination/twitter_bootstrap_v3_sortable_link.html.twig' # sort link template
+        filtration: '@KnpPaginator/Pagination/filtration.html.twig'  # filters template
+
+vich_uploader:
+    db_driver: orm
+    mappings:
+        fos_user_image:
+            uri_prefix:         /uploads/images/users
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/users'
+            namer:              vich_uploader.namer_uniqid
+        material_imagen:
+            uri_prefix:         /uploads/images/material
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/material'
+            namer:              vich_uploader.namer_uniqid
+        diseno_imagen:
+            uri_prefix:         /uploads/images/disenos
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/disenos'
+            namer:              vich_uploader.namer_uniqid
+        equipo_trabajo_documento:
+            uri_prefix:         /uploads/documents/equipo
+            upload_destination: '%kernel.root_dir%/../web/uploads/documents/equipo'
+            namer:              vich_uploader.namer_uniqid
+        producto_imagen:
+            uri_prefix:         /uploads/images/productos
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/productos'
+            namer:              vich_uploader.namer_uniqid
+        producto_categoria:
+            uri_prefix:         /uploads/images/categorias
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/categorias'
+            namer:              vich_uploader.namer_uniqid
+        store_inicio:
+            uri_prefix:         /uploads/images/store_inicio
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/store_inicio'
+            namer:              vich_uploader.namer_uniqid
+        store_tienda:
+            uri_prefix:         /uploads/images/store_tienda
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/store_tienda'
+            namer:              vich_uploader.namer_uniqid
+        store_tienda_slider:
+            uri_prefix:         /uploads/images/store_tienda/slider
+            upload_destination: '%kernel.root_dir%/../web/uploads/images/store_tienda/slider'
+            namer:              vich_uploader.namer_uniqid

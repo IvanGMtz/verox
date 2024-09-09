@@ -1,0 +1,116 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Inventario{% endblock %}
+{% block avanzu_page_title %}Inventario{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Inventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">          <div class="form-group ml-sm-1">
+              <label for="material" class="sr-only">Material</label>
+              <input type="text" class="form-control" id="material" name="q[material]" placeholder="Material" {% if q and q.material %}value="{{ q.material }}"{% endif %}>
+            </div>       <div class="form-group ml-sm-1">
+              <label for="categoria" class="sr-only">Categoría</label>
+              <input type="text" class="form-control" id="categoria" name="q[categoria]" placeholder="Categoria" {% if q and q.categoria %}value="{{ q.categoria }}"{% endif %}>
+            </div>           <div class="form-group ml-sm-1">
+              <label for="zona" class="sr-only">Zona</label>
+              <input type="text" class="form-control" id="zona" name="q[zona]" placeholder="Zona" {% if q and q.zona %}value="{{ q.zona }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="proveedor" class="sr-only">Proveedor</label>
+              <input type="text" class="form-control" id="proveedor" name="q[proveedor]" placeholder="Proveedor" {% if q and q.proveedor %}value="{{ q.proveedor }}"{% endif %}>
+            </div>                     
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('inventariocosto_createreport') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Exportar a Excel
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.material') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Material', 'a.material') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.material.categoria') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Categoría', 'a.material.categoria') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.zona') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'zona', 'a.zona') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.proveedor') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'proveedor', 'a.proveedor') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.ingreso') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Ingreso', 'a.ingreso') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.egreso') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Egreso', 'a.egreso') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.cantidadActual') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Cantidad actual', 'a.cantidadActual') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fechaUltimoIngreso') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Último Ingreso', 'a.fechaUltimoIngreso') }}
+                  </th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for inventarioCosto in inventarioCostos %}
+              <tr>
+                  <td class="nowrap">{{ inventarioCosto.material }}</td>
+                  <td class="nowrap">{{ inventarioCosto.material.categoria }}</td>
+                  <td class="nowrap">{{ inventarioCosto.zona }}</td>
+                  <td class="nowrap">{{ inventarioCosto.proveedor }}</td>
+                  <td class="nowrap">{{ inventarioCosto.ingreso|number_format(2, ',', '.') }}</td>
+                  <td class="nowrap">{{ inventarioCosto.egreso|number_format(2, ',', '.') }}</td>
+                  <td class="nowrap">{{ inventarioCosto.cantidadActual|number_format(2, ',', '.') }}</td>
+                  <td class="nowrap" data-sort-value="{% if inventarioCosto.fechaUltimoIngreso %}{{ inventarioCosto.fechaUltimoIngreso|date('U') }}{% endif %}">{% if inventarioCosto.fechaUltimoIngreso %}{{ inventarioCosto.fechaUltimoIngreso|date('d-m-Y h:i:s a') }}{% endif %}</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

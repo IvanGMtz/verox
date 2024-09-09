@@ -1,0 +1,60 @@
+AppBundle\Entity\ProductoInventarioMovimiento:
+    type: entity
+    table: producto_inventario_movimiento
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        producto:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        color:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+        movimiento:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        bodega:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+        informacion:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        usuario:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        fecha:
+            type: datetime
+            nullable: false
+            options:
+                default: CURRENT_TIMESTAMP
+    lifecycleCallbacks: {  }

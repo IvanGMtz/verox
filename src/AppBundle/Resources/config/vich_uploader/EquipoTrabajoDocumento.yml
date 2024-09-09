@@ -1,0 +1,4 @@
+AppBundle\Entity\EquipoTrabajoDocumento:
+    document:
+        mapping:           equipo_trabajo_documento
+        filename_property: documento

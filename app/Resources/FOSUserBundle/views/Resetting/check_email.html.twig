@@ -1,0 +1,25 @@
+{% extends 'AvanzuAdminThemeBundle:layout:login-layout.html.twig' %}
+{% trans_default_domain 'FOSUserBundle' %}
+{% block avanzu_login_box %}
+  <div class="row">
+    <div class="col-12 col-md-6 offset-md-3">
+      <div class="login-box" style="width:100%">
+          <div class="login-box-body p-3 p-md-5 rounded">
+            <img style="width:100%" src="/bundles/appbundle/images/favicon.png" alt="GOlD Trade Company">
+            <br>
+            {% block avanzu_login_box_msg %}
+                <h3 style="color:#333" class="mt-2">Confrmación</h3>
+                {% if error|default(false) %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+            {% endblock %}
+            <p class="text-justify">{{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}</p>
+            {% block avanzu_login_social_auth %}
+            {% endblock %}
+            {% block avanzu_login_actions %}
+            {% endblock %}
+        </div>
+    </div>
+    </div>
+  </div>
+{% endblock %}

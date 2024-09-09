@@ -1,0 +1,60 @@
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation
+    
+app_module:
+    resource: "@AppBundle/Resources/config/routing.yml"
+    prefix:   /
+    
+avanzu_admin_home:
+    path: /
+    
+welcome:
+    path: /
+    
+avanzu_admin_profile:
+    path: /admin/fosuser/{userid}/edit
+    
+profile:
+    path: /admin/fosuser/{userid}/edit
+    
+avanzu_admin_logout:
+    path: /logout
+    
+avanzu_admin_show_message:
+    path: /admin/{messageid}/message
+    
+avanzu_admin_all_messages:
+    path: /admin/messages
+    
+login_check:
+  path: /login_check
+  
+fos_user_security:
+    resource: "@AppBundle/Resources/config/routing/security.yml"
+    
+fos_user_resetting:
+    resource: "@AppBundle/Resources/config/routing/resetting.yml"
+    prefix: /resetting
+    
+fos_user_registration:
+    resource: "@AppBundle/Resources/config/routing/registration.yml"
+    prefix: /register
+    
+fos_user_change_password:
+    resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
+    prefix: /change_password
+    
+fos_user_profile:
+    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
+    prefix: /profile
+    
+app_cities:
+    path:     /cities
+    defaults: { _controller: "AppBundle:FosUser:cities" }
+    methods:  [GET, POST]
+    
+app_public_test_email:
+    path:     /public/testemail/
+    defaults: { _controller: "AppBundle:Default:testEmail" }
+    methods:  [GET, POST]

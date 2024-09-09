@@ -1,0 +1,29 @@
+disenomaterial_index:
+    path:     /
+    defaults: { _controller: "AppBundle:DisenoMaterial:index" }
+    methods:  [GET, POST]
+
+disenomaterial_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:DisenoMaterial:show" }
+    methods:  GET
+
+disenomaterial_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:DisenoMaterial:new" }
+    methods:  [GET, POST]
+
+disenomaterial_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:DisenoMaterial:edit" }
+    methods:  [GET, POST]
+
+disenomaterial_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:DisenoMaterial:delete" }
+    methods:  DELETE
+
+disenomaterial_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:DisenoMaterial:erase" }
+    methods:  GET

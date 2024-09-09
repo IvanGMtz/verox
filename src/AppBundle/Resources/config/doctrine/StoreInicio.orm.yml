@@ -1,0 +1,65 @@
+AppBundle\Entity\StoreInicio:
+    type: entity
+    table: store_inicio
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        imagenFondo:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+            column: imagen_fondo
+        imagenVrx:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+            column: imagen_vrx
+        imagenKiwi:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+            column: imagen_kiwi
+        fuente:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        hexFuente:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        hexModalBody:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: hex_modal_body
+        hexModalHeader:
+            type: string
+            nullable: false
+            length: 30
+            options:
+                fixed: false
+            column: hex_modal_header
+        fechaActualizacion:
+            type: datetime
+            nullable: false
+            column: fecha_actualizacion
+    lifecycleCallbacks: {  }

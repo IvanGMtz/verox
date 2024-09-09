@@ -1,0 +1,113 @@
+AppBundle\Entity\InventarioCosto:
+    type: entity
+    table: inventario_costo
+    indexes:
+        fk_inventarioCosto_proveedor:
+            columns:
+                - proveedor
+        fk_inventarioCosto_zona:
+            columns:
+                - zona
+        material:
+            columns:
+                - material_id
+        fk_inventarioCosto_ordenCompra:
+            columns:
+                - orden_compra
+        fk_inventarioCosto_almacen:
+            columns:
+                - almacen
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        ingreso:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        egreso:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        cantidadActual:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: cantidad_actual
+        valorSinIva:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: valor_sin_iva
+        valorConIva:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+            column: valor_con_iva
+        fechaUltimoIngreso:
+            type: datetime
+            nullable: false
+            column: fecha_ultimo_ingreso
+    manyToOne:
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenCompra:
+            targetEntity: OrdenCompra
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_compra:
+                    referencedColumnName: id
+            orphanRemoval: false
+        proveedor:
+            targetEntity: Proveedor
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proveedor:
+                    referencedColumnName: id
+            orphanRemoval: false
+        almacen:
+            targetEntity: Almacen
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                almacen:
+                    referencedColumnName: id
+            orphanRemoval: false
+        zona:
+            targetEntity: AlmacenZona
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                zona:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

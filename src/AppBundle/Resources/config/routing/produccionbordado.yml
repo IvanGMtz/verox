@@ -1,0 +1,29 @@
+produccionbordado_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionBordado:index" }
+    methods:  [GET, POST]
+
+produccionbordado_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionBordado:show" }
+    methods:  GET
+
+produccionbordado_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProduccionBordado:new" }
+    methods:  [GET, POST]
+
+produccionbordado_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionBordado:edit" }
+    methods:  [GET, POST]
+
+produccionbordado_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProduccionBordado:delete" }
+    methods:  DELETE
+
+produccionbordado_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionBordado:erase" }
+    methods:  GET

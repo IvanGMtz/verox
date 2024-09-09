@@ -1,0 +1,29 @@
+equipotrabajodocumento_index:
+    path:     /
+    defaults: { _controller: "AppBundle:EquipoTrabajoDocumento:index" }
+    methods:  [GET, POST]
+
+equipotrabajodocumento_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:EquipoTrabajoDocumento:show" }
+    methods:  GET
+
+equipotrabajodocumento_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:EquipoTrabajoDocumento:new" }
+    methods:  [GET, POST]
+
+equipotrabajodocumento_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:EquipoTrabajoDocumento:edit" }
+    methods:  [GET, POST]
+
+equipotrabajodocumento_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:EquipoTrabajoDocumento:delete" }
+    methods:  DELETE
+
+equipotrabajodocumento_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:EquipoTrabajoDocumento:erase" }
+    methods:  GET

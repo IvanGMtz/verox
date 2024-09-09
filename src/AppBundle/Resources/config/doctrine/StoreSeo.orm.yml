@@ -1,0 +1,35 @@
+AppBundle\Entity\StoreSeo:
+    type: entity
+    table: store_seo
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        facebookPixel:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+            column: facebook_pixel
+        googleAnalytics:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+            column: google_analytics
+        keyWords:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+            column: key_words
+    lifecycleCallbacks: {  }

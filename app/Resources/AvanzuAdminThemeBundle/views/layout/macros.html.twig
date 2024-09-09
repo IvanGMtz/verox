@@ -1,0 +1,88 @@
+{% macro avatar(image, alt, class) %}
+  {% if image %}
+    <img src="{{ vich_uploader_asset(app.user, 'avatar') }}" class="{{ class|default('img-circle') }}" alt="{{ alt }}" />
+  {% else %}
+    <img src="/bundles/appbundle/images/avatar.png" class="{{ class|default('img-circle') }}" alt="{{ alt }}" />
+  {% endif %}
+{% endmacro %}
+
+{% macro menu_item(item) %}
+    {% import _self as menu %}
+    {% if item.route or item.hasChildren %}
+        <li id="{{ item.identifier }}" class="nav-item {{ item.hasChildren? 'has-treeview' : '' }} {{ item.isActive ? 'menu-open' : '' }}">
+            <a class="nav-link {{ item.isActive ? 'active' : '' }}" href="{{ item.hasChildren ? '#': '/' in item.route ? item.route : path(item.route, item.routeArgs) }}">
+                {% if item.icon %} <i class="nav-icon {{ item.icon }}"></i> {% endif %}
+                {% if item.badge is not same as(false) %}
+                    <small class="right badge badge-danger bg-{{ item.badgeColor }}">{{ item.badge }}</small>
+                {% endif %}
+                {% if item.hasChildren %}<i class="right fas fa-angle-left"></i>{% endif %}
+                <p>{{ item.label|trans }}</p>
+            </a>
+
+            {% if item.hasChildren %}
+                <ul class="nav nav-treeview">
+                    {% for child in item.children %}
+                        {% if child.hasChildren %}
+                           {{ menu.menu_item(child) }}
+                        {% else %}
+                            <li class="nav-item" id="{{ child.identifier }}">
+                                <a class="nav-link {{ child.isActive ? 'active':'' }}" href="{{ '/' in child.route ? child.route : path(child.route, child.routeArgs) }}">
+                                    {{ menu.menu_item_content(child, '') }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </li>
+    {% else %}
+        <li id="{{ item.identifier }}" class="nav-item">
+          <a class="nav-link" href="#!">
+            {{ menu.menu_item_content(item, '') }}
+          </a>
+        </li>
+    {% endif %}
+{% endmacro %}
+
+{% macro menu_item_content(item, defaultIcon) %}
+{#    <i class="nav-icon {{ item.icon|default(defaultIcon) }}"></i>#}
+    <i class="far fa-circle nav-icon"></i>
+    <p>{{ item.label|trans }}</p>
+    {% if item.badge is not same as(false) %}
+        <small class="label pull-right bg-{{ item.badgeColor }}">{{ item.badge }}</small>
+    {% endif %}
+{% endmacro %}
+ 
+
+{#
+  the following code is based on phiamo/MopaBootstrapBundle
+  https://github.com/phiamo/MopaBootstrapBundle/blob/88b104b3efd4c3c3bfff1df4525a53bc3596010b/Resources/views/flash.html.twig
+#}
+{% macro flash(type, message, close, use_raw, class, domain) %}
+    <div class="alert{{ type ? ' alert-'~type : '' }} fade in {{ class|default('') }} {% if close|default(false) %}alert-dismissible{% endif %}">
+        {% if close|default(false) %}
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {% endif %}
+        {% if use_raw|default(false) %}
+            {{ message|trans({}, domain|default('messages'))|raw }}
+        {% else %}
+            {{ message|trans({}, domain|default('messages')) }}
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro session_flash(close, use_raw, class, domain) %}
+    {% import _self as flash_messages %}
+
+    {% if app.session.flashbag.peekAll|length > 0 %}
+        {% for type, messages in app.session.flashbag.all %}
+            {% for message in messages %}
+                {% if type == 'fos_user_success' %}
+                    {% set type = 'success' %}
+                    {% set domain = 'FOSUserBundle' %}
+                {% endif %}
+                {{ flash_messages.flash(type, message, close, use_raw, class, domain) }}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}

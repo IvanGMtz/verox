@@ -1,0 +1,235 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_document_title %}Preliquidación de Proceso{% endblock %}
+{% block avanzu_page_title %}Preliquidación de Proceso{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  {% for trabajador in trabajadores %}
+      <div style="visibility:hidden" id="" class="tarea"
+      data-nombre="{{ trabajador.personaAsignada.nombre }}"
+      data-cantidad="{{ trabajador.cantidad }}"
+      data-talla="{{ trabajador.talla }}"
+      data-referencia="{{ trabajador.diseno.referencia }}"
+      data-material="{{ (trabajador.material == null) ? 'EMPAQUE' : trabajador.material }}"
+      data-concepto="{{ trabajador.diseno.nombre }}">
+    </div>
+  {% endfor %}
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Seleccionar Operario</h1>
+          <select class="custom-select" onchange="persona_selected(this.id)" id="select-persona">
+            <option value="" disabled selected>Seleccionar</option>
+            {% set empleados = [] %}
+            {% for trabajador in trabajadores %}
+                {% if trabajador.personaAsignada.nombre not in empleados %}
+                  <option value="{{ trabajador.personaAsignada.nombre }}@{{ trabajador.personaAsignada.cc }}@{{ trabajador.personaAsignada.direccion }}@{{ trabajador.personaAsignada.telefono }}">{{ trabajador.personaAsignada.nombre }}</option>
+                {% endif %}
+                {% set empleados = empleados|merge([trabajador.personaAsignada.nombre]) %}
+            {% endfor %}
+          </select>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-12">
+      <div class="invoice p-3 mb-3">
+        <div class="row">
+          <div class="col-12">
+            <h4 style="text-align:center">
+              <img src="/bundles/appbundle/logo.png" alt="Enterprise logo" class="brand-image" style="opacity: 1;margin: 0 auto;float: none;width:70px"> VRX Group S.A.S<br>
+              NIT. 901273396-0<br>DEBE A:<br>
+              <span id="operario_selected"></span>
+            </h4>
+            <span id="fecha" class="float-right text-right"></span>
+            <br>
+            <div class="row">
+              <div class="col col-7">
+                <input id="suma" type="text" class="form-control" name="" value="" placeholder="La suma de ....">
+              </div>
+              <div class="col col-3">
+                <label style="font-size:large" id="total2">$ 0</label>
+              </div>
+              <div class="col col-2">
+                <input type="text" id="consecutivo" placeholder="Cuenta de Cobro #-" name="" value="">
+              </div>
+            </div>
+            <label>ORDEN DE {{ tipoOrden }} #{{ ordenProduccion.id }} - {{ ordenProduccion.referencia }}</label>
+          </div>
+        </div>
+        <div class="row invoice-info">
+          <div class="col-sm-4 invoice-col">
+            Detalles:
+            <address>
+                <ul class="list-unstyled">
+                  <li class="small">Cuenta de Cobro por labor realizada en el proceso de {{ proceso.proceso }}</li>
+                </ul>
+            </address>
+          </div>
+          <div class="col-sm-3 invoice-col">
+
+          </div>
+          <div class="col-sm-2 invoice-col">
+
+          </div>
+          <div class="col-sm-3 invoice-col">
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 table-responsive">
+            <table class="table table-striped" id="main_table">
+              <thead>
+                <tr>
+                  <th>Cantidad</th>
+                  <th>Referencia</th>
+                  <th>Concepto</th>
+                  <th>Valor unitario</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody id="t-body">
+
+              </tbody>
+            </table>
+            {% set total = 0 %}
+            {% for procesoT in trabajadores %}
+                {% set total = total + (procesoT.cantidad * costo[0].costo) %}
+            {% endfor %}
+            <hr/>
+            <h4 id="total" style="float:right" class="m-3"></h4>
+          </div>
+          <div class="" style="width:500px">
+            <input type="text" id="cuenta" class="form-control" name="cuenta_bancaria" placeholder="Cuenta bancaria para realizar pago" value="">
+            <div class="row">
+              <div class="col-sm-8 invoice-col ml-4">
+                <br>
+                <br>
+                <br>
+                <hr>
+                <label id="selected"></label><br>
+                <label id="cc"></label><br>
+                <label id="direccion"></label><br>
+                <label id="telefono"></label>
+                <br>
+                <br>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row no-print">
+          <div class="col-12">
+            <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a>
+            <a href="{{ app.request.headers.get('referer') }}" class="btn btn-default float-right" style="margin-right: 5px;">
+              <i class="fas fa-chevron-left"></i> Regresar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+  var total = 0;
+  function subtotal1(id){
+    var costo = parseInt($('#costo1').val());
+    var subT = costo * parseInt($('#cantidad1').val());
+    document.getElementById('subtotal1').value = subT;
+    $('#total').html('Total a pagar COP ' + new Intl.NumberFormat("de-DE").format(total +  subT).toString());
+    $('#total2').html('$ ' + new Intl.NumberFormat("de-DE").format(total +  subT).toString());
+  }
+    function persona_selected(id){
+      total=0;
+      var proceso = '{{ proceso.proceso }}';
+      var selected = $('#'+id).val();
+      var tareas = document.getElementsByClassName("tarea");
+      var talla = "";
+      var unidades ="";
+      var valor ="";
+      var costo = 0;
+      var subtotal ="";
+      var referencia="";
+      var concepto="";
+      var rows = "";
+      $('#t-body').html('');
+      $('#total').html('');
+      $('#fecha').html('');
+      $('#cc').html('');
+      $('#direccion').html('');
+      $('#telefono').html('');
+      $('#selected').html('');
+      $('#suma').val('');
+      $('#cuenta').val('');
+      $('#consecutivo').val('');
+      $('#operario_selected').html('');
+      for (var i = 0; i < tareas.length; i++) {
+        if(tareas[i].dataset.nombre == selected.split('@')[0]){
+          talla = tareas[i].dataset.talla == 0 ? ' (Tarea realizada - '+tareas[i].dataset.material.split('-')[0] + ')' : " - Talla: " + tareas[i].dataset.talla;
+          unidades = '<td>'+ tareas[i].dataset.cantidad + talla +'</td>';
+          referencia = '<td>'+tareas[i].dataset.referencia+'</td>';
+          concepto = '<td>'+tareas[i].dataset.concepto+'</td>';
+          if(tareas[i].dataset.material.split('-')[0] == "PRETINAS"){
+            costo = '{{ costo[0].costo2 }}';
+            valor = '<td>COP {{ costo[0].costo2 | number_format(0,'.') }}</td>';
+          }
+          else if(tareas[i].dataset.material.split('-')[0] == "Presillas"){
+            costo = '{{ costo[0].costo }}';
+            valor = '<td>COP {{ costo[0].costo | number_format(0,'.') }}</td>';
+          }
+          else if(tareas[i].dataset.material.split('-')[0] == "Ojales"){
+            costo = '{{ costo[0].costo2 }}';
+            valor = '<td>COP {{ costo[0].costo2 | number_format(0,'.') }}</td>';
+          }
+          else if(tareas[i].dataset.material.split('-')[0] == "Despeluzado"){
+            costo = '{{ costo[0].costo3 }}';
+            valor = '<td>COP {{ costo[0].costo3 | number_format(0,'.') }}</td>';
+          }
+          else if(tareas[i].dataset.material.split('-')[0] == "TACHES"){
+            costo = '{{ costo[0].costo }}';
+            valor = '<td>COP {{ costo[0].costo | number_format(0,'.') }}</td>';
+          }
+          else if(tareas[i].dataset.material.split('-')[0] == "PLACAS"){
+            costo = '{{ costo[0].costo2 }}';
+            valor = '<td>COP {{ costo[0].costo2 | number_format(0,'.') }}</td>';
+          }
+          else if(proceso == "BORDADO"){
+            costo = '{{ costo[0].costo2 }}';
+            valor = '<td>COP {{ costo[0].costo2 | number_format(0,'.') }}</td>';
+          }
+          else{
+            costo = '{{ costo[0].costo }}';
+            valor = '<td>COP {{ costo[0].costo | number_format(0,'.') }}</td>';
+          }
+          subtotal = '<td>'+ new Intl.NumberFormat("de-DE").format(parseInt(tareas[i].dataset.cantidad) * parseInt(costo)) +'</td>';
+          rows += '<tr>'+ unidades + referencia + concepto + valor + subtotal + '</tr>';
+          total += parseInt(tareas[i].dataset.cantidad) * parseInt(costo);
+        }
+      }
+      var currentdate = new Date();
+      var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/"
+                + currentdate.getFullYear();
+      $('#t-body').append(rows);
+      $('#t-body').append('<tr><td><input type="number" id="cantidad1" name="" value=""></td><td><input type="text" name="" value=""></td><td><input type="text" name="" value=""></td><td><input type="number" id="costo1" onchange="subtotal1(this.id)" name="" value=""></td><td><input type="number" id="subtotal1" name="" value=""></td></tr>');
+      $('#total').append('Total a pagar COP ' + new Intl.NumberFormat("de-DE").format(total).toString());
+      $('#total2').html('$ ' + new Intl.NumberFormat("de-DE").format(total).toString());
+      $('#operario_selected').append(selected.split('@')[0] + "<br>CC. " + selected.split('@')[1]);
+      $('#fecha').html(datetime);
+      $('#cc').html('CC. '+ selected.split('@')[1]);
+      $('#direccion').html('DIR. '+ selected.split('@')[2]);
+      $('#telefono').html('TEL. '+ selected.split('@')[3]);
+      $('#selected').html(selected.split('@')[0]);
+    }
+  </script>
+{% endblock %}

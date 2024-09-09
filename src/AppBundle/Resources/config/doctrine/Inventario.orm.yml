@@ -1,0 +1,66 @@
+AppBundle\Entity\Inventario:
+    type: entity
+    table: inventario
+    indexes:
+        material:
+            columns:
+                - material
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        ingresoTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+            column: ingreso_total
+        egresoTotal:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+            column: egreso_total
+        cantidadActual:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+            options:
+                default: '0.00'
+            column: cantidad_actual
+        fechaUltimoIngreso:
+            type: datetime
+            nullable: true
+            column: fecha_ultimo_ingreso
+        fechaUltimoEgreso:
+            type: datetime
+            nullable: true
+            column: fecha_ultimo_egreso
+        reserva:
+            type: float
+            nullable: false
+            precision: 25
+            scale: 2
+    manyToOne:
+        material:
+            targetEntity: Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: inventario
+            inversedBy: inventario
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,26 @@
+<!-- sidebar menu: : style can be found in sidebar.less -->
+{% from "AvanzuAdminThemeBundle:layout:macros.html.twig" import menu_item %}
+<aside class="main-sidebar sidebar-light-red elevation-4">
+  <!-- Brand Logo -->
+  <a href="/" class="brand-link text-center elevation-2" style="padding-bottom: 5px">
+    <img src="/bundles/appbundle/logo.png" alt="Enterprise logo" class="brand-image" style="opacity: 1;margin: 0 auto;float: none;">
+{#    <span class="brand-text font-weight-light">AdminLTE 3</span>#}
+  </a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar Menu -->
+      <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column nav-compact nav-collapse-hide-child" data-widget="treeview" role="menu" data-accordion="false">
+     {#   <style>
+            .ul li .nav-link .active{
+                background-color: #e2d263 !important;
+                color: #000 !important;
+            }
+        </style>  #}
+        {% for item in menu %}
+            {{ menu_item(item) }}
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</aside>

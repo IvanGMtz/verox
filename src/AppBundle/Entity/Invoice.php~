@@ -1,0 +1,489 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * Invoice
+ */
+class Invoice
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $invoiceDate;
+
+    /**
+     * @var float
+     */
+    private $amount = '0.00';
+
+    /**
+     * @var string
+     */
+    private $currency;
+
+    /**
+     * @var bool
+     */
+    private $cashout = false;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $cashoutDate;
+
+    /**
+     * @var string
+     */
+    private $type;
+
+    /**
+     * @var string|null
+     */
+    private $bankName;
+
+    /**
+     * @var string|null
+     */
+    private $bankAccount;
+
+    /**
+     * @var string|null
+     */
+    private $bankUser;
+
+    /**
+     * @var string|null
+     */
+    private $transferUser;
+
+    /**
+     * @var string|null
+     */
+    private $transferDni;
+
+    /**
+     * @var string|null
+     */
+    private $wallet;
+
+    /**
+     * @var int
+     */
+    private $state = '1';
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $cashoutUser;
+
+    /**
+     * @var \AppBundle\Entity\Cycle
+     */
+    private $cycle;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $invoiceUser;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set invoiceDate.
+     *
+     * @param \DateTime $invoiceDate
+     *
+     * @return Invoice
+     */
+    public function setInvoiceDate($invoiceDate)
+    {
+        $this->invoiceDate = $invoiceDate;
+
+        return $this;
+    }
+
+    /**
+     * Get invoiceDate.
+     *
+     * @return \DateTime
+     */
+    public function getInvoiceDate()
+    {
+        return $this->invoiceDate;
+    }
+
+    /**
+     * Set amount.
+     *
+     * @param float $amount
+     *
+     * @return Invoice
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set currency.
+     *
+     * @param string $currency
+     *
+     * @return Invoice
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * Get currency.
+     *
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * Set cashout.
+     *
+     * @param bool $cashout
+     *
+     * @return Invoice
+     */
+    public function setCashout($cashout)
+    {
+        $this->cashout = $cashout;
+
+        return $this;
+    }
+
+    /**
+     * Get cashout.
+     *
+     * @return bool
+     */
+    public function getCashout()
+    {
+        return $this->cashout;
+    }
+
+    /**
+     * Set cashoutDate.
+     *
+     * @param \DateTime|null $cashoutDate
+     *
+     * @return Invoice
+     */
+    public function setCashoutDate($cashoutDate = null)
+    {
+        $this->cashoutDate = $cashoutDate;
+
+        return $this;
+    }
+
+    /**
+     * Get cashoutDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getCashoutDate()
+    {
+        return $this->cashoutDate;
+    }
+
+    /**
+     * Set type.
+     *
+     * @param string $type
+     *
+     * @return Invoice
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set bankName.
+     *
+     * @param string|null $bankName
+     *
+     * @return Invoice
+     */
+    public function setBankName($bankName = null)
+    {
+        $this->bankName = $bankName;
+
+        return $this;
+    }
+
+    /**
+     * Get bankName.
+     *
+     * @return string|null
+     */
+    public function getBankName()
+    {
+        return $this->bankName;
+    }
+
+    /**
+     * Set bankAccount.
+     *
+     * @param string|null $bankAccount
+     *
+     * @return Invoice
+     */
+    public function setBankAccount($bankAccount = null)
+    {
+        $this->bankAccount = $bankAccount;
+
+        return $this;
+    }
+
+    /**
+     * Get bankAccount.
+     *
+     * @return string|null
+     */
+    public function getBankAccount()
+    {
+        return $this->bankAccount;
+    }
+
+    /**
+     * Set bankUser.
+     *
+     * @param string|null $bankUser
+     *
+     * @return Invoice
+     */
+    public function setBankUser($bankUser = null)
+    {
+        $this->bankUser = $bankUser;
+
+        return $this;
+    }
+
+    /**
+     * Get bankUser.
+     *
+     * @return string|null
+     */
+    public function getBankUser()
+    {
+        return $this->bankUser;
+    }
+
+    /**
+     * Set transferUser.
+     *
+     * @param string|null $transferUser
+     *
+     * @return Invoice
+     */
+    public function setTransferUser($transferUser = null)
+    {
+        $this->transferUser = $transferUser;
+
+        return $this;
+    }
+
+    /**
+     * Get transferUser.
+     *
+     * @return string|null
+     */
+    public function getTransferUser()
+    {
+        return $this->transferUser;
+    }
+
+    /**
+     * Set transferDni.
+     *
+     * @param string|null $transferDni
+     *
+     * @return Invoice
+     */
+    public function setTransferDni($transferDni = null)
+    {
+        $this->transferDni = $transferDni;
+
+        return $this;
+    }
+
+    /**
+     * Get transferDni.
+     *
+     * @return string|null
+     */
+    public function getTransferDni()
+    {
+        return $this->transferDni;
+    }
+
+    /**
+     * Set wallet.
+     *
+     * @param string|null $wallet
+     *
+     * @return Invoice
+     */
+    public function setWallet($wallet = null)
+    {
+        $this->wallet = $wallet;
+
+        return $this;
+    }
+
+    /**
+     * Get wallet.
+     *
+     * @return string|null
+     */
+    public function getWallet()
+    {
+        return $this->wallet;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return Invoice
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set cashoutUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $cashoutUser
+     *
+     * @return Invoice
+     */
+    public function setCashoutUser(\AppBundle\Entity\FosUser $cashoutUser = null)
+    {
+        $this->cashoutUser = $cashoutUser;
+
+        return $this;
+    }
+
+    /**
+     * Get cashoutUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getCashoutUser()
+    {
+        return $this->cashoutUser;
+    }
+
+    /**
+     * Set cycle.
+     *
+     * @param \AppBundle\Entity\Cycle|null $cycle
+     *
+     * @return Invoice
+     */
+    public function setCycle(\AppBundle\Entity\Cycle $cycle = null)
+    {
+        $this->cycle = $cycle;
+
+        return $this;
+    }
+
+    /**
+     * Get cycle.
+     *
+     * @return \AppBundle\Entity\Cycle|null
+     */
+    public function getCycle()
+    {
+        return $this->cycle;
+    }
+
+    /**
+     * Set invoiceUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $invoiceUser
+     *
+     * @return Invoice
+     */
+    public function setInvoiceUser(\AppBundle\Entity\FosUser $invoiceUser = null)
+    {
+        $this->invoiceUser = $invoiceUser;
+
+        return $this;
+    }
+
+    /**
+     * Get invoiceUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getInvoiceUser()
+    {
+        return $this->invoiceUser;
+    }
+}

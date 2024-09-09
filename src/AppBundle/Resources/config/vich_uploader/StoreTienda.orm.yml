@@ -1,0 +1,4 @@
+AppBundle\Entity\StoreTienda:
+    foto:
+        mapping:           store_tienda
+        filename_property: logo_navbar

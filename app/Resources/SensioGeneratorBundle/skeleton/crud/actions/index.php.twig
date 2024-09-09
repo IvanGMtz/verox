@@ -1,0 +1,62 @@
+    /**
+{% block phpdoc_method_header %}
+     * Lists all {{ entity_singularized }} entities.
+{% endblock phpdoc_method_header %}
+     *
+{% block phpdoc_method_annotations %}
+{% if 'annotation' == format %}
+     * @Route("/", name="{{ route_name_prefix }}_index")
+     * @Method("GET")
+{% endif %}
+{% endblock phpdoc_method_annotations %}
+     */
+{% block method_definition %}
+    public function indexAction(Request $request, PaginatorInterface $paginator)
+{% endblock method_definition %}
+    {
+{% block method_body %}
+        $em = $this->getDoctrine()->getManager();
+        $q = $request->request->get('q', $this->get('session')->get('q.{{ entity }}'));
+        if ($request->isMethod('POST')) {
+          $page = 1;
+        }else{
+          $page = $request->query->getInt('page', 1);
+        }
+        
+        ${{ entity_pluralized }}Q = $em->getRepository('{{ bundle }}:{{ entity }}')->createQueryBuilder('a');
+        
+        if($q && $q !=''){
+          $this->get('session')->set('q.{{ entity }}', $q);
+          $qcount = 0;
+          foreach($q as $field => $value){
+            if($value){
+              if($qcount == 0){
+                ${{ entity_pluralized }}Q->where('a.'.$field.' LIKE :'.$field)->setParameter($field, '%'.$value.'%');
+              }else{
+                ${{ entity_pluralized }}Q->andWhere('a.'.$field.' LIKE :'.$field)->setParameter($field, '%'.$value.'%');
+              }
+            }
+            $qcount++;
+          }
+        }
+        
+        $query = ${{ entity_pluralized }}Q->getQuery();
+        
+        $pagination = $paginator->paginate(
+            $query, /* query NOT result */
+            $page, /*page number*/
+            50 /*limit per page*/
+        );
+        
+        ${{ entity_pluralized }} = $pagination->getItems();
+        
+{% endblock method_body %}
+
+{% block method_return %}
+        return $this->render('{{ entity|lower|replace({'\\': '/'}) }}/index.html.twig', array(
+            '{{ entity_pluralized }}' => ${{ entity_pluralized }},
+            'q' => $q,
+            'pagination' => $pagination
+        ));
+{% endblock method_return %}
+    }

@@ -1,0 +1,157 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %} 
+{% block avanzu_document_title %}Egreso de inventario{% endblock %}
+{% block avanzu_page_title %}Egreso de inventario{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Egreso de inventario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row p-2">
+  <div class="col-12 p-2 card">
+    <select class="custom-select" id="bodega_select" syle="width:100px">
+      <option selected disabled>Bodega</option>
+      <option value="detal">Detal</option>
+      <option value="mayorista">Mayoristas</option>
+    </select><br>
+    <form onsubmit="event.preventDefault(); request_product();">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" id="ref" placeholder="Referencia" aria-label="Referencia" aria-describedby="basic-addon2">
+      </div>
+    </form>
+    <div id="response">
+      <div class="table-responsive">
+        <form id="confirmation_form" action = "{{ path('productoinventario_out') }}" method = "post">
+          <input style="visibility: hidden" id="products_data" type="text" name="products_data"></input>
+          <table class="table table-sm table-bordered table-hover">
+            <thead>
+                <tr>
+                  <th class="nowrap">Referencia</th>
+                  <th class="nowrap">Nombre</th>
+                  <th class="nowrap">Talla</th>
+                  <th class="nowrap">Color</th>
+                  <th class="nowrap">Cantidad</th>
+                  <th class="nowrap"></th>
+                </tr>
+            </thead>
+            <tbody id="product_table">
+            
+            </tbody>
+          </table>
+          <div class="row">
+            <div class="col-12">
+              <div class="card card-danger">
+                <div class="card-body">
+                  <button disabled id="confirm_btn" class="btn btn-warning btn-flat btn-sm" type="button" onclick="confirm_register()">Confirmar Egreso</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12" style="display:none">
+    <div class="card card-danger">
+      <div class="card-body">
+                <a class="btn btn-default btn-flat btn-sm" href="{{ path('productoinventario_index') }}">Regresar</a>
+</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script>
+        $(function () {
+            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });
+            $('select:not(.swal2-select)').select2();
+            $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+            $('[data-timepicker]').timepicker();
+        });
+        var products = [];
+        var counter = 1;
+        function remove_row(id){
+          counter--;
+          for(let i = 0;i< products.length;i++){
+              if(products[i].counter == id){
+                products.splice(i,1);
+              }
+            }
+          $("#product-"+id).remove();
+          if(counter<2){$("#confirm_btn").prop('disabled', true);}
+        }
+        function request_product(){
+          let ref = $("#ref").val();
+          $.ajax({
+            url:"{{ app.request.getSchemeAndHttpHost() }}/admin/producto/search_product?ref="+ref,
+            type:'GET',
+            success: function(result){
+              if(result.request == "success"){
+                result.counter = counter;
+                products.push(result);
+                let colores = "";
+                result.producto_color.forEach(color=>{
+                  colores += '<option id="" data-hex="'+color.hex+'" style="background-color:'+color.hex+'" value="'+color.id+'-'+color.hex+'">'+color.nombre+'</option>';
+                });
+                $("#product_table").append(
+                  '<tr id="product-'+counter+'">'+
+                    '<td class="nowrap">'+result.producto_referencia+'</td>'+
+                    '<td class="nowrap">'+result.producto_nombre+'</td>'+
+                    '<td class="nowrap">'+result.producto_talla+'</td>'+
+                    '<td class="nowrap p-1"><select class="form-control" data-reference="'+counter+'" style="background-color:'+result.producto_color[0].hex+';color:white" id="color-'+result.producto_id+'-'+counter+'">'+colores+'</select></td>'+
+                    '<td class="nowrap"><input class="form-control" id="qty-'+result.producto_id+'-'+result.producto_talla.replace(/\s/g,'')+'-'+counter+'" value="1"></inpu></td>'+
+                    '<td class="nowrap text-center"><button class="btn btn-danger" onclick="remove_row('+counter+')" type="button"><i class="fa fa-trash"></i></button></td>'+
+                  '</tr>'
+                );
+                $('#color-'+result.producto_id+"-"+result.counter).change(function(){
+                  $('#color-'+result.producto_id+"-"+result.counter).css("background-color", $('#color-'+result.producto_id+"-"+result.counter).val().split("-")[1]);
+                });
+                $("#ref").val("");
+                $("#confirm_btn").prop('disabled', false);
+                counter ++;
+              }
+            },
+            error:function(error){
+              console.error(error);
+            }
+          });
+        }
+        function confirm_register(){
+          let bodega = $("#bodega_select").val();
+          if(bodega != null){
+            for(let i = 0;i< products.length;i++){
+              let color = $("#color-"+products[i].producto_id+"-"+products[i].counter).val().split("-")[0];
+              let reference = $("#color-"+products[i].producto_id+"-"+products[i].counter).data("reference");
+              let qty = $("#qty-"+products[i].producto_id+"-"+products[i].producto_talla.replace(/\s/g,'')+"-"+reference).val();
+              products[i].cantidad = qty;
+              products[i].bodega = bodega;
+              products[i]['producto_color'] = color;
+            }
+            $("#products_data").val(JSON.stringify(products));
+            $("#confirmation_form").submit();
+          }
+          else{
+            return alert("No hay Bodega seleccionada!");
+          }
+        }
+    </script>
+{% endblock %}

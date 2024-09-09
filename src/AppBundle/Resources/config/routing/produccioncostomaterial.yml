@@ -1,0 +1,29 @@
+produccioncostomaterial_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionCostoMaterial:index" }
+    methods:  [GET, POST]
+
+produccioncostomaterial_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionCostoMaterial:show" }
+    methods:  GET
+
+produccioncostomaterial_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProduccionCostoMaterial:new" }
+    methods:  [GET, POST]
+
+produccioncostomaterial_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionCostoMaterial:edit" }
+    methods:  [GET, POST]
+
+produccioncostomaterial_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:ProduccionCostoMaterial:delete" }
+    methods:  DELETE
+
+produccioncostomaterial_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionCostoMaterial:erase" }
+    methods:  GET

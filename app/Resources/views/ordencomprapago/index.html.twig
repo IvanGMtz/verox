@@ -1,0 +1,122 @@
+<div class="card card-solid">
+  <div class="card-header">
+    {{ form_start(form,{'attr':{'action': path('ordencomprapago_new',{id:ordenCompra.id}) }}) }}
+      <table class="table table-sm table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="nowrap text-right">
+                  Valor total
+                </th>
+                <th class="nowrap text-right">
+                  Pagado
+                </th>
+                <th class="nowrap text-right">
+                  Saldo
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <th class="nowrap text-right">
+                {{ ordenCompra.valorTotal|number_format(2,',','.') }}
+              </th>
+              <th class="nowrap text-right">
+                {{ ordenCompra.valorPagado|number_format(2,',','.') }}
+              </th>
+              <th class="nowrap text-right">
+                {{ ordenCompra.valorSaldo|number_format(2,',','.') }}
+              </th>
+              <th></th>
+          </tr>
+        </tbody>
+        {% if not ordenCompra.pagada %}
+        <thead>
+          <tr>
+              <th colspan="4" class="nowrap text-left">
+                Agregar pago:
+              </th>
+          </tr>
+            <tr>
+                <th class="nowrap text-right">
+                  Forma de pago
+                </th>
+                <th class="nowrap text-right">
+                  # Factura
+                </th>
+                <th class="nowrap text-right">
+                  Valor
+                </th>
+                <th class="nowrap"></th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <th class="nowrap text-right">
+                {{ form_widget(form.tipoPago) }} 
+              </th>
+              <th class="nowrap text-right">
+                {{ form_widget(form.referencia) }} 
+              </th>
+              <th class="nowrap text-right">
+                {{ form_widget(form.valor) }} 
+              </th>
+              <th class="nowrap text-center">
+                <button type="submit" class="btn btn-success ml-sm-1">Crear</button>
+              </th>
+          </tr>
+        </tbody>
+        {% endif %}
+      </table>
+      <div style="display:none">{{ form_rest(form) }}</div>
+    {{ form_end(form) }}
+  </div>
+  <div class="card-body table-responsive">
+    <table class="table table-sm table-bordered table-hover">
+      <thead>
+          <tr>
+              <th class="nowrap">
+                Id
+              </th>
+              <th class="nowrap">
+                Fecha
+              </th>
+              <th class="nowrap">
+                Forma
+              </th>
+              <th class="nowrap">
+                # Factura
+              </th>
+              <th class="nowrap">
+                Valor
+              </th>
+              <th class="nowrap"></th>
+          </tr>
+      </thead>
+      <tbody>
+      {% for ordenCompraPago in ordenCompraPagos %}
+          <tr {% if ordenCompraPago.estado == 0 %}class="bg-gray"{% endif %}>
+              <td class="nowrap">{{ ordenCompraPago.id }}</td>
+              <td class="nowrap" data-sort-value="{% if ordenCompraPago.fechaCreacion %}{{ ordenCompraPago.fechaCreacion|date('U') }}{% endif %}">
+                {% if ordenCompraPago.fechaCreacion %}
+                  {{ ordenCompraPago.fechaCreacion|date('d-m-Y') }}<br>
+                  {{ ordenCompraPago.fechaCreacion|date('h:i:s a') }}
+                {% endif %}
+              </td>
+              <td class="nowrap">{{ ordenCompraPago.tipoPago }}</td>
+              <td class="nowrap">{{ ordenCompraPago.referencia }}</td>
+              <td class="nowrap text-right">{{ ordenCompraPago.valor|number_format(2,',','.') }}</td>
+              <td class="nowrap text-center">
+                {% if ordenCompraPago.estado == 1 and ordenCompra.estado != 3 %}
+                <a class="btn btn-primary btn-xs" title="Anular item" href="{{ path('ordencomprapago_anular', { 'id': ordenCompraPago.id }) }}"><i class="fa fa-trash"></i></a>
+                {% endif %}
+              </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="navigation mt-4">
+      {{ knp_pagination_render(pagination) }}
+    </div>
+  </div>
+</div>   

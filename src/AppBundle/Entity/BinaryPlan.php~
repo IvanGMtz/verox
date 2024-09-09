@@ -1,0 +1,435 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * BinaryPlan
+ */
+class BinaryPlan
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var float
+     */
+    private $amount;
+
+    /**
+     * @var float
+     */
+    private $ratioBonus1;
+
+    /**
+     * @var float
+     */
+    private $ratioBonus2;
+
+    /**
+     * @var float
+     */
+    private $ratioBinary;
+
+    /**
+     * @var float
+     */
+    private $ratioEqual1;
+
+    /**
+     * @var float
+     */
+    private $ratioEqual2;
+
+    /**
+     * @var float
+     */
+    private $ratioEqual3;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     * @return BinaryPlan
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set amount.
+     *
+     * @param float $amount
+     *
+     * @return BinaryPlan
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount.
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set ratioBonus1.
+     *
+     * @param float $ratioBonus1
+     *
+     * @return BinaryPlan
+     */
+    public function setRatioBonus1($ratioBonus1)
+    {
+        $this->ratioBonus1 = $ratioBonus1;
+
+        return $this;
+    }
+
+    /**
+     * Get ratioBonus1.
+     *
+     * @return float
+     */
+    public function getRatioBonus1()
+    {
+        return $this->ratioBonus1;
+    }
+
+    /**
+     * Set ratioBonus2.
+     *
+     * @param float $ratioBonus2
+     *
+     * @return BinaryPlan
+     */
+    public function setRatioBonus2($ratioBonus2)
+    {
+        $this->ratioBonus2 = $ratioBonus2;
+
+        return $this;
+    }
+
+    /**
+     * Get ratioBonus2.
+     *
+     * @return float
+     */
+    public function getRatioBonus2()
+    {
+        return $this->ratioBonus2;
+    }
+
+    /**
+     * Set ratioBinary.
+     *
+     * @param float $ratioBinary
+     *
+     * @return BinaryPlan
+     */
+    public function setRatioBinary($ratioBinary)
+    {
+        $this->ratioBinary = $ratioBinary;
+
+        return $this;
+    }
+
+    /**
+     * Get ratioBinary.
+     *
+     * @return float
+     */
+    public function getRatioBinary()
+    {
+        return $this->ratioBinary;
+    }
+
+    /**
+     * Set ratioEqual1.
+     *
+     * @param float $ratioEqual1
+     *
+     * @return BinaryPlan
+     */
+    public function setRatioEqual1($ratioEqual1)
+    {
+        $this->ratioEqual1 = $ratioEqual1;
+
+        return $this;
+    }
+
+    /**
+     * Get ratioEqual1.
+     *
+     * @return float
+     */
+    public function getRatioEqual1()
+    {
+        return $this->ratioEqual1;
+    }
+
+    /**
+     * Set ratioEqual2.
+     *
+     * @param float $ratioEqual2
+     *
+     * @return BinaryPlan
+     */
+    public function setRatioEqual2($ratioEqual2)
+    {
+        $this->ratioEqual2 = $ratioEqual2;
+
+        return $this;
+    }
+
+    /**
+     * Get ratioEqual2.
+     *
+     * @return float
+     */
+    public function getRatioEqual2()
+    {
+        return $this->ratioEqual2;
+    }
+
+    /**
+     * Set ratioEqual3.
+     *
+     * @param float $ratioEqual3
+     *
+     * @return BinaryPlan
+     */
+    public function setRatioEqual3($ratioEqual3)
+    {
+        $this->ratioEqual3 = $ratioEqual3;
+
+        return $this;
+    }
+
+    /**
+     * Get ratioEqual3.
+     *
+     * @return float
+     */
+    public function getRatioEqual3()
+    {
+        return $this->ratioEqual3;
+    }
+    /**
+     * @var string|null
+     */
+    private $description;
+
+    /**
+     * @var string|null
+     */
+    private $shortDescription;
+
+
+    /**
+     * Set description.
+     *
+     * @param string|null $description
+     *
+     * @return BinaryPlan
+     */
+    public function setDescription($description = null)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set shortDescription.
+     *
+     * @param string|null $shortDescription
+     *
+     * @return BinaryPlan
+     */
+    public function setShortDescription($shortDescription = null)
+    {
+        $this->shortDescription = $shortDescription;
+
+        return $this;
+    }
+
+    /**
+     * Get shortDescription.
+     *
+     * @return string|null
+     */
+    public function getShortDescription()
+    {
+        return $this->shortDescription;
+    }
+    
+    public function __toString() {
+      return $this->name;
+    }
+    /**
+     * @var bool|null
+     */
+    private $hidden = '0';
+
+
+    /**
+     * Set hidden.
+     *
+     * @param bool|null $hidden
+     *
+     * @return BinaryPlan
+     */
+    public function setHidden($hidden = null)
+    {
+        $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Get hidden.
+     *
+     * @return bool|null
+     */
+    public function getHidden()
+    {
+        return $this->hidden;
+    }
+    /**
+     * @var bool|null
+     */
+    private $buyable = 1;
+
+
+    /**
+     * Set buyable.
+     *
+     * @param bool|null $buyable
+     *
+     * @return BinaryPlan
+     */
+    public function setBuyable($buyable = null)
+    {
+        $this->buyable = $buyable;
+
+        return $this;
+    }
+
+    /**
+     * Get buyable.
+     *
+     * @return bool|null
+     */
+    public function getBuyable()
+    {
+        return $this->buyable;
+    }
+    /**
+     * @var float|null
+     */
+    private $overAmount = 0;
+
+    /**
+     * @var float|null
+     */
+    private $totalAmount = 0;
+
+
+    /**
+     * Set overAmount.
+     *
+     * @param float|null $overAmount
+     *
+     * @return BinaryPlan
+     */
+    public function setOverAmount($overAmount = null)
+    {
+        $this->overAmount = $overAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get overAmount.
+     *
+     * @return float|null
+     */
+    public function getOverAmount()
+    {
+        return $this->overAmount;
+    }
+
+    /**
+     * Set totalAmount.
+     *
+     * @param float|null $totalAmount
+     *
+     * @return BinaryPlan
+     */
+    public function setTotalAmount($totalAmount = null)
+    {
+        $this->totalAmount = $totalAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get totalAmount.
+     *
+     * @return float|null
+     */
+    public function getTotalAmount()
+    {
+        return $this->totalAmount;
+    }
+}

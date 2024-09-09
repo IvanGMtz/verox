@@ -1,0 +1,87 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Storeinicio{% endblock %}
+{% block avanzu_page_title %}Storeinicio{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Configuración página de inicio</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.imagenFondo') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Imagenfondo', 'a.imagenFondo') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.imagenVrx') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Imagenvrx', 'a.imagenVrx') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.imagenKiwi') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Imagenkiwi', 'a.imagenKiwi') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.fuente') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Fuente', 'a.fuente') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.hexFuente') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'HexFuente', 'a.hexFuente') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.hexModalBody') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Hexmodalbody', 'a.hexModalBody') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.hexModalHeader') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Hexmodalheader', 'a.hexModalHeader') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for storeInicio in storeInicios %}
+              <tr>
+                  <td class="nowrap">{{ storeInicio.imagenFondo }}</td>
+                  <td class="nowrap">{{ storeInicio.imagenVrx }}</td>
+                  <td class="nowrap">{{ storeInicio.imagenKiwi }}</td>
+                  <td class="nowrap">{{ storeInicio.fuente }}</td>
+                  <td class="nowrap">{{ storeInicio.hexFuente }}</td>
+                  <td class="nowrap">{{ storeInicio.hexModalBody }}</td>
+                  <td class="nowrap">{{ storeInicio.hexModalHeader }}</td>
+                  <td class="nowrap text-center">                                                  
+                                                                     
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('storeinicio_edit', { 'id': storeInicio.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

@@ -1,0 +1,10 @@
+AppBundle\Entity\StoreInicio:
+    foto1:
+        mapping:           store_inicio
+        filename_property: imagen_fondo
+    foto2:
+        mapping:           store_inicio
+        filename_property: imagen_vrx
+    foto3:
+        mapping:           store_inicio
+        filename_property: imagen_kiwi

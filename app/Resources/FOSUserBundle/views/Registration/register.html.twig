@@ -1,0 +1,118 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% extends 'AvanzuAdminThemeBundle:layout:login-layout.html.twig' %}
+{% block avanzu_login_box %}
+  <div class="row">
+    <div class="col-12">
+      <div class="login-box" style="width:100%">
+          <div class="login-box-body p-3 p-md-5 rounded">
+              {% block avanzu_login_box_msg %}
+                <h3 class="login-box-msg" style="color: #333">REGISTRO DE NUEVO USUARIO</h3>
+                {% if error|default(false) %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+              {% endblock %}
+              {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+                <div class="row">
+                  <div class="col-12">
+                    <div class="row">
+                      <div class="col-12 col-sm-12 col-md-6">
+                        {{ form_row(form.name) }}
+                        {{ form_row(form.email) }}
+                        {{ form_row(form.username) }}
+                        {{ form_row(form.plainPassword.first) }}
+                        {{ form_row(form.plainPassword.second) }}
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-6">
+                        
+                        <div class="form-group">
+                        {{ form_label(form.country) }}<br>
+                        {{ form_widget(form.country) }}
+                        </div>
+                        <div class="form-group">
+                        {{ form_label(form.city) }}<br>
+                        {{ form_widget(form.city) }}
+                        </div>
+                        <div class="form-group">
+                        {{ form_row(form.phone) }}
+                        </div>
+                        <div style="display:none">
+                          {{ form_rest(form) }}
+                        </div>
+                        <div class="row justify-content-center pb-4 pb-md-0 pt-0 pt-md-4">
+                          <div class="col-12 col-sm-12 col-md-4">
+                            <button type="submit" class="btn btn-success btn-block mt-2">Registrar</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row pt-0 pt-md-2">
+                      <div class="col-12 col-sm-12">
+                        <div class="alert alert-info text-center">
+                          POR FAVOR INGRESE DATOS REALES, DE LO CONTRARIO PUEDE SER ANULADA SU INSCRIPCIÓN.
+                        </div>
+                      </div>
+                    </div>
+                    
+              {{ form_end(form) }}
+
+              {% block avanzu_login_social_auth %}
+              {% endblock %}
+
+              {% block avanzu_login_actions %}
+              {% endblock %}
+
+          </div>
+      </div>
+    </div>
+{#    {{ dump(paises) }}#}
+  </div>
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+    var paises = JSON.parse('{{ paises|raw }}');
+    $(document).ready( function (){
+      $("#fos_user_registration_form_username").on("keypress", function (){
+        var input = $(this);
+        setTimeout(function (){
+          input.val(input.val().toLowerCase().trim());
+        },5);
+      });
+    });
+    $(function(){
+      $('#fos_user_registration_form_country').change(function(){
+        var country = $(this).val();
+        $.ajax({
+          url: "{{path('app_cities')}}",
+          method: 'GET',
+          dataType: 'JSON',
+          data: {
+            country: country
+          },
+          success: function(data){
+            $('#fos_user_registration_form_city').html('');
+            $.each(data, function(idx,city){
+              $('#fos_user_registration_form_city').append($('<option value="'+city.id+'">'+city.name+'</option>'));
+            });
+            var indicativo = '';
+            for(var i=0; i<paises.length; i++){
+                if(country == paises[i].id){
+                    indicativo = paises[i].extra2;
+                }
+            }
+            $('#fos_user_registration_form_phone').val(indicativo);
+          },
+          error: function(error){
+            console.log(error);
+          },
+          complete: function(){
+            
+          }
+        });
+      });
+      $('#fos_user_registration_form_country').trigger('change');
+      $('form').submit(function(){
+        alert('Procesando registro, por favor espere', 'info');
+      });
+    });
+  </script>
+{% endblock %}

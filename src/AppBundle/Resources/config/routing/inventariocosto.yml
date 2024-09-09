@@ -1,0 +1,39 @@
+inventariocosto_index:
+    path:     /
+    defaults: { _controller: "AppBundle:InventarioCosto:index" }
+    methods:  [GET, POST]
+
+inventariocosto_index2:
+    path:     /index2
+    defaults: { _controller: "AppBundle:InventarioCosto:index2" }
+    methods:  [GET, POST]
+
+inventariocosto_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:InventarioCosto:show" }
+    methods:  GET
+
+inventariocosto_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:InventarioCosto:new" }
+    methods:  [GET, POST]
+
+inventariocosto_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:InventarioCosto:edit" }
+    methods:  [GET, POST]
+
+inventariocosto_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:InventarioCosto:delete" }
+    methods:  DELETE
+
+inventariocosto_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:InventarioCosto:erase" }
+    methods:  GET
+
+inventariocosto_createreport:
+    path:     /report
+    defaults: { _controller: "AppBundle:InventarioCosto:report" }
+    methods:  [GET, POST]

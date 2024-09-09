@@ -1,0 +1,138 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Lista de empaque{% endblock %}
+{% block avanzu_page_title %}Lista de empaque{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm">
+          <h1 class="m-0">Lista de empaque orden de producción: {{ orden_produccion.referencia }}</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+
+        <form class="form-inline pull-left no-print" method="POST">         <div class="form-group ml-sm-1">
+              <label for="caja" class="sr-only">caja</label>
+              <input type="text" class="form-control" id="caja" name="q[caja]" placeholder="Caja" {% if q and q.caja %}value="{{ q.caja }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="cantidad" class="sr-only">cantidad</label>
+              <input type="text" class="form-control" id="cantidad" name="q[cantidad]" placeholder="Cantidad" {% if q and q.cantidad %}value="{{ q.cantidad }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="marca" class="sr-only">marca</label>
+              <input type="text" class="form-control" id="marca" name="q[marca]" placeholder="Marca" {% if q and q.marca %}value="{{ q.marca }}"{% endif %}>
+            </div>
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+
+        <div class="card-tools pull-right no-print">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('produccionempaque_new', {produccionOrden: orden_produccion.id}) }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+        <br><br><br>
+        <div class="">
+          {% set conf = 0 %}
+          {% set empa = 0 %}
+          {% for item in confirmados %}
+              {% set conf = conf + item %}
+          {% endfor %}
+          {% for item in empacados %}
+              {% set empa = empa + item %}
+          {% endfor %}
+          {% if empa < conf %}
+          {% for key,item in confirmados %}
+              {% for key2,item2 in empacados %}
+                {% if key2 == key %}
+                  {% if item2 < item %}
+                  <div class="alert alert-warning" role="alert">
+                    <label>Falta empacar {{ item - item2 }} unidades de la referencia: {{ key2 }}</label>
+                  </div>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+          {% endfor %}
+          {% elseif empa > conf %}
+          <div class="alert alert-warning" role="alert">
+            <label>Atención: Hay mas unidades empacadas que las reportadas en producción, revisa cuidadosamente las cantidades de cada caja</label>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body table-responsive">
+        <label>Cantidad Total: {{ conf }} prendas - {{ orden_produccion.referencia }}</label>
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.caja') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Caja', 'a.caja') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.diseno') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Diseño', 'a.diseno') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.cantidad') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Cantidad', 'a.cantidad') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.marca') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Marca', 'a.marca') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.curva') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Curva', 'a.curva') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.notas') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Notas', 'a.notas') }}
+                  </th>
+                  <th class="nowrap no-print"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for produccionEmpaque in produccionEmpaques %}
+              <tr>
+                  <td class="nowrap">{{ produccionEmpaque.caja }}</td>
+                  <td class="nowrap">{{ produccionEmpaque.diseno.diseno.nombre }}</td>
+                  <td class="nowrap">{{ produccionEmpaque.cantidad }}</td>
+                  <td class="nowrap">{{ produccionEmpaque.marca }}</td>
+                  <td class="nowrap">{{ produccionEmpaque.curva }}</td>
+                  <td class="nowrap">{{ produccionEmpaque.notas }}</td>
+                  <td class="nowrap text-center no-print">
+                    <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('produccionempaque_show', { produccionEmpaque: produccionEmpaque.id, produccionOrden: orden_produccion.id }) }}"><i class="fa fa-eye"></i></a>
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('produccionempaque_edit', { produccionEmpaque: produccionEmpaque.id, produccionOrden: orden_produccion.id }) }}"><i class="fa fa-edit"></i></a>
+
+                                          </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default mt-2"><i class="fas fa-print"></i> Imprimir</a>
+        <div class="navigation mt-4 no-print">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+
+  </script>
+{% endblock %}

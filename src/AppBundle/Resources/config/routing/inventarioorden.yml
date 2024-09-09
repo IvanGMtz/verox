@@ -1,0 +1,54 @@
+inventarioorden_index:
+    path:     /
+    defaults: { _controller: "AppBundle:InventarioOrden:index" }
+    methods:  [GET, POST]
+
+inventarioorden_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:InventarioOrden:show" }
+    methods:  GET
+
+inventarioorden_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:InventarioOrden:new" }
+    methods:  [GET, POST]
+
+inventarioorden_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:InventarioOrden:edit" }
+    methods:  [GET, POST]
+
+#inventarioorden_delete:
+#    path:     /{id}/delete
+#    defaults: { _controller: "AppBundle:InventarioOrden:delete" }
+#    methods:  DELETE
+#
+#inventarioorden_erase:
+#    path:     /{id}/erase
+#    defaults: { _controller: "AppBundle:InventarioOrden:erase" }
+#    methods:  GET
+
+inventarioorden_newfromdiseno:
+    path:     /{id}/newfromdiseno
+    defaults: { _controller: "AppBundle:InventarioOrden:newFromDiseno" }
+    methods:  [GET]
+
+inventarioorden_aceptar:
+    path:     /{id}/aceptar
+    defaults: { _controller: "AppBundle:InventarioOrden:aceptar" }
+    methods:  [GET]
+
+inventarioorden_rechazar:
+    path:     /{id}/rechazar
+    defaults: { _controller: "AppBundle:InventarioOrden:rechazar" }
+    methods:  [GET]
+
+inventarioorden_pend_aceptar:
+    path:     /pend_aceptar
+    defaults: { _controller: "AppBundle:InventarioOrden:pendAceptar" }
+    methods:  [GET]
+
+inventarioorden_pend_entrega:
+    path:     /pend_entrega
+    defaults: { _controller: "AppBundle:InventarioOrden:pendEntrega" }
+    methods:  [GET]

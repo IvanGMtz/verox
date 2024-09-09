@@ -1,0 +1,64 @@
+AppBundle\Entity\DisenoOrden:
+    type: entity
+    table: diseno_orden
+    indexes:
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        referencia:
+            type: string
+            nullable: false
+            length: 120
+            options:
+                fixed: false
+        cantidad:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        notas:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        fechaFinalizacion:
+            type: datetime
+            nullable: true
+            column: fecha_finalizacion
+        duracion:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+    manyToOne:
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

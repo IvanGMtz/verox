@@ -1,0 +1,115 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Productocategorias{% endblock %}
+{% block avanzu_page_title %}Productocategorias{% endblock %}
+{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Listado de productoCategorias</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+                  </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-header">
+        
+        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
+              <label for="id" class="sr-only">id</label>
+              <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
+            </div>            <div class="form-group ml-sm-1">
+              <label for="nombreEs" class="sr-only">nombreEs</label>
+              <input type="text" class="form-control" id="nombreEs" name="q[nombreEs]" placeholder="Nombrees" {% if q and q.nombreEs %}value="{{ q.nombreEs }}"{% endif %}>
+            </div>      
+          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        </form>
+          
+        <div class="card-tools pull-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+              <i class="fas fa-wrench"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" role="menu">
+              <a href="{{ path('productocategoria_new') }}" class="dropdown-item" title="Nuevo">
+                <i class="fa fa-plus"></i>&nbsp;Nuevo
+              </a>            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body table-responsive">  
+        <table class="table table-sm table-bordered table-hover">
+          <thead>
+              <tr>
+                  <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.nombreEs') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Nombre', 'a.nombreEs') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.nombreEn') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Descripción', 'a.nombreEn') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.principal') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Principal', 'a.principal') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.verox') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Verox', 'a.verox') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.kiwi') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Kiwi', 'a.kiwi') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.orden') %} sorted{% endif %}">
+                    {{ knp_pagination_sortable(pagination, 'Orden', 'a.orden') }}
+                  </th>
+                  <th class="nowrap"></th>
+              </tr>
+          </thead>
+          <tbody>
+          {% for productoCategorium in productoCategorias %}
+            {% if productoCategorium.nombreEs != "Todos" %}
+              <tr>
+                  <td class="nowrap"><a href="{{ path('productocategoria_show', { 'id': productoCategorium.id }) }}">{{ productoCategorium.id }}</a></td>
+                  <td class="nowrap">{{ productoCategorium.nombreEs }}</td>
+                  <td class="nowrap">{{ productoCategorium.nombreEn }}</td>
+                  <td class="nowrap">{{ productoCategorium.principal }}</td>
+                  <td class="nowrap">{{ productoCategorium.verox }}</td>
+                  <td class="nowrap">{{ productoCategorium.kiwi }}</td>
+                  <td class="nowrap">{{ productoCategorium.orden }}</td>
+                  <td class="nowrap text-center">                                                  
+                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('productocategoria_show', { 'id': productoCategorium.id }) }}"><i class="fa fa-eye"></i></a>
+                        
+                                                                          
+                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('productocategoria_edit', { 'id': productoCategorium.id }) }}"><i class="fa fa-edit"></i></a>
+                        
+                                          </td>
+              </tr>
+              {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="navigation mt-4">
+          {{ knp_pagination_render(pagination) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+  <script>
+   
+  </script>
+{% endblock %}

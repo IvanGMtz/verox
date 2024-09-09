@@ -1,0 +1,29 @@
+producciondiseno_index:
+    path:     /
+    defaults: { _controller: "AppBundle:ProduccionDiseno:index" }
+    methods:  [GET, POST]
+
+producciondiseno_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:ProduccionDiseno:show" }
+    methods:  GET
+
+producciondiseno_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:ProduccionDiseno:new" }
+    methods:  [GET, POST]
+
+producciondiseno_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:ProduccionDiseno:edit" }
+    methods:  [GET, POST]
+
+producciondiseno_delete:
+    path:     /{produccionDiseno}/produccionDiseno/{produccionOrden}/produccionOrden/delete
+    defaults: { _controller: "AppBundle:ProduccionDiseno:delete" }
+    methods:  GET
+
+producciondiseno_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:ProduccionDiseno:erase" }
+    methods:  GET

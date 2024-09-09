@@ -1,0 +1,257 @@
+<?php
+
+namespace AppBundle\Entity;
+
+/**
+ * Referral
+ */
+class Referral
+{
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $email;
+
+    /**
+     * @var \DateTime
+     */
+    private $invitationDate;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $subscribedDate;
+
+    /**
+     * @var int
+     */
+    private $state = '1';
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $invitationUser;
+
+    /**
+     * @var \AppBundle\Entity\Plan
+     */
+    private $plan;
+
+    /**
+     * @var \AppBundle\Entity\FosUser
+     */
+    private $subscribedUser;
+
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     * @return Referral
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set email.
+     *
+     * @param string $email
+     *
+     * @return Referral
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email.
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set invitationDate.
+     *
+     * @param \DateTime $invitationDate
+     *
+     * @return Referral
+     */
+    public function setInvitationDate($invitationDate)
+    {
+        $this->invitationDate = $invitationDate;
+
+        return $this;
+    }
+
+    /**
+     * Get invitationDate.
+     *
+     * @return \DateTime
+     */
+    public function getInvitationDate()
+    {
+        return $this->invitationDate;
+    }
+
+    /**
+     * Set subscribedDate.
+     *
+     * @param \DateTime|null $subscribedDate
+     *
+     * @return Referral
+     */
+    public function setSubscribedDate($subscribedDate = null)
+    {
+        $this->subscribedDate = $subscribedDate;
+
+        return $this;
+    }
+
+    /**
+     * Get subscribedDate.
+     *
+     * @return \DateTime|null
+     */
+    public function getSubscribedDate()
+    {
+        return $this->subscribedDate;
+    }
+
+    /**
+     * Set state.
+     *
+     * @param int $state
+     *
+     * @return Referral
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state.
+     *
+     * @return int
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set invitationUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $invitationUser
+     *
+     * @return Referral
+     */
+    public function setInvitationUser(\AppBundle\Entity\FosUser $invitationUser = null)
+    {
+        $this->invitationUser = $invitationUser;
+
+        return $this;
+    }
+
+    /**
+     * Get invitationUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getInvitationUser()
+    {
+        return $this->invitationUser;
+    }
+
+    /**
+     * Set plan.
+     *
+     * @param \AppBundle\Entity\Plan|null $plan
+     *
+     * @return Referral
+     */
+    public function setPlan(\AppBundle\Entity\Plan $plan = null)
+    {
+        $this->plan = $plan;
+
+        return $this;
+    }
+
+    /**
+     * Get plan.
+     *
+     * @return \AppBundle\Entity\Plan|null
+     */
+    public function getPlan()
+    {
+        return $this->plan;
+    }
+
+    /**
+     * Set subscribedUser.
+     *
+     * @param \AppBundle\Entity\FosUser|null $subscribedUser
+     *
+     * @return Referral
+     */
+    public function setSubscribedUser(\AppBundle\Entity\FosUser $subscribedUser = null)
+    {
+        $this->subscribedUser = $subscribedUser;
+
+        return $this;
+    }
+
+    /**
+     * Get subscribedUser.
+     *
+     * @return \AppBundle\Entity\FosUser|null
+     */
+    public function getSubscribedUser()
+    {
+        return $this->subscribedUser;
+    }
+}

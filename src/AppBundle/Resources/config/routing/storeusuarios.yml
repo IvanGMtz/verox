@@ -1,0 +1,33 @@
+storeusuarios_index:
+    path:     /
+    defaults: { _controller: "AppBundle:StoreUsuarios:index" }
+    methods:  [GET, POST]
+
+storeusuarios_show:
+    path:     /{id}/show
+    defaults: { _controller: "AppBundle:StoreUsuarios:show" }
+    methods:  GET
+
+storeusuarios_new:
+    path:     /new
+    defaults: { _controller: "AppBundle:StoreUsuarios:new" }
+    methods:  [GET, POST]
+
+storeusuarios_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "AppBundle:StoreUsuarios:edit" }
+    methods:  [GET, POST]
+
+storeusuarios_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "AppBundle:StoreUsuarios:delete" }
+    methods:  DELETE
+
+storeusuarios_erase:
+    path:     /{id}/erase
+    defaults: { _controller: "AppBundle:StoreUsuarios:erase" }
+    methods:  GET
+storeusuarios_createreport:
+    path:     /report
+    defaults: { _controller: "AppBundle:StoreUsuarios:report" }
+    methods:  [GET, POST]

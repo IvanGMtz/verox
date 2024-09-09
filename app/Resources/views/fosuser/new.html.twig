@@ -1,0 +1,140 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_head %} {% include 'AvanzuAdminThemeBundle:Partials:_header-form-extra.html.twig' %}{% endblock %}  
+{% block avanzu_document_title %}NUEVO USUARIO{% endblock %}
+{% block avanzu_page_title %}NUEVO USUARIO{% endblock %}
+{% block titulo_pagina %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Nuevo usuario</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          {#<ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard v2</li>
+          </ol>#}
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+{{ form_start(form,{attr:{'autocomplete':'off'}}) }}
+<div class="row">
+  {#<div class="col-12">
+    <div class="info-box bg-yellow">
+      <span class="info-box-icon"><i class="fas fa-barcode"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">GTC ID: </span>
+        <h3 class="info-box-number" style="font-size: 26px;">{{ fosUser.serial|upper }}</h3>
+      </div>
+    </div>
+  </div>#}
+  
+  <div class="col-12 col-sm-12 col-md-6">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-6">
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              {{ form_row(form.username) }}
+            {% else %}
+              {{ form_row(form.username) }}
+            {% endif %}
+            {{ form_row(form.plainPassword) }}
+            {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_PRODUCCION') %}
+              {{ form_row(form.name) }}
+            {% else %}
+              {{ form_row(form.name) }}
+            {% endif %}
+            {{ form_row(form.email) }}
+          </div>
+          <div class="col-12 col-sm-12 col-md-6">
+            {{ form_row(form.phone) }}
+            {{ form_row(form.birthday) }}
+            {{ form_row(form.country) }}
+            {{ form_row(form.city) }}
+            {{ form_row(form.address) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      {#<div class="card-header with-border">
+        <h3 class="card-title no-margin">Imagen</h3>
+      </div>#}
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            {{ form_row(form.roles) }}
+          </div>
+          <div class="col-12">
+            {{ form_row(form.avatar) }}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <input type="submit" class="btn btn-sm btn-success d-flex ml-auto" value="Guardar" />
+      </div>
+    </div>
+  </div>
+</div>
+{{ form_end(form) }}
+{% endblock %}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
+{% block avanzu_javascripts_inline %}
+    <script>
+        $(function () {
+            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
+            {#$('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' // optional
+            });#}
+            $(document).on('shown.lte.pushmenu', function(){
+              $('form select').select2();
+            });
+            $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
+            $('[data-timepicker]').timepicker();
+            $('#appbundle_fosuser_country').change(function(){
+              var country = $(this).val();
+              $.ajax({
+                url: "{{path('app_cities')}}",
+                method: 'GET',
+                dataType: 'JSON',
+                data: {
+                  country: country
+                },
+                success: function(data){
+                  $('#appbundle_fosuser_city').html('');
+                  $.each(data, function(idx,city){
+                    $('#appbundle_fosuser_city').append($('<option value="'+city.id+'">'+city.name+'</option>'));
+                  });
+                },
+                error: function(error){
+                  console.log(error);
+                },
+                complete: function(){
+
+                }
+              });
+            });
+            $('input[type=checkbox]').change(function(){
+              var estado = $(this).prop('checked');
+              $('input[type=checkbox]').prop('checked',false);
+              $(this).prop('checked',estado);
+            });
+        });
+    </script>
+{% endblock %}

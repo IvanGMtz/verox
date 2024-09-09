@@ -1,0 +1,52 @@
+AppBundle\Entity\ProduccionCostoMaterial:
+    type: entity
+    table: produccion_costo_material
+    indexes:
+        fk_produccionCostoMaterial_ordenProduccion:
+            columns:
+                - orden_produccion
+        fk_produccionCostoMaterial_invCosto:
+            columns:
+                - material
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        cantidad:
+            type: float
+            nullable: false
+            precision: 10
+            scale: 0
+        diseno:
+            type: integer
+            nullable: true
+            options:
+                unsigned: false
+    manyToOne:
+        material:
+            targetEntity: InventarioCosto
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                material:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

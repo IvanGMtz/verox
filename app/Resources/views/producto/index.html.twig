@@ -1,0 +1,209 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Productos
+{% endblock %}
+{% block avanzu_page_title %}Productos
+{% endblock %}
+{% block avanzu_page_subtitle %}
+	{% if q is defined %}Filtrado por:
+		{{q}}
+	{% endif %}
+{% endblock %}
+{% block titulo_pagina %}
+	<!-- Content Header (Page header) -->
+	<div class="content-header">
+		<div class="container-fluid">
+			<div class="row mb-2">
+				<div class="col-sm-6">
+					<h1 class="m-0">Listado de productos</h1>
+				</div>
+				<!-- /.col -->
+				<div class="col-sm-6"></div>
+				<!-- /.col -->
+			</div>
+			<!-- /.row -->
+		</div>
+		<!-- /.container-fluid -->
+	</div>
+	<!-- /.content-header -->
+{% endblock %}
+{% block avanzu_page_content %}
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="overlay" style="display:none">
+					<i class="fa fa-refresh fa-spin"></i>
+				</div>
+				<div class="card-header">
+
+					<form class="form-inline pull-left" method="POST">
+						<div class="form-group ml-sm-1">
+							<label for="id" class="sr-only">id</label>
+							<input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %} value="{{ q.id }}" {% endif %}>
+						</div>
+						<div class="form-group ml-sm-1">
+							<label for="nombre" class="sr-only">nombre</label>
+							<input type="text" class="form-control" id="nombre" name="q[nombre]" placeholder="Nombre" {% if q and q.nombre %} value="{{ q.nombre }}" {% endif %}>
+						</div>
+						<div class="form-group ml-sm-1">
+							<label for="referencia" class="sr-only">referencia</label>
+							<input type="text" class="form-control" id="referencia" name="q[referencia]" placeholder="Referencia" {% if q and q.referencia %} value="{{ q.referencia }}" {% endif %}>
+						</div>
+						<div class="form-group ml-sm-1">
+							<label for="referencia" class="sr-only">estado</label>
+							<input type="text" class="form-control" id="estado" name="q[estado]" placeholder="Estado" {% if q and q.estado %} value="{{ q.estado }}" {% endif %}>
+						</div>
+						<button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+					</form>
+
+					<div class="card-tools pull-right">
+						<div class="btn-group">
+							<button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+								<i class="fas fa-wrench"></i>
+							</button>
+							<div class="dropdown-menu dropdown-menu-right" role="menu">
+								<a href="{{ path('producto_new') }}" class="dropdown-item" title="Nuevo">
+									<i class="fa fa-plus"></i>&nbsp;Nuevo
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-body table-responsive">
+					<table class="table table-sm table-bordered table-hover">
+						<thead>
+							<tr>
+								<th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
+								</th>
+								<th class="nowrap {% if pagination.isSorted('a.nombre') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Nombre', 'a.nombre') }}
+								</th>
+								<th class="nowrap {% if pagination.isSorted('a.precioMayorista') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Preciomayorista', 'a.precioMayorista') }}
+								</th>
+								<th class="nowrap {% if pagination.isSorted('a.precioDetal') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Preciodetal', 'a.precioDetal') }}
+								</th>
+								<th class="nowrap {% if pagination.isSorted('a.referencia') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Referencia', 'a.referencia') }}
+								</th>
+								<th class="nowrap {% if pagination.isSorted('a.estado') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Estado', 'a.estado') }}
+								</th>
+								<th class="nowrap {% if pagination.isSorted('a.etiqueta') %} sorted{% endif %}">
+									{{ knp_pagination_sortable(pagination, 'Etiqueta', 'a.etiqueta') }}
+								</th>
+								<th class="nowrap text-center">
+									<button onclick="saveChanges()" class="btn btn-success btn-sm">Guardar Cambios</button>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for producto in productos %}
+								<tr>
+									<td class="nowrap">
+										<a href="{{ path('producto_show', { 'id': producto.id }) }}">{{ producto.id }}</a>
+									</td>
+									<td class="nowrap">{{ producto.nombre }}</td>
+									<td class="nowrap">{{ producto.precioMayorista }}</td>
+									<td class="nowrap">{{ producto.precioDetal }}</td>
+									<td class="nowrap">{{ producto.referencia }}</td>
+									<td class="nowrap">
+										<select onchange="changeEstado('estado-{{ producto.id }}')" name="estado" id="estado-{{ producto.id }}">
+											{% if producto.estado == 'DISPONIBLE' %}
+												<option value="DISPONIBLE" selected>DISPONIBLE</option>
+											{% else %}
+												<option value="DISPONIBLE">DISPONIBLE</option>
+											{% endif %}
+											{% if producto.estado == 'INACTIVO' %}
+												<option value="INACTIVO" selected>INACTIVO</option>
+											{% else %}
+												<option value="INACTIVO">INACTIVO</option>
+											{% endif %}
+										</select>
+									</td>
+									<td class="nowrap">
+										<select onchange="changeEtiqueta('etiqueta-{{ producto.id }}')" name="etiqueta" id="etiqueta-{{ producto.id }}">
+											{% if producto.etiqueta == 'NEW' %}
+												<option value="NEW" selected>NEW</option>
+											{% else %}
+												<option value="NEW">NEW</option>
+											{% endif %}
+											{% if producto.etiqueta == 'SALES' %}
+												<option value="SALES" selected>SALES</option>
+											{% else %}
+												<option value="SALES">SALES</option>
+											{% endif %}
+											{% if producto.etiqueta == 'NINGUNA' %}
+												<option value="NINGUNA" selected>NINGUNA</option>
+											{% else %}
+												<option value="NINGUNA">NINGUNA</option>
+											{% endif %}
+										</select>
+									</td>
+									<td class="nowrap text-center">
+										<a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('producto_show', { 'id': producto.id }) }}">
+											<i class="fa fa-eye"></i>
+										</a>
+
+
+										<a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('producto_edit', { 'id': producto.id }) }}">
+											<i class="fa fa-edit"></i>
+										</a>
+                    
+										<a class="btn btn-warning btn-xs" title="Duplicar producto" href="{{ path('producto_copy', { 'id': producto.id }) }}">
+											<i class="far fa-copy"></i>
+										</a>
+
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<div class="navigation mt-4">
+						{{ knp_pagination_render(pagination) }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+{% block avanzu_javascripts_inline %}
+	<script>
+		let etiquetasChanges = {};
+let estadosChanges = {};
+function changeEtiqueta(id) {
+let newVal = document.getElementById(id).value;
+let pId = id.split('-')[1];
+etiquetasChanges[pId] = newVal;
+}
+function changeEstado(id) {
+let newVal = document.getElementById(id).value;
+let pId = id.split('-')[1];
+estadosChanges[pId] = newVal;
+}
+function saveChanges() {
+if (Object.keys(etiquetasChanges).length > 0 || Object.keys(estadosChanges).length) {
+$.ajax({
+url:"{{ app.request.getSchemeAndHttpHost() }}/admin/producto/change_etiquetas",
+data: JSON.stringify(
+{etiquetas: etiquetasChanges, estados: estadosChanges}
+),
+dataType: 'json',
+type: 'POST',
+success: function (result) {
+if (result.success) {
+location.reload();
+} else {
+console.log('error');
+}
+},
+error: function (error) {
+console.error(error);
+}
+})
+}
+}
+	</script>
+{% endblock %}

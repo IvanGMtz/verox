@@ -1,0 +1,68 @@
+AppBundle\Entity\ProduccionCosto:
+    type: entity
+    table: produccion_costo
+    indexes:
+        fk_proceso_orden:
+            columns:
+                - orden_produccion
+        fk_proceso_nombre:
+            columns:
+                - proceso
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        costo:
+            type: float
+            nullable: false
+            options:
+                unsigned: false
+        costo2:
+            type: float
+            nullable: true
+            options:
+                unsigned: false
+        costo3:
+            type: float
+            nullable: true
+            options:
+                unsigned: false
+        costo4:
+            type: float
+            nullable: true
+            options:
+                unsigned: false
+        descripcion:
+            type: string
+            nullable: true
+            length: 120
+            options:
+                fixed: false
+    manyToOne:
+        proceso:
+            targetEntity: ProcesoNombre
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proceso:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ordenProduccion:
+            targetEntity: ProduccionOrden
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                orden_produccion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

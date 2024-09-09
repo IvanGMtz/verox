@@ -1,0 +1,115 @@
+AppBundle\Entity\FosUser:
+    type: entity
+    table: fos_user
+    indexes:
+        change_password:
+            columns:
+                - change_password
+        country:
+            columns:
+                - country
+        city:
+            columns:
+                - city
+        is_active:
+            columns:
+                - is_active
+    uniqueConstraints:
+        UNIQ_957A647992FC23A8:
+            columns:
+                - username_canonical
+        UNIQ_957A6479A0D96FBF:
+            columns:
+                - email_canonical
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        address:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        phone:
+            type: string
+            nullable: true
+            length: 128
+            options:
+                fixed: false
+        docType:
+            type: string
+            nullable: true
+            length: 5
+            options:
+                fixed: false
+            column: doc_type
+        doc:
+            type: string
+            nullable: true
+            length: 56
+            options:
+                fixed: false
+        birthday:
+            type: date
+            nullable: true
+        serial:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+        changePassword:
+            type: boolean
+            nullable: true
+            options:
+                default: '1'
+            column: change_password
+        image:
+            type: string
+            nullable: true
+            length: 512
+            options:
+                fixed: false
+        registeredAt:
+            type: datetime
+            nullable: true
+            column: registered_at
+        updatedAt:
+            type: datetime
+            nullable: true
+            column: updated_at
+    manyToOne:
+        city:
+            targetEntity: City
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                city:
+                    referencedColumnName: id
+            orphanRemoval: false
+        country:
+            targetEntity: Country
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                country:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,85 @@
+{% block extends %}
+{{ "{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}" }}
+{% endblock extends %}
+{% block body %}
+{{ "{% block avanzu_document_title %}" }}Detalle {{ entity_singularized|capitalize }}{{ "{% endblock %}
+{% block avanzu_page_title %}" }}Detalle {{ entity_singularized|capitalize }}{{ "{% endblock %}" }}
+{{ "{% block titulo_pagina %}" }}
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Detalle {{ entity_singularized }}</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          {#<ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard v2</li>
+          </ol>#}
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+{{ "{% endblock %}" }}
+{{ "{% block avanzu_page_content %}" }}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="overlay" style="display:none">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+      <div class="card-body">
+        
+        <table class="table table-sm table-bordered table-hover">
+            <tbody>
+            {%- for field, metadata in fields %}
+
+                <tr>
+                    <th>{{ field|capitalize }}</th>
+
+                {%- if metadata.type in ['datetime'] %}
+
+                    <td>{{ '{% if ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ ' %}{{ ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ '|date(\'d-m-Y h:i:s a\') }}{% endif %}' }}</td>
+
+                {%- elseif metadata.type in ['date'] %}
+
+                    <td>{{ '{% if ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ ' %}{{ ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ '|date(\'d-m-Y\') }}{% endif %}' }}</td>
+
+                {%- elseif metadata.type in ['time'] %}
+
+                    <td>{{ '{% if ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ ' %}{{ ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ '|date(\'h:i:s a\') }}{% endif %}' }}</td>
+
+                {%- elseif metadata.type in ['array'] %}
+
+                    <td>{{ '{% if ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ ' %}{{ ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ '|join(\', \') }}{% endif %}' }}</td>
+
+                {%- elseif metadata.type in ['boolean'] %}
+
+                    <td>{{ '{% if ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ ' %}Si{% else %}No{% endif %}' }}</td>
+
+                {%- else %}
+
+                    <td>{{ '{{ ' ~ entity_singularized ~ '.' ~ field|replace({'_': ''}) ~ ' }}' }}</td>
+
+                {%- endif %}
+
+                </tr>
+
+            {%- endfor %}
+
+            </tbody>
+        </table>
+        
+      </div>
+      <div class="card-footer clearfix">
+        {% set hide_edit, hide_delete = false, false %}
+        {{ include('crud/views/others/record_actions.html.twig.twig') -}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ "{% endblock %}" }}
+{% endblock body %}
