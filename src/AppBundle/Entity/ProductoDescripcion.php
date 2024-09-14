@@ -18,6 +18,11 @@ class ProductoDescripcion
     private $texto;
 
     /**
+     * @var string
+     */
+    private $texto_en;
+
+    /**
      * @var \AppBundle\Entity\Producto
      */
     private $producto;
@@ -55,6 +60,30 @@ class ProductoDescripcion
     public function getTexto()
     {
         return $this->texto;
+    }
+
+        /**
+     * Set texto_en.
+     *
+     * @param string $texto_en
+     *
+     * @return ProductoDescripcion
+     */
+    public function setTextoEn($texto_en)
+    {
+        $this->texto_en = $texto_en;
+
+        return $this;
+    }
+
+    /**
+     * Get texto_en.
+     *
+     * @return string
+     */
+    public function getTextoEn()
+    {
+        return $this->texto_en;
     }
 
     /**

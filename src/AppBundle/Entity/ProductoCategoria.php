@@ -29,6 +29,17 @@ class ProductoCategoria
      * @var string
      */
     private $nombreEn;
+
+        /**
+     * @var string
+     */
+    private $descripcionEs;
+
+        /**
+     * @var string
+     */
+    private $descripcionEn;
+
     /**
      * @var string
      */
@@ -120,6 +131,53 @@ class ProductoCategoria
     {
         return $this->nombreEn;
     }
+
+        /**
+     * Set DescripcionEn.
+     *
+     * @param string $descripcionEn
+     *
+     * @return ProductoCategoria
+     */
+    public function setDescripcionEn($descripcionEn)
+    {
+        $this->descripcionEn = $descripcionEn;
+
+        return $this;
+    }
+
+    /**
+     * Get descripcionEn.
+     *
+     * @return string
+     */
+    public function getDescripcionEn()
+    {
+        return $this->descripcionEn;
+    }
+
+    /**
+     * Set descripcionEs.
+     *
+     * @param string $descripcionEs
+     * @return ProductoCategoria
+     */
+    public function setDescripcionEs($descripcionEs)
+    {
+        $this->descripcionEs = $descripcionEs;
+        return $this;
+    }
+
+    /**
+     * Get descripcionEs.
+     *
+     * @return string
+     */
+    public function getDescripcionEs()
+    {
+        return $this->descripcionEs;
+    }
+
     /**
      * Set principal.
      *

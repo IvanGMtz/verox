@@ -8,7 +8,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0">Listado de productoCategorias</h1>
+          <h1 class="m-0">Listado Categorias de producto</h1>
         </div><!-- /.col -->
         <div class="col-sm-6">
                   </div><!-- /.col -->
@@ -31,7 +31,7 @@
               <input type="text" class="form-control" id="id" name="q[id]" placeholder="Id" {% if q and q.id %}value="{{ q.id }}"{% endif %}>
             </div>            <div class="form-group ml-sm-1">
               <label for="nombreEs" class="sr-only">nombreEs</label>
-              <input type="text" class="form-control" id="nombreEs" name="q[nombreEs]" placeholder="Nombrees" {% if q and q.nombreEs %}value="{{ q.nombreEs }}"{% endif %}>
+              <input type="text" class="form-control" id="nombreEs" name="q[nombreEs]" placeholder="Nombre_Es" {% if q and q.nombreEs %}value="{{ q.nombreEs }}"{% endif %}>
             </div>      
           <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
         </form>
@@ -55,11 +55,17 @@
                   <th class="nowrap {% if pagination.isSorted('a.id') %} sorted{% endif %}">
                     {{ knp_pagination_sortable(pagination, 'Id', 'a.id') }}
                   </th>
-                  <th class="nowrap {% if pagination.isSorted('a.nombreEs') %} sorted{% endif %}">
-                    {{ knp_pagination_sortable(pagination, 'Nombre', 'a.nombreEs') }}
+                  <th class="nowrap {% if pagination.isSorted('a.nombreEs') %}sorted{% endif %}">
+                      {{ knp_pagination_sortable(pagination, 'Nombre ES', 'a.nombreEs') }}
                   </th>
-                  <th class="nowrap {% if pagination.isSorted('a.nombreEn') %} sorted{% endif %}">
-                    {{ knp_pagination_sortable(pagination, 'Descripción', 'a.nombreEn') }}
+                  <th class="nowrap {% if pagination.isSorted('a.nombreEn') %}sorted{% endif %}">
+                      {{ knp_pagination_sortable(pagination, 'Nombre EN', 'a.nombreEn') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.descripcionEs') %}sorted{% endif %}">
+                      {{ knp_pagination_sortable(pagination, 'Descripción ES', 'a.descripcionEs') }}
+                  </th>
+                  <th class="nowrap {% if pagination.isSorted('a.descripcionEn') %}sorted{% endif %}">
+                      {{ knp_pagination_sortable(pagination, 'Descripción EN', 'a.descripcionEn') }}
                   </th>
                   <th class="nowrap {% if pagination.isSorted('a.principal') %} sorted{% endif %}">
                     {{ knp_pagination_sortable(pagination, 'Principal', 'a.principal') }}
@@ -83,6 +89,8 @@
                   <td class="nowrap"><a href="{{ path('productocategoria_show', { 'id': productoCategorium.id }) }}">{{ productoCategorium.id }}</a></td>
                   <td class="nowrap">{{ productoCategorium.nombreEs }}</td>
                   <td class="nowrap">{{ productoCategorium.nombreEn }}</td>
+                  <td class="nowrap">{{ productoCategorium.descripcionEs }}</td>
+                  <td class="nowrap">{{ productoCategorium.descripcionEn }}</td>
                   <td class="nowrap">{{ productoCategorium.principal }}</td>
                   <td class="nowrap">{{ productoCategorium.verox }}</td>
                   <td class="nowrap">{{ productoCategorium.kiwi }}</td>

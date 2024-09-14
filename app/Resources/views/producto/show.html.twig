@@ -126,6 +126,9 @@
         <div class="border border-1 p-1">
           {{ (descripcion) ? descripcion[0].texto | raw : "No hay descripción para este producto" }}
         </div>
+        <div class="border border-1 p-1">
+          {{ (descripcion) ? descripcion[0].textoEn | raw : "No hay descripción para este producto" }}
+        </div>
         <br>
         <h5>Productos Recomendados</h5>
         <div class="row p-1">

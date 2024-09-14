@@ -25,6 +25,20 @@ AppBundle\Entity\ProductoCategoria:
             options:
                 fixed: false
             column: nombre_en
+        descripcionEn:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: descripcion_es
+        descripcionEs:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: descripcion_en
         principal:
             type: string
             nullable: false

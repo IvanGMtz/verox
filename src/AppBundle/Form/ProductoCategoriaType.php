@@ -20,7 +20,15 @@ class ProductoCategoriaType extends AbstractType
             'required' => true
         ])
         ->add('nombreEn', null, [
-            'label' => 'Descripción',
+            'label' => 'Nombre En',
+            'required' => false
+        ])
+        ->add('descripcionEn', null, [
+            'label' => 'Descripción En',
+            'required' => false
+        ])
+        ->add('descripcionEs', null, [
+            'label' => 'Descripción Es',
             'required' => false
         ])
         ->add('principal', ChoiceType::class,[

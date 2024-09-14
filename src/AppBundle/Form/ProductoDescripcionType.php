@@ -13,7 +13,7 @@ class ProductoDescripcionType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('texto')->add('imagen')->add('video')->add('producto');
+        $builder->add('texto')->add('texto_en')->add('imagen')->add('video')->add('producto');
     }/**
      * {@inheritdoc}
      */

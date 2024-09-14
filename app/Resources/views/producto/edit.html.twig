@@ -111,6 +111,9 @@
         <textarea id="summernote" name="texto">
           {{ (descripcion) ? descripcion[0].texto | raw }}
         </textarea><br>
+        <textarea id="texto_en" name="texto_en">
+          {{ (descripcion) ? descripcion[0].textoEn | raw }}
+        </textarea><br>
         <h6 style="font-weight:bold">Imágenes del Producto</h6> 
         <div class="col-12">
           <div class="row imagenes"
@@ -194,6 +197,7 @@
     <script>
       $(document).ready(function() {
         $('#summernote').summernote();
+        $('#texto_en').summernote();
       });
     </script>
     <script>
