@@ -88,7 +88,7 @@ class ProductoController extends Controller
                 $em->flush($producto);
                 $description = new ProductoDescripcion();
                 $description->setTexto($request->request->get('texto'));
-                $description->setTextEn($request->request->get('texto_en'));
+                //$description->setTextEn($request->request->get('texto_en'));
                 $description->setProducto($producto);
                 $em->persist($description);
                 $em->flush();
