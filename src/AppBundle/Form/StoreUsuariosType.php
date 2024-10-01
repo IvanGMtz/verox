@@ -47,7 +47,8 @@ class StoreUsuariosType extends AbstractType
                 'LUISA VESGA' => 'LUISA VESGA',
                 'MANUEL GONZALEZ' => 'MANUEL GONZALEZ',
                 'MAYERLY GARCIA' => 'MAYERLY GARCIA',
-                'JOAN ROJAS' => 'JOAN ROJAS'
+                'JOAN ROJAS' => 'JOAN ROJAS',
+                'MARIA PAULA HERNANDEZ' => 'MARIA PAULA HERNANDEZ'
             ],
         ]);
     }/**
