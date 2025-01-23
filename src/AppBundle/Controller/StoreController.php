@@ -848,15 +848,7 @@ class StoreController extends Controller
                     ]
                 ];
                 $client2->post($url,$options);
-                //enviar lead de ORDER_PLACED a RD STATION
-                $RD = new Client();
-                $response2 = $RD->request('POST', 'https://api.rd.services/platform/conversions?api_key=bsKkCkiGLPppCrAtZLhbFuDvTgWpSSsyxNGT', [
-                    'body' => '{"event_type":"CONVERSION","event_family":"CDP","payload":{"conversion_identifier":"ORDER_PLACED","email":"'.$despachoOrden->getClienteId()->getEmail().'","cf_payment_method":"'.$data['pago'].'","cf_order_id":"'.$despachoOrden->getId().'"}}',
-                    'headers' => [
-                    'Content-Type' => 'application/json',
-                    'accept' => 'application/json',
-                    ],
-                ]);
+
             }
             if($productos_check && count($product_errors) < 1){ 
                 $response = new Response('{"result":"'.$productos_check.'","order_id":"'.$despachoOrden->getId().'","total":"'.$despachoOrden->getTotal().'"}');
@@ -937,15 +929,7 @@ class StoreController extends Controller
                     ]
                 ];
                 $client2->post($url,$options);
-                //enviar lead de ORDER_PAID a RD STATION
-                $RD = new Client();
-                $response2 = $RD->request('POST', 'https://api.rd.services/platform/conversions?api_key=bsKkCkiGLPppCrAtZLhbFuDvTgWpSSsyxNGT', [
-                    'body' => '{"event_type":"CONVERSION","event_family":"CDP","payload":{"conversion_identifier":"ORDER_PAID","email":"'.$order->getClienteId()->getEmail().'","cf_order_id":"'.$order->getId().'","cf_paypal_ref":"'.$data['purchase_units'][0]['payments']['captures'][0]['id'].'"}}',
-                    'headers' => [
-                    'Content-Type' => 'application/json',
-                    'accept' => 'application/json',
-                    ],
-                ]);
+
             }
             else if($status == "VOIDED"){
                 $order->setStatusPago(3); //ANULADA

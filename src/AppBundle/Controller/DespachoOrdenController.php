@@ -628,15 +628,7 @@ class DespachoOrdenController extends Controller
               ->setParameter('orden', $despachoOrden)
               ->getQuery()
               ->getResult();
-        //enviar lead de ORDER_PAID a RD STATION
-        $RD = new Client();
-        $response2 = $RD->request('POST', 'https://api.rd.services/platform/conversions?api_key=bsKkCkiGLPppCrAtZLhbFuDvTgWpSSsyxNGT', [
-            'body' => '{"event_type":"CONVERSION","event_family":"CDP","payload":{"conversion_identifier":"ORDER_PAID","email":"'.$despachoOrden->getClienteId()->getEmail().'","cf_order_id":"'.$despachoOrden->getId().'","cf_payment_method":"'.$despachoOrden->getTipoPago().'"}}',
-            'headers' => [
-            'Content-Type' => 'application/json',
-            'accept' => 'application/json',
-            ],
-        ]);
+
         $this->addFlash(
             'success',
             'Registro editado correctamente'
@@ -753,15 +745,7 @@ class DespachoOrdenController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
-        //enviar lead de ORDER_SENT a RD STATION
-        $RD = new Client();
-        $response2 = $RD->request('POST', 'https://api.rd.services/platform/conversions?api_key=bsKkCkiGLPppCrAtZLhbFuDvTgWpSSsyxNGT', [
-            'body' => '{"event_type":"CONVERSION","event_family":"CDP","payload":{"conversion_identifier":"ORDER_SENT","email":"'.$despachoOrden->getClienteId()->getEmail().'","cf_order_id":"'.$despachoOrden->getId().'","cf_transport_id":"'.$request->query->get('guia').'"}}',
-            'headers' => [
-            'Content-Type' => 'application/json',
-            'accept' => 'application/json',
-            ],
-        ]);
+
         $this->addFlash(
             'success',
             'Registro editado correctamente'
