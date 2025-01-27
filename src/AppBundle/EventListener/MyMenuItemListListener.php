@@ -80,6 +80,8 @@ class MyMenuItemListListener {
             ($this->user->hasRole('ROLE_DESIGN') || $this->user->hasRole('ROLE_SUPER_ADMIN') || $this->user->hasRole('ROLE_ADMIN_PRODUCCION'))
           ){
           array_push($menuItems, $diseno_new = new MenuItemModel('diseno_new', 'CREAR DISEÑO', 'diseno_new', array(), 'fas fa-female'));
+          array_push($menuItems, $productos = new MenuItemModel('producto_index', 'MIS PRODUCTOS', 'producto_index', array(), 'fas fa-shopping-bag'));
+          array_push($menuItems, $producto_new = new MenuItemModel('producto_new', 'CREAR PRODUCTO', 'producto_new', array(), 'fas fa-female'));
         }
         if(
             $this->user && !is_string($this->user) &&
