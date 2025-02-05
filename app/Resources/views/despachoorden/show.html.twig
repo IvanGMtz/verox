@@ -191,10 +191,9 @@
         {% elseif despachoOrden.statusOrden == 2 and is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') %}
         <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
         {% endif %}
-        {% if user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS') %}
-          <a onclick="$('#modal-delete').modal('show');" class="btn btn-danger">Eliminar
-          </a>
-        {% endif %}
+        {% if (user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) and despachoOrden.statusPago != 2 %}
+        <a onclick="$('#modal-delete').modal('show');" class="btn btn-danger">Eliminar</a>
+      {% endif %}      
         <span class="float-right">
         {% if despachoOrden.statusOrden == 1 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) %}
           <button onclick="add_guia()"  class="btn btn-primary"><i class="fa fa-check"></i> Confirmar Despacho
