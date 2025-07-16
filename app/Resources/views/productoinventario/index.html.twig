@@ -1,7 +1,18 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
 {% block avanzu_document_title %}Productoinventarios{% endblock %}
 {% block avanzu_page_title %}Productoinventarios{% endblock %}
-{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block avanzu_page_subtitle %}
+    {% if q is defined and q is not empty %}
+        Filtros: 
+        {{ q.referencia is defined ? 'Referencia: ' ~ q.referencia ~ ' | ' }}
+        {{ q.nombre is defined ? 'Nombre: ' ~ q.nombre ~ ' | ' }}
+        {% if q.qtyMayoristaMin is defined or q.qtyMayoristaMax is defined %}
+            Mayorista: 
+            {{ q.qtyMayoristaMin is defined ? 'Desde ' ~ q.qtyMayoristaMin }}
+            {{ q.qtyMayoristaMax is defined ? 'Hasta ' ~ q.qtyMayoristaMax }} |
+        {% endif %}
+    {% endif %}
+{% endblock %}
 {% block titulo_pagina %}
   <!-- Content Header (Page header) -->
   <div class="content-header">
@@ -11,7 +22,7 @@
           <h1 class="m-0">Inventario total (Detal / Mayoristas)</h1>
         </div><!-- /.col -->
         <div class="col-sm-6">
-                  </div><!-- /.col -->
+        </div><!-- /.col -->
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
   </div>
@@ -25,17 +36,29 @@
         <i class="fa fa-refresh fa-spin"></i>
       </div>
       <div class="card-header">
-        
-        <form class="form-inline pull-left" method="POST">            <div class="form-group ml-sm-1">
-              <label for="id" class="sr-only">id</label>
-              <input type="text" class="form-control" id="referencia" name="q[referencia]" placeholder="Referencia" {% if q and q.referencia %}value="{{ q.referencia }}"{% endif %}>
-            </div>            <div class="form-group ml-sm-1">
-              <label for="ingresoDetal" class="sr-only">nombre</label>
-              <input type="text" class="form-control" id="nombre" name="q[nombre]" placeholder="Nombre" {% if q and q.nombre %}value="{{ q.nombre }}"{% endif %}>
-            </div>         
-          <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
+        <form class="form-inline pull-left" method="POST">
+            {# Filtros básicos #}
+            <div class="form-group ml-sm-1">
+                <input type="text" class="form-control" name="q[referencia]" 
+                     placeholder="Referencia" value="{{ q.referencia|default('') }}">
+            </div>
+            <div class="form-group ml-sm-1">
+                <input type="text" class="form-control" name="q[nombre]" 
+                     placeholder="Nombre" value="{{ q.nombre|default('') }}">
+            </div>
+
+            {# Selector de rangos predefinidos #}
+            <div class="form-group ml-sm-1">
+              <select class="form-control" name="stock_filter" onchange="applyPreset(this)">
+                <option value="">Filtrar por stock</option>
+                <option value="low" {{ (q.qtyMayoristaMax|default(0)) == 5 ? 'selected' }}>Stock Bajo (≤5)</option>
+                <option value="high" {{ (q.qtyMayoristaMin|default(0)) == 20 ? 'selected' }}>Stock Alto (≥20)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
         </form>
-          
+
         <div class="card-tools pull-right">
           <div class="btn-group">
             <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
@@ -98,7 +121,6 @@
                   <th class="nowrap {% if pagination.isSorted('a.ultimoEgresoM') %} sorted{% endif %}">
                     {{ knp_pagination_sortable(pagination, 'Ultimo egreso', 'a.ultimoEgresoM') }}
                   </th>
-                  {# <th class="nowrap"></th> #}
               </tr>
           </thead>
           <tbody>
@@ -109,15 +131,19 @@
                   <td class="nowrap">{{ productoInventario.producto.nombre }}</td>
                   <td class="nowrap">{{ productoInventario.color.nombre }}</td>
                   <td class="nowrap">{{ productoInventario.qtyActualDetal }}</td>
-                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoIngresoD %}{{ productoInventario.ultimoIngresoD|date('U') }}{% endif %}">{% if productoInventario.ultimoIngresoD %}{{ productoInventario.ultimoIngresoD|date('d-m-Y h:i:s a') }}{% endif %}</td>
-                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoEgresoD %}{{ productoInventario.ultimoEgresoD|date('U') }}{% endif %}">{% if productoInventario.ultimoEgresoD %}{{ productoInventario.ultimoEgresoD|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoIngresoD %}{{ productoInventario.ultimoIngresoD|date('U') }}{% endif %}">
+                    {% if productoInventario.ultimoIngresoD %}{{ productoInventario.ultimoIngresoD|date('d-m-Y h:i:s a') }}{% endif %}
+                  </td>
+                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoEgresoD %}{{ productoInventario.ultimoEgresoD|date('U') }}{% endif %}">
+                    {% if productoInventario.ultimoEgresoD %}{{ productoInventario.ultimoEgresoD|date('d-m-Y h:i:s a') }}{% endif %}
+                  </td>
                   <td class="nowrap">{{ productoInventario.qtyActualMayorista }}</td>
-                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoIngresoM %}{{ productoInventario.ultimoIngresoM|date('U') }}{% endif %}">{% if productoInventario.ultimoIngresoM %}{{ productoInventario.ultimoIngresoM|date('d-m-Y h:i:s a') }}{% endif %}</td>
-                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoEgresoM %}{{ productoInventario.ultimoEgresoM|date('U') }}{% endif %}">{% if productoInventario.ultimoEgresoM %}{{ productoInventario.ultimoEgresoM|date('d-m-Y h:i:s a') }}{% endif %}</td>
-                  {# <td class="nowrap text-center">                                                                                                                            
-                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('productoinventario_edit', { 'id': productoInventario.id }) }}"><i class="fa fa-edit"></i></a>
-                        
-                                          </td> #}
+                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoIngresoM %}{{ productoInventario.ultimoIngresoM|date('U') }}{% endif %}">
+                    {% if productoInventario.ultimoIngresoM %}{{ productoInventario.ultimoIngresoM|date('d-m-Y h:i:s a') }}{% endif %}
+                  </td>
+                  <td class="nowrap" data-sort-value="{% if productoInventario.ultimoEgresoM %}{{ productoInventario.ultimoEgresoM|date('U') }}{% endif %}">
+                    {% if productoInventario.ultimoEgresoM %}{{ productoInventario.ultimoEgresoM|date('d-m-Y h:i:s a') }}{% endif %}
+                  </td>
               </tr>
           {% endfor %}
           </tbody>
@@ -129,10 +155,32 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
+
 {% block avanzu_javascripts_inline %}
-  <script>
-   
-  </script>
+<script>
+function applyPreset(select) {
+    const form = select.closest('form');
+    const minInput = document.createElement('input');
+    const maxInput = document.createElement('input');
+    
+    minInput.type = 'hidden';
+    maxInput.type = 'hidden';
+    minInput.name = 'q[qtyMayoristaMin]';
+    maxInput.name = 'q[qtyMayoristaMax]';
+
+    switch(select.value) {
+        case 'low':
+            maxInput.value = 5;
+            break;
+        case 'high':
+            minInput.value = 20;
+            break;
+    }
+    
+    form.appendChild(minInput);
+    form.appendChild(maxInput);
+    form.submit();
+}
+</script>
 {% endblock %}

@@ -51,7 +51,9 @@ class StoreUsuariosType extends AbstractType
                 'MARIA CECILIA REYES' => 'MARIA CECILIA REYES',
                 'MARIA PAULA HERNANDEZ' => 'MARIA PAULA HERNANDEZ',
                 'ROCIO SALAZAR' => 'ROCIO SALAZAR',
-                'DANIELA MORENO' => 'DANIELA MORENO'
+                'DANIELA MORENO' => 'DANIELA MORENO',
+                'ROBERTO CARLOS LOPEZ' => 'ROBERTO CARLOS LOPEZ',
+                'MATEO CASTRO' => 'MATEO CASTRO'
             ],
         ]);
     }/**

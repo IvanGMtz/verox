@@ -117,6 +117,10 @@ class ProductoInventarioMovimientoController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $deleteForm = $this->createDeleteForm($productoInventarioMovimiento);
+        
+        // Guardar la información original ANTES de procesar el formulario
+        $informacionOriginal = $productoInventarioMovimiento->getInformacion();
+        
         $editForm = $this->createForm('AppBundle\Form\ProductoInventarioMovimientoType', $productoInventarioMovimiento);
         $editForm->handleRequest($request);
         
@@ -124,11 +128,29 @@ class ProductoInventarioMovimientoController extends Controller
         $fecha = new \DateTime();
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            // Obtener la nueva información enviada
+            $nuevaInformacion = $productoInventarioMovimiento->getInformacion();
+            
+            // Verificar que la parte original no fue modificada
+            if (strpos($nuevaInformacion, $informacionOriginal) !== 0) {
+                $this->addFlash(
+                    'error',
+                    'No está permitido modificar la información original de la orden. Solo puede agregar nuevos comentarios al final.'
+                );
+                
+                return $this->redirectToRoute('productoinventariomovimiento_edit', [
+                    'id' => $productoInventarioMovimiento->getId()
+                ]);
+            }
+            
+            // Guardar los cambios si la validación es exitosa
             $em->flush();
+            
             $this->addFlash(
                 'success',
                 'Registro editado correctamente'
             );
+            
             return $this->redirectToRoute('productoinventariomovimiento_index');
         }
 

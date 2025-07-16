@@ -42,8 +42,6 @@ class DespachoOrdenType extends AbstractType
                 'TARJETA DEBITO O CREDITO' => 'TARJETA DEBITO O CREDITO',
             ],
         ])
-        //->add('statusPago')
-        //->add('statusOrden')
         ->add('costoEnvio')
         ->add('total')
         ->add('notas');

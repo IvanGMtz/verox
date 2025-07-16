@@ -13,7 +13,15 @@ class ProductoInventarioMovimientoType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('producto')->add('color')->add('movimiento')->add('cantidad')->add('bodega')->add('informacion')->add('usuario')->add('fecha');
+            $builder
+            ->add('producto', null, ['disabled' => true])
+            ->add('color', null, ['disabled' => true])
+            ->add('movimiento', null, ['disabled' => true])
+            ->add('cantidad', null, ['disabled' => true])
+            ->add('bodega', null, ['disabled' => true])
+            ->add('informacion')
+            ->add('usuario', null, ['disabled' => true])
+            ->add('fecha', null, ['disabled' => true]);
     }/**
      * {@inheritdoc}
      */

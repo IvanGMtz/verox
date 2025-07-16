@@ -16,7 +16,14 @@
   </div>
   <!-- /.content-header -->
 {% endblock %}
-{% block avanzu_page_content %}
+{% block avanzu_page_content %} 
+{% if despachoOrden.anulada %}
+<div class="alert alert-danger">
+    <strong>¡ORDEN ANULADA!</strong><br>
+    Fecha de anulación: {{ despachoOrden.fechaAnulacion|date('d/m/Y H:i') }}<br>
+    Razón: Orden cancelada por el usuario {{despachoOrden.usuarioCreacion }}
+</div>
+{% endif %}
 <div class="modal" tabindex="-1" role="dialog" id="modal-link_pago">
   <div class="modal-dialog modal-md">
     <div class="modal-content">
@@ -79,7 +86,18 @@
       <div class="card-body">
         <h4>
           ACPM FASHION GROUP<br>
-          <small class="float-right text-right">{{ despachoOrden.fechaCreacion|date('d-m-Y h:i a') }}<br><small>{{ despachoOrden.clienteId.asesor ?? despachoOrden.usuarioCreacion }}</small></small>
+          <small class="float-right text-right">
+            Fechas<br>
+            <small>Creacion: {{ despachoOrden.fechaCreacion|date('d-m-Y h:i a') }}</small><br>
+            {% if despachoOrden.fechaPago %}
+              <small class="text-right">Pago: {{ despachoOrden.fechaPago|date('d-m-Y h:i a') }}</small><br>
+            {% endif %}
+            {% if despachoOrden.fechaDespacho %}
+              <small class="text-right">Despacho: {{ despachoOrden.fechaDespacho|date('d-m-Y h:i a') }}</small><br>
+            {% endif %}
+            <small>{{ despachoOrden.clienteId.asesor ?? despachoOrden.usuarioCreacion }}</small>
+        </small> 
+
           <span class="float-end">ORDEN DE DESPACHO #{{ despachoOrden.id }}</span>
         </h4>
         <div class="row invoice-info">
@@ -110,20 +128,39 @@
                 </tr>
             </thead>
             <tbody class="items" id="product_table">
-              {% for item in items %}
-              {% set precio = item.precio %}
-              <tr>
-                <td>{{ item.producto.producto.referencia }}</td>
-                <td>{{ item.producto.producto.nombre }}</td>
-                <td>{{ item.producto.nombre }}</td>
-                <td>{{ item.color }}</td>
-                <td>{{ precio }}</td>
-                <td>{{ item.cantidad }}</td>
-                <td>{{ item.cantidad * precio }}</td>
-                {% set subtotal = subtotal + (item.cantidad * precio) %}
-                {% set qty_items = qty_items + item.cantidad %}
-              </tr>
-              {% endfor %}
+              {% if despachoOrden.statusPago == 2 %}
+                {# Ordenar por referencia si se cumplen las condiciones #}
+                  {% for item in items|sort((a, b) => a.producto.producto.referencia <=> b.producto.producto.referencia) %}
+                    {% set precio = item.precio %}
+                    <tr>
+                      <td>{{ item.producto.producto.referencia }}</td>
+                      <td>{{ item.producto.producto.nombre }}</td>
+                      <td>{{ item.producto.nombre }}</td>
+                      <td>{{ item.color }}</td>
+                      <td>{{ precio }}</td>
+                      <td>{{ item.cantidad }}</td>
+                      <td>{{ item.cantidad * precio }}</td>
+                      {% set subtotal = subtotal + (item.cantidad * precio) %}
+                      {% set qty_items = qty_items + item.cantidad %}
+                    </tr>
+                  {% endfor %}
+              {% else %}
+                {# Mostrar sin ordenar si no se cumplen las condiciones #}
+                {% for item in items %}
+                  {% set precio = item.precio %}
+                  <tr>
+                    <td>{{ item.producto.producto.referencia }}</td>
+                    <td>{{ item.producto.producto.nombre }}</td>
+                    <td>{{ item.producto.nombre }}</td>
+                    <td>{{ item.color }}</td>
+                    <td>{{ precio }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>{{ item.cantidad * precio }}</td>
+                    {% set subtotal = subtotal + (item.cantidad * precio) %}
+                    {% set qty_items = qty_items + item.cantidad %}
+                  </tr>
+                {% endfor %}
+              {% endif %}
             </tbody>
           </table>
         </div>
@@ -186,30 +223,65 @@
       <div class="card-footer clearfix no-print">
       <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a> 
         <a class="btn btn-default btn-flat btn-sm" href="{{ path('despachoorden_index') }}">Regresar</a>&nbsp;
-        {% if despachoOrden.statusOrden == 1 and user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') %}
-        <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
-        {% elseif despachoOrden.statusOrden == 2 and is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') %}
-        <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
-        {% endif %}
-        {% if (user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) and despachoOrden.statusPago != 2 %}
-        <a onclick="$('#modal-delete').modal('show');" class="btn btn-danger">Eliminar</a>
-      {% endif %}      
-        <span class="float-right">
-        {% if despachoOrden.statusOrden == 1 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) %}
-          <button onclick="add_guia()"  class="btn btn-primary"><i class="fa fa-check"></i> Confirmar Despacho
-          </button>
-        {% endif %}
-        {% if despachoOrden.statusPago == 1 %}
-          {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS') %}
-            &nbsp;
-            <a href="{{ path('despachoorden_pagado', { 'id': despachoOrden.id }) }}" class="btn btn-success"><i class="far fa-credit-card"></i> Confirmar Pago
-            </a>
+
+    {# Mostrar opciones de edición solo si NO está anulada #}
+          {% if not despachoOrden.anulada %}
+              {% if despachoOrden.statusPago == 2 %}
+                  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') %}
+                      <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
+                  {% endif %}
+              {% else %}
+                  {% if (despachoOrden.statusOrden == 1 and (user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS'))) %}
+                      <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
+                  {% elseif despachoOrden.statusOrden == 2 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS')) %}
+                      <a class="btn btn-warning btn-flat btn-sm" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">Editar</a>&nbsp; 
+                  {% endif %}
+              {% endif %}
           {% endif %}
-          &nbsp;
-          <a onclick="$('#modal-link_pago').modal('show');" class="btn btn-warning"><i class="far fa-credit-card"></i> Crear Link de Pago
-          </a>
-        {% endif %}
-        </span>
+
+          {# Mostrar botón de anulación solo si NO está anulada y el usuario tiene permisos #}
+          {% if not despachoOrden.anulada %}
+              {% if (user == despachoOrden.clienteId.asesor or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) and despachoOrden.statusPago != 2 %}
+                  <a onclick="$('#modal-delete').modal('show');" class="btn btn-danger">Anular</a>
+              {% endif %} 
+          {% endif %}     
+
+          <span class="float-right">
+          {# Ocultar funcionalidades de despacho si está anulada #}
+          {% if not despachoOrden.anulada %}
+              {% if despachoOrden.statusOrden == 1 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) %}
+                  <button onclick="add_guia()"  class="btn btn-primary"><i class="fa fa-check"></i> Confirmar Despacho</button>
+              {% endif %}
+              {% if despachoOrden.statusPago == 1 %}
+                  {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS') %}
+                      &nbsp;
+                      <a href="{{ path('despachoorden_pagado', { 'id': despachoOrden.id }) }}" class="btn btn-success"><i class="far fa-credit-card"></i> Confirmar Pago</a>
+                  {% endif %}
+                  &nbsp;
+                  <a onclick="$('#modal-link_pago').modal('show');" class="btn btn-warning"><i class="far fa-credit-card"></i> Crear Link de Pago</a>
+              {% endif %}
+          {% endif %}
+          </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="modal-delete">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Anular Orden de Despacho</h5> 
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <span style="font-size:medium;">¿Estás seguro que quieres anular esta orden de despacho?</span>
+      </div>
+      <div class="modal-footer">
+        {{ form_start(delete_form, { 'attr': {'style': 'display:inline-block'}} ) }}
+          <input class="btn btn-danger btn-flat btn-sm" type="submit" value="Anular"> 
+        {{ form_end(delete_form) }}
       </div>
     </div>
   </div>

@@ -1205,9 +1205,9 @@ class StoreController extends Controller
             ->createQueryBuilder('a')
             ->where('a.statusPago = :pago')
             ->setParameter('pago', 2)
-            ->andWhere('a.fechaCreacion >= :start') 
+            ->andWhere('a.fechaPago >= :start') 
             ->setParameter('start', $start_date." 00:00:00")
-            ->andWhere('a.fechaCreacion <= :finish')
+            ->andWhere('a.fechaPago <= :finish')
             ->setParameter('finish', $finish_date." 23:59:00")
             ->getQuery()
             ->getResult();
@@ -1215,7 +1215,7 @@ class StoreController extends Controller
             ->createQueryBuilder('a')
             ->where('a.statusPago = :pago')
             ->setParameter('pago', 2)
-            ->andWhere('a.fechaCreacion < :start') 
+            ->andWhere('a.fechaPago < :start') 
             ->setParameter('start', $start_date." 00:00:00")
             ->getQuery()
             ->getResult();
@@ -1231,7 +1231,7 @@ class StoreController extends Controller
                     "asesor"=>$order->getClienteId()->getAsesor(),
                     "client_type"=>($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
                     "client_state"=>$order->getClienteId()->getEstado(),
-                    "order_date"=>$order->getFechaCreacion()->format('Y-m-d'),
+                    "order_date"=>$order->getFechaPago()->format('Y-m-d'),
                     "order_price"=>$order->getTotal(),
                     "shipment_cost"=>$order->getCostoEnvio(),
                     "items"=>[]

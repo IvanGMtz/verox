@@ -59,16 +59,21 @@
             </div>          
           <button type="submit" class="btn btn-primary ml-sm-1">Buscar</button>
         </form>
-          
+
+        {% if is_granted('ROLE_SUPER_ADMIN') or app.user.username == 'MariaMoreno'%}
+          <a href="{{ path('despacho_orden_cierre_mensual') }}" 
+            class="btn btn-danger mt-1 ml-sm-1"
+            onclick="return confirm('¿Está seguro de realizar el cierre mensual? Se anularán todas las órdenes no pagadas del mes anterior.')">
+            <i class="fa fa-calendar-times-o"></i> Cierre Mensual
+          </a>
+        {% endif %}
+
         <div class="card-tools pull-right">
           <div class="btn-group">
             <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
               <i class="fas fa-wrench"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-right" role="menu">
-              {# <a href="{{ path('despachoorden_new') }}" class="dropdown-item" title="Nuevo">
-                <i class="fa fa-plus"></i>&nbsp;Nuevo
-              </a>             #}
               <a href="{{ path('despachoordenitem_index') }}" class="dropdown-item" title="Nuevo">
                 <i class="fa fa-plus"></i>&nbsp;Buscador de Items
               </a>            
@@ -127,42 +132,52 @@
           </thead>
           <tbody>
           {% for despachoOrden in despachoOrdens %}
-              <tr>
-                  <td class="nowrap"><a href="{{ path('despachoorden_show', { 'id': despachoOrden.id }) }}">{{ despachoOrden.id }}</a></td>
-                  <td class="nowrap">{{ despachoOrden.clienteId }}</td>
-                  <td class="nowrap">{{ despachoOrden.clienteId.nombre }}</td>
-                  <td class="nowrap">{{ despachoOrden.clienteId.apellidos }}</td>
-                  <td class="nowrap">{{ despachoOrden.clienteTipo }}</td>
-                  <td class="nowrap">{{ despachoOrden.direccionEnvio }}</td>
-                  <td class="nowrap">{{ despachoOrden.tipoPago }}</td>
-                  <td class="nowrap">
-                      {% if despachoOrden.statusPago == 1 %}
-                        PENDIENTE
-                      {% elseif despachoOrden.statusPago == 2 %}
-                        CONFIRMADO
-                      {% elseif despachoOrden.statusPago == 3 %}
-                        RECHAZADO O ANULADO
-                      {% endif %}
-                  <td class="nowrap">
-                    {% if despachoOrden.statusOrden == 1 %}
-                      POR DESPACHAR
-                    {% else %}
-                      DESPACHADA
-                    {% endif %}</td>
-                  </td>
-                  <td class="nowrap">{{ despachoOrden.costoEnvio }}</td>
-                  <td class="nowrap">{{ despachoOrden.total }}</td>
-                  <td class="nowrap">{{ despachoOrden.notas }}</td>
-                  <td class="nowrap" data-sort-value="{% if despachoOrden.fechaCreacion %}{{ despachoOrden.fechaCreacion|date('U') }}{% endif %}">{% if despachoOrden.fechaCreacion %}{{ despachoOrden.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
-                  <td class="nowrap" data-sort-value="{% if despachoOrden.fechaDespacho %}{{ despachoOrden.fechaDespacho|date('U') }}{% endif %}">{% if despachoOrden.fechaDespacho %}{{ despachoOrden.fechaDespacho|date('d-m-Y h:i:s a') }}{% endif %}</td>
-                  <td class="nowrap text-center">                                                  
-                          <a class="btn btn-success btn-xs" title="Detalle del item" href="{{ path('despachoorden_show', { 'id': despachoOrden.id }) }}"><i class="fa fa-eye"></i></a>
-                        
-                                                                          
-                          <a class="btn btn-primary btn-xs" title="Editar item" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}"><i class="fa fa-edit"></i></a>
-                        
-                                          </td>
-              </tr>
+              {# Ocultar órdenes anuladas a usuarios sin permiso #}
+              {% if despachoOrden.anulada and (not is_granted('ROLE_SUPER_ADMIN') and not is_granted('ROLE_ADMIN_VENTAS')) %}
+                  {# No mostrar esta orden #}
+              {% else %}
+                  <tr class="{{ despachoOrden.anulada ? 'text-danger' : '' }}">
+                      <td class="nowrap"><a href="{{ path('despachoorden_show', { 'id': despachoOrden.id }) }}">{{ despachoOrden.id }}</a></td>
+                      <td class="nowrap">{{ despachoOrden.clienteId }}</td>
+                      <td class="nowrap">{{ despachoOrden.clienteId.nombre }}</td>
+                      <td class="nowrap">{{ despachoOrden.clienteId.apellidos }}</td>
+                      <td class="nowrap">{{ despachoOrden.clienteTipo }}</td>
+                      <td class="nowrap">{{ despachoOrden.direccionEnvio }}</td>
+                      <td class="nowrap">{{ despachoOrden.tipoPago }}</td>
+                      <td class="nowrap">
+                          {% if despachoOrden.statusPago == 1 %}
+                            PENDIENTE
+                          {% elseif despachoOrden.statusPago == 2 %}
+                            CONFIRMADO
+                          {% endif %}
+                      </td>
+                      <td class="nowrap">
+                        {% if despachoOrden.statusOrden == 1 %}
+                          POR DESPACHAR
+                        {% else %}
+                          DESPACHADA
+                        {% endif %}
+                      </td>
+                      <td class="nowrap">{{ despachoOrden.costoEnvio }}</td>
+                      <td class="nowrap">{{ despachoOrden.total }}</td>
+                      <td class="nowrap">{{ despachoOrden.notas }}</td>
+                      <td class="nowrap" data-sort-value="{% if despachoOrden.fechaCreacion %}{{ despachoOrden.fechaCreacion|date('U') }}{% endif %}">{% if despachoOrden.fechaCreacion %}{{ despachoOrden.fechaCreacion|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                      <td class="nowrap" data-sort-value="{% if despachoOrden.fechaDespacho %}{{ despachoOrden.fechaDespacho|date('U') }}{% endif %}">{% if despachoOrden.fechaDespacho %}{{ despachoOrden.fechaDespacho|date('d-m-Y h:i:s a') }}{% endif %}</td>
+                      
+                      {# Columna de Acciones #}
+                      <td class="nowrap text-center">
+                          <a class="btn btn-success btn-xs" title="Detalle" href="{{ path('despachoorden_show', { 'id': despachoOrden.id }) }}">
+                              <i class="fa fa-eye"></i>
+                          </a>
+                          
+                          {% if not despachoOrden.anulada %}
+                              <a class="btn btn-primary btn-xs" title="Editar" href="{{ path('despachoorden_edit', { 'id': despachoOrden.id }) }}">
+                                  <i class="fa fa-edit"></i>
+                              </a>
+                          {% endif %}
+                      </td>
+                  </tr>
+              {% endif %}
           {% endfor %}
           </tbody>
         </table>
@@ -173,7 +188,6 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
 {% block avanzu_javascripts_inline %}
   <script>

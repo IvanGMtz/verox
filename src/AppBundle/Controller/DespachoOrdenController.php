@@ -11,6 +11,7 @@ use AppBundle\Entity\ProductoTalla;
 use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
 
@@ -128,6 +129,12 @@ class DespachoOrdenController extends Controller
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             $fecha = new \DateTime();
             if ($form->isSubmitted() && $form->isValid()) {
+                if ($despachoOrden->getStatusPago() == 2) {
+                    if (!$despachoOrden->getFechaPago()) {
+                        $despachoOrden->setFechaPago(new \DateTime());
+                    }
+                }
+
                 $productos_check = true;
                 $producto_invalido=""; 
                 foreach ($request->request as $key => $value) {
@@ -264,6 +271,7 @@ class DespachoOrdenController extends Controller
         try {
             $em = $this->getDoctrine()->getManager();
             $previousStat = $despachoOrden->getStatusOrden();
+            $previousPaymentStatus = $despachoOrden->getStatusPago();
             $deleteForm = $this->createDeleteForm($despachoOrden);
             $editForm = $this->createForm('AppBundle\Form\DespachoOrdenType', $despachoOrden);
             $editForm->handleRequest($request);
@@ -325,7 +333,16 @@ class DespachoOrdenController extends Controller
                 }
             }
             if ($editForm->isSubmitted() && $editForm->isValid()) {
-                //dump($despachoOrden->getStatusOrden(),$request->get('appbundle_despachoorden')["statusOrden"]);exit;
+                $newPaymentStatus = $despachoOrden->getStatusPago();
+                if ($previousPaymentStatus != 2 && $newPaymentStatus == 2) {
+                    if (!$despachoOrden->getFechaPago()) {
+                        $despachoOrden->setFechaPago(new \DateTime());
+                    }
+                } 
+                else if ($previousPaymentStatus == 2 && $newPaymentStatus != 2) {
+                    $despachoOrden->setFechaPago(null);
+                }
+
                 $items_str = "";
                 if(array_key_exists("statusOrden",$request->get('appbundle_despachoorden'))){
                     if($previousStat == 1 && $request->get('appbundle_despachoorden')["statusOrden"] == 2){
@@ -460,8 +477,6 @@ class DespachoOrdenController extends Controller
                             "json_string" => json_encode([
                                 "email_to"=>"disenograficovrx@gmail.com",
                                 "email_cc"=>"veroxcloset@veroxcloset.com",
-                                //"email_to"=>"jabarragan182@gmail.com",
-                                //"email_cc"=>"",
                                 "email_bcc"=>"",
                                 "email_subject"=>"MODIFICACION DE ORDEN DE DESPACHO VRX-".$despachoOrden->getId(),
                                 "email_body"=>'<h1>Se ha modificado la orden de despacho!</h1>
@@ -521,29 +536,110 @@ class DespachoOrdenController extends Controller
      */
     public function deleteAction(Request $request, DespachoOrden $despachoOrden)
     {
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
         $form = $this->createDeleteForm($despachoOrden);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $user = $this->container->get('security.token_storage')->getToken()->getUser();
-            $items_str = "";
-            $orden_items = $em->getRepository('AppBundle:DespachoOrdenItem')->createQueryBuilder('a')
-            ->where('a.ordenDespacho = :orden')->setParameter('orden', $despachoOrden->getId())
-            ->getQuery()
-            ->getResult();
-            foreach ($orden_items as $item) {
-                $items_str =$items_str.'<tr>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getProducto()->getProducto()->getNombre().'</td>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getProducto()->getProducto()->getReferencia().'</td>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getProducto()->getNombre().'</td>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getColor().'</td>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getCantidad().'</td>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">$'.$item->getPrecio().'</td>
-                    <td style="text-align: center;border:1px solid black;padding:10px;">$'.($item->getPrecio()*(int)$item->getCantidad()).'</td>
-                </tr>';
+            
+            if ($despachoOrden->getAnulada()) {
+                $this->addFlash('error', 'Esta orden ya fue anulada anteriormente');
+                return $this->redirectToRoute('despachoorden_index');
             }
+            
+            $despachoOrden->setAnulada(1);
+            $despachoOrden->setFechaAnulacion(new \DateTime());
+            $despachoOrden->setUsuarioCreacion($user);
+            
+            $fecha = new \DateTime();
+            $items = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy([
+                'ordenDespacho' => $despachoOrden->getId(),
+                'estatus' => 1 
+            ]);
+            
+            foreach ($items as $item) {
+                $productoTalla = $item->getProducto();
+                $colorNombre = $item->getColor();
+                $bodega = $item->getBodega();
+                $cantidad = $item->getCantidad();
+                
+                $productoPadre = $productoTalla->getProducto();
+                $color = $em->getRepository('AppBundle:ProductoColor')->findOneBy([
+                    'producto' => $productoPadre,
+                    'nombre' => $colorNombre
+                ]);
+                
+                if ($color) {
+                    $inventario = $em->getRepository('AppBundle:ProductoInventario')->findOneBy([
+                        'producto' => $productoTalla,
+                        'color' => $color
+                    ]);
+                    
+                    if ($inventario) {
+                        if ($bodega == 'DETAL') {
+                            $inventario->setQtyActualDetal($inventario->getQtyActualDetal());
+                        } elseif ($bodega == 'MAYORISTA') {
+                            $inventario->setQtyActualMayorista($inventario->getQtyActualMayorista());
+                        }
+                        $em->persist($inventario);
+                        
+                        $movimiento = new ProductoInventarioMovimiento();
+                        $movimiento->setProducto($productoPadre->getNombre() . " Talla: " . $productoTalla->getNombre());
+                        $movimiento->setColor($colorNombre);
+                        $movimiento->setMovimiento("Liberación reserva");
+                        $movimiento->setCantidad($cantidad);
+                        $movimiento->setBodega(strtolower($bodega));
+                        $movimiento->setInformacion("Anulación orden VRX-" . $despachoOrden->getId());
+                        $movimiento->setUsuario($user->getName());
+                        $movimiento->setFecha($fecha);
+                        $em->persist($movimiento);
+                    }
+                }
+                
+                $item->setEstatus(0);
+                $em->persist($item);
+            }
+            
+            // 4. Actualizar items ya despachados (estado 2) solo marcarlos como anulados
+            $despachados = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy([
+                'ordenDespacho' => $despachoOrden->getId(),
+                'estatus' => 2 // Items ya despachados
+            ]);
+            
+            foreach ($despachados as $item) {
+                $item->setEstatus(0);
+                $em->persist($item);
+            }
+            
             try {
+                $em->flush();
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error al anular: ' . $e->getMessage());
+                return $this->redirectToRoute('despachoorden_index');
+            }
+            
+            try {
+                $items_str = "";
+                $orden_items = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy([
+                    'ordenDespacho' => $despachoOrden->getId()
+                ]);
+                
+                foreach ($orden_items as $item) {
+                    $producto = $item->getProducto();
+                    $productoPadre = $producto ? $producto->getProducto() : null;
+                    
+                    $items_str .= '<tr>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">'.($productoPadre ? $productoPadre->getNombre() : 'N/A').'</td>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">'.($productoPadre ? $productoPadre->getReferencia() : 'N/A').'</td>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">'.($producto ? $producto->getNombre() : 'N/A').'</td>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getColor().'</td>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">'.$item->getCantidad().'</td>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">$'.$item->getPrecio().'</td>
+                        <td style="text-align: center;border:1px solid black;padding:10px;">$'.($item->getPrecio()*(int)$item->getCantidad()).'</td>
+                    </tr>';
+                }
+
                 $url = "https://www.veroxcloset.com/send-email";
                 $client3 = new Client();
                 $options = [
@@ -551,38 +647,35 @@ class DespachoOrdenController extends Controller
                         "json_string" => json_encode([
                             "email_to"=>"disenograficovrx@gmail.com",
                             "email_cc"=>"veroxcloset@veroxcloset.com",
-                            // "email_to"=>"jabarragan182@gmail.com",
-                            // "email_cc"=>"",
-                            "email_bcc"=>"",
-                            "email_subject"=>"Orden de despacho eliminada: VRX-".$despachoOrden->getId(),
-                            "email_body"=>'<h1>Se ha eliminado la orden de despacho!</h1>
-                            <span>A continuación los datos de la orden:</span><br><br>
-                            <span>Eliminada por: '.$user->getName().'</span>
-                            <table style="text-align: center;border:1px solid black">
-                                <tr>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Item</th>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Referencia</th>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Talla</th>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Color</th>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Cantidad</th>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Precio</th>
-                                    <th style="text-align: center;border:1px solid black;padding:10px;">Subtotal</th>
-                                </tr>'.$items_str.'
-                            </table>
-                            <span>Cliente: '.$despachoOrden->getClienteId()->getNombre().' '.$despachoOrden->getClienteId()->getApellidos().'</span><br>
-                            <span>Email: '.$despachoOrden->getClienteId()->getEmail().'</span><br>
-                            <h3>Atentamente,</h3>
-                            <h4>Equipo VEROXCLOSET<h4>'
+                            "email_bcc" => "",
+                            "email_subject" => "Orden de despacho anulada: VRX-".$despachoOrden->getId(),
+                            "email_body" => '<h1>Se ha anulado la orden de despacho!</h1>
+                                <span>A continuación los datos de la orden:</span><br><br>
+                                <span>Anulada por: '.$user->getName().'</span>
+                                <table style="text-align: center;border:1px solid black">
+                                    <tr>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Item</th>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Referencia</th>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Talla</th>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Color</th>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Cantidad</th>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Precio</th>
+                                        <th style="text-align: center;border:1px solid black;padding:10px;">Subtotal</th>
+                                    </tr>'.$items_str.'
+                                </table>
+                                <span>Cliente: '.$despachoOrden->getClienteId()->getNombre().' '.$despachoOrden->getClienteId()->getApellidos().'</span><br>
+                                <span>Email: '.$despachoOrden->getClienteId()->getEmail().'</span><br>
+                                <h3>Atentamente,</h3>
+                                <h4>Equipo VEROXCLOSET<h4>'
                         ])
                     ]
                 ];
-                $client3->post($url,$options);
+                $client3->post($url, $options);
             } catch (\Throwable $th) {
-                //throw $th;
+                error_log("Error enviando correo: " . $th->getMessage());
             }
             
-            $em->remove($despachoOrden);
-            $em->flush($despachoOrden);
+            $this->addFlash('success', 'Orden anulada correctamente');
         }
 
         return $this->redirectToRoute('despachoorden_index');
@@ -619,6 +712,7 @@ class DespachoOrdenController extends Controller
     public function pagadoAction(DespachoOrden $despachoOrden){
         $em = $this->getDoctrine()->getManager();
         $despachoOrden->setStatusPago(2);
+        $despachoOrden->setFechaPago(new \DateTime());
         $em->persist($despachoOrden);
         $em->flush($despachoOrden);
         $deleteForm = $this->createDeleteForm($despachoOrden);
@@ -734,7 +828,7 @@ class DespachoOrdenController extends Controller
                         <h2>Guía de Transporte: '.$request->query->get('guia').'</h2>
                         <br>
                         <h3>Puedes rastrear el paquete en el siguientelink</h3>
-                        <a href="https://www.fedex.com/en-us/tracking.html">Fedex tracking</a>
+                        <a href="https://www.dhl.com/us-en/home.html">DHL tracking</a>
                         <p>Te estaremos enviando más información en caso de ser necesario.</p><br>
                         <h3>Atentamente,</h3>
                         <h4>Equipo VEROXCLOSET<h4>'
@@ -756,4 +850,80 @@ class DespachoOrdenController extends Controller
             "items"=>$items
         ));
     }
+
+    /**
+     * @Route("/cierre-mensual", name="despacho_orden_cierre_mensual")
+     */
+    public function cierreMensualAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        // Obtener el primer y último día del mes anterior
+        $startDate = new \DateTime('first day of last month');
+        $endDate = new \DateTime('last day of last month');
+        $endDate->setTime(23, 59, 59);
+        
+        // Obtener órdenes no pagadas del mes anterior
+        $ordenes = $em->getRepository('AppBundle:DespachoOrden')->createQueryBuilder('o')
+            ->where('o.statusPago = :statusPago')
+            ->andWhere('o.anulada = :anulada')
+            ->andWhere('o.fechaCreacion BETWEEN :start AND :end')
+            ->setParameter('statusPago', 1) // Estado 1 = no pagado
+            ->setParameter('anulada', 0)    // No anuladas
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getResult();
+        
+        $contador = 0;
+        $now = new \DateTime();
+        
+        foreach ($ordenes as $orden) {
+            // Anular la orden
+            $orden->setAnulada(1);
+            $orden->setFechaAnulacion($now);
+            
+            // Agregar nota de anulación
+            $notas = $orden->getNotas() . "\n\nANULADA POR CIERRE MENSUAL - " . $now->format('Y-m-d H:i');
+            $orden->setNotas($notas);
+            
+            // Liberar inventario reservado
+            $items = $em->getRepository('AppBundle:DespachoOrdenItem')
+                ->findBy(['ordenDespacho' => $orden->getId()]);
+                
+            foreach ($items as $item) {
+                if ($item->getEstatus() == 1) { // Solo items reservados
+                    $prodColor = $em->getRepository('AppBundle:ProductoColor')
+                        ->findOneBy(['producto' => $item->getProducto()->getProducto()->getId(), 'nombre' => $item->getColor()]);
+                    
+                    if ($prodColor) {
+                        $inventario = $em->getRepository('AppBundle:ProductoInventario')
+                            ->findOneBy(['producto' => $item->getProducto(), 'color' => $prodColor]);
+                        
+                        if ($inventario) {
+                            if ($item->getBodega() == 'MAYORISTA') {
+                                $inventario->setQtyActualMayorista($inventario->getQtyActualMayorista() + $item->getCantidad());
+                            } else {
+                                $inventario->setQtyActualDetal($inventario->getQtyActualDetal() + $item->getCantidad());
+                            }
+                            $em->persist($inventario);
+                        }
+                    }
+                }
+            }
+            
+            $em->persist($orden);
+            $contador++;
+        }
+        
+        $em->flush();
+        
+        $this->addFlash(
+            'success',
+            "Cierre mensual realizado: $contador órdenes anuladas"
+        );
+        
+        return $this->redirectToRoute('despachoorden_index');
+    }
+
 }

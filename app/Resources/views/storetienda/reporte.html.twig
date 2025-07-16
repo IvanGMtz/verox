@@ -119,7 +119,9 @@
 {% block avanzu_javascripts_inline %}
   <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
   <script> 
-   var reporteData = [];
+    var toleranciaKPI = 0.0;
+    var kpiGenerales = null;
+    var reporteData = [];
    function changeReporte(){
       let selectorValue = document.getElementById("reporteTipo").value;
       if(selectorValue=="Categoria"){
@@ -163,7 +165,8 @@
           "{{ app.request.getSchemeAndHttpHost()}}/store/get_reporte",
           ref,
           function(reporte){
-            reporteData = reporte
+            reporte = reporte.filter(item => item.asesor !== 'MATEO CASTRO');
+            reporteData = reporte;
             document.getElementById("CategoriaDetalle").innerHTML = "";
             showReporte(reporte,rtipo,start_Date,stop_Date,{category:"TODOS",refFilter:"",tallaFilter:"",colorFilter:""},tag)
           }
@@ -194,17 +197,20 @@
       let tag = (rtipo=="Total" || rtipo=="Top")? null:document.getElementById(rtipo).value;
       showReporte(reporteData,rtipo,start_Date,stop_Date,{category:asesor,refFilter:"",tallaFilter:"",colorFilter:""},tag)
     }
-    function showReporte(reporte,rtipo,start_Date,stop_Date,filtros,tag){
+    function showReporte(reporte, rtipo, start_Date, stop_Date, filtros, tag) {
       document.getElementById("reporte_principal_head").innerHTML = "";
       document.getElementById("reporte_principal").innerHTML = "";
       document.getElementById("report_detail").innerHTML = "";
       document.getElementById("detail_data").innerHTML = "";
+      
       let cantidad = 0;
       let totalPrendas = 0;
       let total = 0;
       let totalEnvios = 0;
       let totalNuevos = 0;
-      if(rtipo=="Total"){
+      let totalVentaNetaNuevos = 0;
+      
+      if (rtipo == "Total") {
         document.getElementById("asesorSelector2").style.display = "block";
         document.getElementById("categoriaDetalleBox").style.display = "none";
         document.getElementById("CategoriaDetalleRow").style.display = "none";
@@ -214,89 +220,144 @@
         document.getElementById("search_report").style.display = "none";
         document.getElementById("Nuevo_reporte").style.display = "block";
         document.getElementById("export_xls").style.display = "block";
+        
         $("#reporte_principal_head").append(
-          '<tr id="reporte_data">'+
-            '<th class="nowrap">Tipo Reporte</th>'+
-            '<th class="nowrap">Fecha de Inicio</th>'+
-            '<th class="nowrap">Fecha de Cierre</th>'+
-            '<th class="nowrap">Número de ventas</th>'+
-            '<th class="nowrap">Total clientes nuevos</th>'+
-            '<th class="nowrap">Total de unidades</th>'+
-            '<th class="nowrap">Total Venta neta</th>'+
-            '<th class="nowrap">Total costo envios</th>'+
-            '<th class="nowrap">Gran total</th>'+
-          '</tr>'
+            '<tr id="reporte_data">' +
+                '<th class="nowrap">Tipo Reporte</th>' +
+                '<th class="nowrap">Fecha de Inicio</th>' +
+                '<th class="nowrap">Fecha de Cierre</th>' +
+                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Total de unidades</th>' +
+                '<th class="nowrap">Total Venta neta</th>' +
+                '<th class="nowrap">Total costo envios</th>' +
+                '<th class="nowrap">Gran total</th>' +
+            '</tr>'
         );
+        
         $("#report_detail").append(
-          '<tr id="instances">'+
-            '<th class="nowrap">'+'Order ID'+'</th>'+
-            '<th class="nowrap">'+'Fecha'+'</th>'+
-            '<th class="nowrap">'+'Tipo cliente'+'</th>'+
-            '<th class="nowrap">'+'Estado cliente'+'</th>'+
-            '<th class="nowrap">'+'Venta neta'+'</th>'+
-            '<th class="nowrap">'+'Costo envío'+'</th>'+
-            '<th class="nowrap">'+'Gran Total'+'</th>'+
+          '<tr id="instances">' +
+            '<th class="nowrap">Order ID</th>' +
+            '<th class="nowrap">Fecha</th>' +
+            '<th class="nowrap">Tipo cliente</th>' +
+            '<th class="nowrap">Estado cliente</th>' +
+            '<th class="nowrap">Venta neta</th>' +
+            '<th class="nowrap">Costo envío</th>' +
+            '<th class="nowrap">Gran Total</th>' +
           '</tr>'
         );
-        for(let i=0; i < reporte.length; i++) {
-          let subtotal = 0
-          if(filtros.category=="TODOS"){
-            cantidad = reporte.length;
-            totalNuevos = totalNuevos + (reporte[i].client_type == 'Nuevo' ? 1 : 0);
-            totalEnvios += reporte[i].shipment_cost;
-            reporte[i].items.forEach(item=>{
-              totalPrendas+=item.product_qty;
-              total += item.product_price * item.product_qty;
-              subtotal += item.product_price * item.product_qty;
-            })
-            $("#detail_data").append(
-              '<tr id="data'+i+'">'+
-                '<td class="nowrap">'+reporte[i].id+'</td>'+
-                '<td class="nowrap">'+reporte[i].date+'</td>'+
-                '<td class="nowrap">'+reporte[i].client_type+'</td>'+
-                '<td class="nowrap">'+reporte[i].client_state+'</td>'+
-                '<td class="nowrap">'+subtotal.toFixed(2)+'</td>'+
-                '<td class="nowrap">'+reporte[i].shipment_cost+'</td>'+
-                '<td class="nowrap">'+(subtotal+reporte[i].shipment_cost).toFixed(2)+'</td>'+
-              '</tr>'
-            );     
+        
+        
+        // Iteramos sobre cada registro del reporte
+        for (let i = 0; i < reporte.length; i++) {
+          // Si se ha seleccionado un asesor específico y este registro no coincide, se omite.
+          if (filtros.category !== "TODOS" && reporte[i].asesor !== filtros.category) {
+            continue;
           }
-          else{
-            if(reporte[i].asesor == filtros.category){
-              cantidad ++;
-              totalEnvios += reporte[i].shipment_cost;
-              totalNuevos = totalNuevos + (reporte[i].client_type == 'Nuevo' ? 1 : 0);
-              reporte[i].items.forEach(item=>{
-                totalPrendas+=item.product_qty;
-                total += item.product_price * item.product_qty;
-                subtotal += item.product_price * item.product_qty;
-              })
-              $("#detail_data").append(
-                '<tr id="data'+i+'">'+
-                  '<td class="nowrap">'+reporte[i].id+'</td>'+
-                  '<td class="nowrap">'+reporte[i].date+'</td>'+
-                  '<td class="nowrap">'+reporte[i].client_type+'</td>'+
-                  '<td class="nowrap">'+reporte[i].client_state+'</td>'+
-                  '<td class="nowrap">'+subtotal.toFixed(2)+'</td>'+
-                  '<td class="nowrap">'+reporte[i].shipment_cost+'</td>'+
-                  '<td class="nowrap">'+(subtotal+reporte[i].shipment_cost).toFixed(2)+'</td>'+
-                '</tr>'
-              );  
-            }
-          }       
+          
+          cantidad++;
+          totalEnvios += reporte[i].shipment_cost;
+          
+          if (reporte[i].client_type === 'Nuevo') {
+            totalNuevos++;
+          }
+          
+          let subtotal = 0;
+          reporte[i].items.forEach(item => {
+            totalPrendas += item.product_qty;
+            let itemTotal = item.product_price * item.product_qty;
+            total += itemTotal;
+            subtotal += itemTotal;
+          });
+          
+          // Si el cliente es nuevo, se acumula el subtotal en totalVentaNetaNuevos
+          if (reporte[i].client_type === 'Nuevo') {
+            totalVentaNetaNuevos += subtotal;
+          }
+          
+          $("#detail_data").append(
+            '<tr id="data' + i + '">' +
+              '<td class="nowrap">' + reporte[i].id + '</td>' +
+              '<td class="nowrap">' + reporte[i].date + '</td>' +
+              '<td class="nowrap">' + reporte[i].client_type + '</td>' +
+              '<td class="nowrap">' + reporte[i].client_state + '</td>' +
+              '<td class="nowrap">' + subtotal.toFixed(2) + '</td>' +
+              '<td class="nowrap">' + reporte[i].shipment_cost + '</td>' +
+              '<td class="nowrap">' + (subtotal + reporte[i].shipment_cost).toFixed(2) + '</td>' +
+            '</tr>'
+          );
         }
-         $("#reporte_principal").append(
-          '<tr id="reporte_data">'+
-            '<td class="nowrap">'+rtipo+'</td>'+
-            '<td class="nowrap">'+start_Date+'</td>'+
-            '<td class="nowrap">'+stop_Date+'</td>'+
-            '<td class="nowrap">'+cantidad+'</td>'+
-            '<td class="nowrap">'+totalNuevos+'</td>'+
-            '<td class="nowrap">'+totalPrendas+'</td>'+
-            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
-            '<td class="nowrap">'+totalEnvios.toFixed(2)+'</td>'+
-            '<td class="nowrap">'+(totalEnvios+total).toFixed(2)+'</td>'+
-          '</tr>'
+
+        const ticketPromedio = cantidad > 0 ? total / cantidad : 0;
+        const unidadesPorVenta = cantidad > 0 ? totalPrendas / cantidad : 0;
+
+        if (filtros.category === "TODOS") {
+            kpiGenerales = {
+                ticketPromedio: ticketPromedio,
+                unidadesPorVenta: unidadesPorVenta
+            };
+        }
+        
+        // Fila 1: Datos principales
+        $("#reporte_principal").append(
+            '<tr>' +
+                '<td class="nowrap">' + rtipo + '</td>' +
+                '<td class="nowrap">' + start_Date + '</td>' +
+                '<td class="nowrap">' + stop_Date + '</td>' +
+                '<td class="nowrap">' + cantidad + '</td>' +
+                '<td class="nowrap">' + totalPrendas + '</td>' +
+                '<td class="nowrap">' + total.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + totalEnvios.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + (totalEnvios + total).toFixed(2) + '</td>' +
+            '</tr>'
+        );
+        
+        // Fila 2: KPIs - Generamos esta fila de manera condicional
+        let kpiRow = '';
+        if (filtros.category !== "TODOS" && kpiGenerales) {
+            // Calcular umbrales de tolerancia
+            const minTicket = kpiGenerales.ticketPromedio * (1 - toleranciaKPI);
+            const minUnidades = kpiGenerales.unidadesPorVenta * (1 - toleranciaKPI);
+            
+            // Determinar clases según cumplimiento
+            const claseTicket = ticketPromedio >= minTicket ? 'text-success' : 'text-danger';
+            const claseUnidades = unidadesPorVenta >= minUnidades ? 'text-success' : 'text-danger';
+            
+            kpiRow = '<tr>' +
+                '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
+                '<td class="nowrap">Ticket Promedio:</td>' +
+                '<td class="nowrap ' + claseTicket + '"><strong>' + 
+                    ticketPromedio.toFixed(2) + 
+                    ' (Meta: ' + minTicket.toFixed(2) + ')' +
+                '</strong></td>' +
+                '<td class="nowrap">Unidades por Venta:</td>' +
+                '<td class="nowrap ' + claseUnidades + '"><strong>' + 
+                    unidadesPorVenta.toFixed(2) + 
+                    ' (Meta: ' + minUnidades.toFixed(2) + ')' +
+                '</strong></td>' +
+                '<td colspan="2"></td>' +
+            '</tr>';
+        } else {
+            kpiRow = '<tr>' +
+                '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
+                '<td class="nowrap">Ticket Promedio:</td>' +
+                '<td class="nowrap">' + ticketPromedio.toFixed(2) + '</td>' +
+                '<td class="nowrap">Unidades por Venta:</td>' +
+                '<td class="nowrap">' + unidadesPorVenta.toFixed(2) + '</td>' +
+                '<td colspan="2"></td>' +
+            '</tr>';
+        }
+        $("#reporte_principal").append(kpiRow);
+        
+        // Fila 3: Datos de nuevos clientes
+        $("#reporte_principal").append(
+            '<tr>' +
+                '<td colspan="2" class="nowrap"><strong>Nuevos Clientes</strong></td>' +
+                '<td class="nowrap">Cantidad:</td>' +
+                '<td class="nowrap">' + totalNuevos + '</td>' +
+                '<td class="nowrap">Venta Neta:</td>' +
+                '<td class="nowrap">' + totalVentaNetaNuevos.toFixed(2) + '</td>' +
+                '<td colspan="2"></td>' +
+            '</tr>'
         );
       }
       else if(rtipo=="Categoria"){
@@ -310,15 +371,15 @@
         document.getElementById("Nuevo_reporte").style.display = "block";
         document.getElementById("export_xls").style.display = "block";
         $("#reporte_principal_head").append(
-          '<tr id="reporte_data">'+
-            '<th class="nowrap">Tipo Reporte</th>'+
-            '<th class="nowrap">Fecha de Inicio</th>'+
-            '<th class="nowrap">Fecha de Cierre</th>'+
-            '<th class="nowrap">Número de ventas</th>'+
-            '<th class="nowrap">Total de unidades</th>'+
-            '<th class="nowrap">Total venta neta</th>'+
-            '<th class="nowrap">Gran total</th>'+
-          '</tr>'
+            '<tr>' +
+                '<th class="nowrap">Tipo Reporte</th>' +
+                '<th class="nowrap">Fecha de Inicio</th>' +
+                '<th class="nowrap">Fecha de Cierre</th>' +
+                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Total de unidades</th>' +
+                '<th class="nowrap">Total venta neta</th>' +
+                '<th class="nowrap">Gran total</th>' +
+            '</tr>'
         );
         $("#report_detail").append(
           '<tr id="instances">'+
@@ -372,16 +433,16 @@
             );
           }
         })
-         $("#reporte_principal").append(
-          '<tr id="reporte_data">'+
-            '<td class="nowrap">'+rtipo+' : '+tag+'</td>'+
-            '<td class="nowrap">'+start_Date+'</td>'+
-            '<td class="nowrap">'+stop_Date+'</td>'+
-            '<td class="nowrap">'+cantidad+'</td>'+
-            '<td class="nowrap">'+totalUnid+'</td>'+
-            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
-            '<td class="nowrap">'+(totalEnvios+total).toFixed(2)+'</td>'+
-          '</tr>'
+        $("#reporte_principal").append(
+            '<tr>' +
+                '<td class="nowrap">' + rtipo + ' : ' + tag + '</td>' +
+                '<td class="nowrap">' + start_Date + '</td>' +
+                '<td class="nowrap">' + stop_Date + '</td>' +
+                '<td class="nowrap">' + cantidad + '</td>' +
+                '<td class="nowrap">' + totalUnid + '</td>' +
+                '<td class="nowrap">' + total.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + (totalEnvios + total).toFixed(2) + '</td>' +
+            '</tr>'
         );
         itemsArray.sort((a,b)=>b.qty-a.qty);
         itemsArray.forEach(item=>{
@@ -408,15 +469,15 @@
         document.getElementById("Nuevo_reporte").style.display = "block";
         document.getElementById("export_xls").style.display = "block";
         $("#reporte_principal_head").append(
-          '<tr id="reporte_data">'+
-            '<th class="nowrap">Tipo Reporte</th>'+
-            '<th class="nowrap">Fecha de Inicio</th>'+
-            '<th class="nowrap">Fecha de Cierre</th>'+
-            '<th class="nowrap">Número de ventas</th>'+
-            '<th class="nowrap">Total de unidades</th>'+
-            '<th class="nowrap">Total venta neta</th>'+
-            '<th class="nowrap">Gran total</th>'+
-          '</tr>'
+            '<tr>' +
+                '<th class="nowrap">Tipo Reporte</th>' +
+                '<th class="nowrap">Fecha de Inicio</th>' +
+                '<th class="nowrap">Fecha de Cierre</th>' +
+                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Total de unidades</th>' +
+                '<th class="nowrap">Total venta neta</th>' +
+                '<th class="nowrap">Gran total</th>' +
+            '</tr>'
         );
         $("#report_detail").append(
           '<tr id="instances">'+
@@ -508,16 +569,32 @@
             '</tr>'
           );    
         })
+
+        const ticketPromedio = cantidad > 0 ? total / cantidad : 0;
+        const unidadesPorVenta = cantidad > 0 ? catTotal / cantidad : 0;
+
         $("#reporte_principal").append(
-          '<tr id="reporte_data">'+
-            '<td class="nowrap">'+rtipo+' : '+tag+'</td>'+
-            '<td class="nowrap">'+start_Date+'</td>'+
-            '<td class="nowrap">'+stop_Date+'</td>'+
-            '<td class="nowrap">'+cantidad+'</td>'+
-            '<td class="nowrap">'+catTotal+'</td>'+
-            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
-            '<td class="nowrap">'+total.toFixed(2)+'</td>'+
-          '</tr>'
+            '<tr>' +
+                '<td class="nowrap">' + rtipo + ' : ' + tag + '</td>' +
+                '<td class="nowrap">' + start_Date + '</td>' +
+                '<td class="nowrap">' + stop_Date + '</td>' +
+                '<td class="nowrap">' + cantidad + '</td>' +
+                '<td class="nowrap">' + catTotal + '</td>' +
+                '<td class="nowrap">' + total.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + total.toFixed(2) + '</td>' +
+            '</tr>'
+        );
+        
+        // Fila 2: KPIs
+        $("#reporte_principal").append(
+            '<tr>' +
+                '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
+                '<td class="nowrap">Ticket Promedio:</td>' +
+                '<td class="nowrap">' + ticketPromedio.toFixed(2) + '</td>' +
+                '<td class="nowrap">Unidades por Venta:</td>' +
+                '<td class="nowrap">' + unidadesPorVenta.toFixed(2) + '</td>' +
+                '<td></td>' + // Celda vacía para completar
+            '</tr>'
         );
       }
       else if(rtipo=="Top"){
@@ -526,28 +603,28 @@
         document.getElementById("CategoriaDetalleRow").style.display = "none";
         reporte.sort((a,b) => (a.cantidad < b.cantidad) ? 1 : ((b.cantidad < a.cantidad) ? -1 : 0));
         $("#reporte_principal_head").append(
-          '<tr id="reporte_data">'+
-            '<th class="nowrap">Referencia</th>'+
-            '<th class="nowrap">Talla</th>'+
-            '<th class="nowrap">Color</th>'+
-            '<th class="nowrap">Fecha de Inicio</th>'+
-            '<th class="nowrap">Fecha de Cierre</th>'+
-            '<th class="nowrap">Número de ventas</th>'+
-            '<th class="nowrap">Total de vendido</th>'+
-          '</tr>'
-        );
-        for(let i=0; i < reporte.length; i++) {
-          $("#reporte_principal").append(
-            '<tr id="reporte-data'+i+'">'+
-              '<td class="nowrap">'+reporte[i].nombre+'</td>'+
-              '<td class="nowrap">'+reporte[i].talla+'</td>'+
-              '<td class="nowrap">'+reporte[i].color+'</td>'+
-              '<td class="nowrap">'+start_Date+'</td>'+
-              '<td class="nowrap">'+stop_Date+'</td>'+
-              '<td class="nowrap">'+reporte[i].cantidad+'</td>'+
-              '<td class="nowrap">'+reporte[i].total.toFixed(2)+'</td>'+
+            '<tr>' +
+                '<th class="nowrap">Referencia</th>' +
+                '<th class="nowrap">Talla</th>' +
+                '<th class="nowrap">Color</th>' +
+                '<th class="nowrap">Fecha de Inicio</th>' +
+                '<th class="nowrap">Fecha de Cierre</th>' +
+                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Total vendido</th>' +
             '</tr>'
-          );       
+        );
+        for(let i = 0; i < reporte.length; i++) {
+            $("#reporte_principal").append(
+                '<tr>' +
+                    '<td class="nowrap">' + reporte[i].nombre + '</td>' +
+                    '<td class="nowrap">' + reporte[i].talla + '</td>' +
+                    '<td class="nowrap">' + reporte[i].color + '</td>' +
+                    '<td class="nowrap">' + start_Date + '</td>' +
+                    '<td class="nowrap">' + stop_Date + '</td>' +
+                    '<td class="nowrap">' + reporte[i].cantidad + '</td>' +
+                    '<td class="nowrap">' + reporte[i].total.toFixed(2) + '</td>' +
+                '</tr>'
+            );
         }
         document.getElementById("table_reporte").style.display = "block";
         document.getElementById("detail_tittle").style.display = "none";

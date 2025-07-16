@@ -22,64 +22,60 @@ class ProductoInventarioController extends Controller
      * Lists all productoInventario entities.
      *
      */
-    public function indexAction(Request $request, PaginatorInterface $paginator)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $q = $request->request->get('q', $this->get('session')->get('q.ProductoInventario'));
-        if ($request->isMethod('POST')) {
-          $page = 1;
-        }else{
-          $page = $request->query->getInt('page', 1);
-        }
-        
-        $productoInventariosQ = $em
-        ->getRepository('AppBundle:ProductoInventario')
+public function indexAction(Request $request, PaginatorInterface $paginator) {
+    $em = $this->getDoctrine()->getManager();
+    $q = $request->request->get('q', $this->get('session')->get('q.ProductoInventario', []));
+    
+    $page = $request->isMethod('POST') ? 1 : $request->query->getInt('page', 1);
+    
+    $productoInventariosQ = $em->getRepository('AppBundle:ProductoInventario')
         ->createQueryBuilder('a')
-        ->join('a.producto','p')
-        ->join('p.producto','p2'); 
-        
-        if($q && $q !=''){
-          $this->get('session')->set('q.ProductoInventario', $q);
-          $qcount = 0;
-          foreach($q as $field => $value){
-            //dump($field, $value);exit;
-            if($value){
-              if($qcount == 0){
-                if($field=="referencia" || $field=="nombre"){
-                    $productoInventariosQ->where('p2.'.$field.' LIKE :'.$field)->setParameter($field, '%'.$value.'%');
-                }
-                else{
-                    $productoInventariosQ->where('a.'.$field.' LIKE :'.$field)->setParameter($field, '%'.$value.'%');
-                }
-                
-              }else{
-                if($field=="referencia" || $field=="nombre"){
-                    $productoInventariosQ->andwhere('p2.'.$field.' LIKE :'.$field)->setParameter($field, '%'.$value.'%');
-                }
-                else{
-                    $productoInventariosQ->andwhere('a.'.$field.' LIKE :'.$field)->setParameter($field, '%'.$value.'%');
-                }
-              }
-              $qcount++;
-            }
-          }
-        }
-        
-        $query = $productoInventariosQ->getQuery();
-        $pagination = $paginator->paginate(
-            $query, /* query NOT result */
-            $page, /*page number*/
-            50 /*limit per page*/
-        );
-        
-        $productoInventarios = $pagination->getItems();
-        
+        ->join('a.producto', 'p')
+        ->join('p.producto', 'p2');
 
-        return $this->render('productoinventario/index.html.twig', array(
-            'productoInventarios' => $productoInventarios,
-            'q' => $q,
-            'pagination' => $pagination
-        ));
+    if (!empty(array_filter($q))) {
+        $this->get('session')->set('q.ProductoInventario', $q);
+        $conditions = [];
+        $params = [];
+
+        // 1. Manejo de rangos de cantidad mayorista
+        if (isset($q['qtyMayoristaMin']) && $q['qtyMayoristaMin'] !== '') {
+            $conditions[] = 'a.qtyActualMayorista >= :qtyMin';
+            $params['qtyMin'] = (int)$q['qtyMayoristaMin'];
+        }
+        if (isset($q['qtyMayoristaMax']) && $q['qtyMayoristaMax'] !== '') {
+            $conditions[] = 'a.qtyActualMayorista <= :qtyMax';
+            $params['qtyMax'] = (int)$q['qtyMayoristaMax'];
+        }
+
+        // 2. Filtros de texto (referencia y nombre)
+        foreach (['referencia', 'nombre'] as $field) {
+            if (!empty($q[$field])) {
+                $conditions[] = "p2.$field LIKE :$field";
+                $params[$field] = '%'.$q[$field].'%';
+            }
+        }
+
+        // 3. Combinar todas las condiciones
+        if (!empty($conditions)) {
+            $productoInventariosQ->where(implode(' AND ', $conditions));
+            foreach ($params as $key => $value) {
+                $productoInventariosQ->setParameter($key, $value);
+            }
+        }
+    }
+
+    $pagination = $paginator->paginate(
+        $productoInventariosQ->getQuery(),
+        $page,
+        50
+    );
+
+    return $this->render('productoinventario/index.html.twig', [
+        'productoInventarios' => $pagination->getItems(),
+        'q' => $q,
+        'pagination' => $pagination
+    ]);
     }
 
     /**

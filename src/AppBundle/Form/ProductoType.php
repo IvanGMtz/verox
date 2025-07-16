@@ -68,6 +68,7 @@ class ProductoType extends AbstractType
             'choices'  => [
                 'VEROX' => 'VEROX',
                 'KIWI' => 'KIWI',
+                'OTRAS MARCAS' => 'OTRAS MARCAS',
             ],
         ])
         ;

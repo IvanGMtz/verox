@@ -78,6 +78,20 @@ AppBundle\Entity\DespachoOrden:
             type: datetime
             nullable: true
             column: fecha_despacho
+        anulada:
+            type: boolean
+            nullable: false
+            options:
+                default: false
+            column: anulada
+        fechaAnulacion:
+            type: datetime
+            nullable: true
+            column: fecha_anulacion
+        fechaPago:
+            type: datetime
+            nullable: true
+            column: fecha_pago
     oneToMany: 
         items:
             targetEntity: DespachoOrdenItem

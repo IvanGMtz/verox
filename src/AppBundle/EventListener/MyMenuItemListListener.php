@@ -57,7 +57,7 @@ class MyMenuItemListListener {
           array_push($menuItems, $storebonos_index = new MenuItemModel('storebonos_index', 'BONOS DE COMPRA', 'storebonos_index', array(), 'fas fa-store'));
           array_push($menuItems, $storeusuarios_index = new MenuItemModel('storeusuarios_index', 'USUARIOS TIENDA', 'storeusuarios_index', array(), 'fas fa-store'));
           array_push($menuItems, $despacho_orden = new MenuItemModel('despachoorden_index', 'ORDENES DE DESPACHO', 'despachoorden_index', array(), 'fas fa-cubes'));
-          // array_push($menuItems, $despacho_orden_new = new MenuItemModel('despachoorden_new', 'NUEVA ORDEN DE DESPACHO', 'despachoorden_new', array(), 'fas fa-cubes'));
+          array_push($menuItems, $despacho_orden_new = new MenuItemModel('despachoorden_new', 'NUEVA ORDEN DE DESPACHO', 'despachoorden_new', array(), 'fas fa-cubes'));
         }
         if($this->user && !is_string($this->user) && ($this->user->hasRole('ROLE_DESPACHOS'))){
           // array_push($menuItems, $productos = new MenuItemModel('producto_index', 'MIS PRODUCTOS', 'producto_index', array(), 'fas fa-shopping-bag'));
@@ -106,7 +106,9 @@ class MyMenuItemListListener {
           }
           if($this->user->hasRole('ROLE_INVENTARIO')  || $this->user->hasRole('ROLE_SUPER_ADMIN') || $this->user->hasRole('ROLE_ADMIN_PRODUCCION') || $this->user->hasRole('ROLE_CORTE')){
             array_push($menuItems, $inventarioorden_pend_entrega = new MenuItemModel('inventarioorden_pend_entrega', 'PENDIENTES ENTREGA', 'inventarioorden_pend_entrega', array(/**'rol'=>'punto_recaudo'**/), 'fas fa-exclamation'));
-          }
+            array_push($menuItems, $productos = new MenuItemModel('producto_index', 'MIS PRODUCTOS', 'producto_index', array(), 'fas fa-shopping-bag'));
+            array_push($menuItems, $producto_new = new MenuItemModel('producto_new', 'CREAR PRODUCTO', 'producto_new', array(), 'fas fa-female'));
+            }
           if(($this->user->hasRole('ROLE_DESIGN') || $this->user->hasRole('ROLE_ADMIN_PRODUCCION') || $this->user->hasRole('ROLE_SUPER_ADMIN') || $this->user->hasRole('ROLE_CORTE')
           || $this->user->hasRole('ROLE_CONFECCION') || $this->user->hasRole('ROLE_BORDADO') || $this->user->hasRole('ROLE_LAVANDERIA')
           || $this->user->hasRole('ROLE_TERMINADOS') || $this->user->hasRole('ROLE_PRETERMINADOS') || $this->user->hasRole('ROLE_EMPAQUE') || $this->user->hasRole('ROLE_TRAZO'))){

@@ -78,6 +78,21 @@ class DespachoOrden
      */
     private $usuarioCreacion;
 
+    /**
+     * @var bool
+     */
+    private $anulada = false;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $fechaAnulacion;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $fechaPago;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -419,4 +434,38 @@ class DespachoOrden
     {
         return $this->items;
     }
+
+    public function getAnulada(): bool
+    {
+        return $this->anulada;
+    }
+
+    public function setAnulada(bool $anulada): self
+    {
+        $this->anulada = $anulada;
+        return $this;
+    }
+
+    public function getFechaAnulacion(): ?\DateTime
+    {
+        return $this->fechaAnulacion;
+    }
+
+    public function setFechaAnulacion(?\DateTime $fechaAnulacion): self
+    {
+        $this->fechaAnulacion = $fechaAnulacion;
+        return $this;
+    }
+
+    public function getFechaPago(): ?\DateTime
+    {
+        return $this->fechaPago;
+    }
+
+    public function setFechaPago(?\DateTime $fechaPago): self
+    {
+        $this->fechaPago = $fechaPago;
+        return $this;
+    }
+
 }
