@@ -81,7 +81,6 @@
                   <th class="nowrap">Precio</th>
                   <th class="nowrap">Cantidad</th>
                   <th class="nowrap">Subtotal</th>
-                  <th class="nowrap"></th>
                 </tr>
             </thead>
             <tbody class="items" id="product_table">
@@ -104,7 +103,6 @@
                 <td><input class="form-control precio" data-precios="{{ item.producto.producto.precioDetal }}-{{ item.producto.producto.precioMayorista }}" type="number" step="any" name="precio-{{ item.id }}-{{ key + 1 }}" value="{{ item.precio }}"></td>
                 <td class="d-flex"><span style="width:30%" class="my-1 stock" data-stock="{{ colors|json_encode() }}" id="stock-{{ item.producto.producto.id }}-{{ item.producto.nombre }}">Stock: </span><input style="width:70%" min="1" name="producto-{{item.id}}-{{ key + 1 }}" data-qty="{{ item.cantidad }}" class="form-control cantidad" id="qty-{{ item.producto.producto.id }}-{{ item.producto.nombre }}" value="{{ item.cantidad }}"></td>
                 <td class="subtotal">{{ item.cantidad * precio }}</td>
-                <td class="nowrap text-center"><button class="btn btn-danger" onclick="remove_row({{ key + 1 }})" type="button"><i class="fa fa-trash"></i></button></td>
                 {% set subtotal = subtotal + (item.cantidad * precio) %}
               </tr>
               {% endfor %}
@@ -146,7 +144,6 @@
 {% block avanzu_javascripts_inline %}
     <script>
         $(function () {
-            console.log('{{ 'augmenting form'|trans({}, 'AvanzuAdminTheme') }}...');
             $('input').iCheck({
                 checkboxClass: 'icheckbox_square-blue',
                 radioClass: 'iradio_square-blue',
@@ -194,7 +191,6 @@
                     '<td class="nowrap"><input data-precios="'+result.producto_precio_detal+'-'+result.producto_precio_mayorista+'" class="form-control precio" type="number" step="any" name="precio-'+result.producto_talla_id+'-'+counter+'-new" value="'+precio+'"></td>'+
                     '<td class="d-flex"><span data-stock=\''+JSON.stringify(result.producto_color)+'\' style="width:30%" class="my-1 stock" id="stock-'+result.producto_id+'-'+result.producto_talla+'">Stock: '+result.producto_color[0][clienteTipo]+'</span><input style="width:70%" min="1" data-qty="0" name="producto-'+result.producto_talla_id+'-'+counter+'-new" class="form-control cantidad" id="qty-'+result.producto_id+'-'+result.producto_talla+'" value="1"></td>'+
                     '<td class="nowrap subtotal">'+precio+'</td>'+
-                    '<td class="nowrap text-center"><button class="btn btn-danger" onclick="remove_row('+counter+')" type="button"><i class="fa fa-trash"></i></button></td>'+
                   '</tr>'
                 );
                 $("#ref").val("");

@@ -222,8 +222,15 @@
       </div>
       <div class="card-footer clearfix no-print">
       <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a> 
-        <a class="btn btn-default btn-flat btn-sm" href="{{ path('despachoorden_index') }}">Regresar</a>&nbsp;
+      <a class="btn btn-default btn-flat btn-sm" href="{{ path('despachoorden_index') }}">Regresar</a>&nbsp;
 
+      {% if despachoOrden.fechaAnulacion is not null %}
+          <a href="{{ path('despachoorden_new', {'duplicate': despachoOrden.id}) }}" 
+            class="btn btn-info btn-sm">
+              <i class="fas fa-copy"></i> Duplicar Orden
+          </a>
+      {% endif %}
+      
     {# Mostrar opciones de edición solo si NO está anulada #}
           {% if not despachoOrden.anulada %}
               {% if despachoOrden.statusPago == 2 %}

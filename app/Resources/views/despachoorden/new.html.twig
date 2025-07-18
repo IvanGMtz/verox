@@ -99,6 +99,12 @@
     </div>
   </div>
 </div>
+
+{% if duplicateData %}
+<script>
+    var duplicateData = {{ duplicateData|json_encode|raw }};
+</script>
+{% endif %}
 {% endblock %}
 {% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
 {% block avanzu_javascripts_inline %}
@@ -113,10 +119,107 @@
             $('select:not(.swal2-select)').select2();
             $('[data-datepickerenable]').datepicker({autoclose: true, format: 'yyyy-mm-dd'});
             $('[data-timepicker]').timepicker();
+            
+            // Cargar productos duplicados si existen
+            if (typeof duplicateData !== 'undefined' && duplicateData.productos) {
+                loadDuplicateProducts();
+            }
         });
+        
         var products = [];
         var counter = 1;
         if(counter<2){$("#confirm_btn").prop('disabled', true);}
+        
+        function loadDuplicateProducts() {
+            let productIndex = 0;
+            
+            function loadNextProduct() {
+                if (productIndex >= duplicateData.productos.length) {
+                    // Todos los productos han sido cargados, calcular totales
+                    setTimeout(function() {
+                        calcular();
+                    }, 500);
+                    return;
+                }
+                
+                let producto = duplicateData.productos[productIndex];
+                let searchRef = producto.referencia + '-' + producto.talla_nombre;
+                
+                // Simular el proceso: poner la referencia-talla en el input y llamar request_product
+                $("#ref").val(searchRef);
+                
+                $.ajax({
+                    url: "{{ app.request.getSchemeAndHttpHost() }}/admin/producto/search_product?ref=" + searchRef,
+                    type: 'GET',
+                    success: function(result) {
+                        if (result.request == "success") {
+                            // Verificar que coincida con el producto original
+                            if (result.producto_talla_id == producto.talla_id) {
+                                result.counter = counter;
+                                products.push(result);
+                                
+                                let colores = "";
+                                let clienteTipo = $("#appbundle_despachoorden_clienteTipo").val();
+                                result.producto_color.forEach(color => {
+                                    let selected = color.nombre === producto.color ? 'selected' : '';
+                                    colores += '<option ' + selected + ' data-hex="' + color.hex + '" style="background-color:' + color.hex + '" value="' + color.nombre + '">' + color.nombre + '</option>';
+                                });
+                                
+                                $("#product_table").append(
+                                    '<tr id="product-' + counter + '">' +
+                                        '<td class="nowrap">' + result.producto_referencia + '</td>' +
+                                        '<td class="nowrap">' + result.producto_nombre + '</td>' +
+                                        '<td class="nowrap">' + result.producto_talla + '</td>' +
+                                        '<td class="nowrap p-1"><select name="color-' + result.producto_talla_id + '-' + counter + '" class="form-control color" id="color-' + result.producto_id + '-' + counter + '">' + colores + '</select></td>' +
+                                        '<td class="nowrap"><input data-precios="' + result.producto_precio_detal + '-' + result.producto_precio_mayorista + '" class="form-control precio" type="number" step="any" name="precio-' + result.producto_talla_id + '-' + counter + '" value="' + producto.precio + '"></td>' +
+                                        '<td class="d-flex"><span data-stock=\'' + JSON.stringify(result.producto_color) + '\' style="width:30%" class="my-1 stock" id="stock-' + result.producto_id + '-' + result.producto_talla + '">Stock: ' + result.producto_color.find(c => c.nombre === producto.color)[clienteTipo] + '</span><input style="width:70%" data-qty="0" name="producto-' + result.producto_talla_id + '-' + counter + '" class="form-control cantidad" id="qty-' + result.producto_id + '-' + result.producto_talla + '" value="' + producto.cantidad + '"></td>' +
+                                        '<td class="nowrap subtotal">' + (producto.precio * producto.cantidad) + '</td>' +
+                                        '<td class="nowrap text-center"><button class="btn btn-danger" onclick="remove_row(' + counter + ')" type="button"><i class="fa fa-trash"></i></button></td>' +
+                                    '</tr>'
+                                );
+                                
+                                // Configurar el color seleccionado y su background
+                                $('#color-' + result.producto_id + "-" + counter).val(producto.color);
+                                let selectedColor = result.producto_color.find(c => c.nombre === producto.color);
+                                if (selectedColor) {
+                                    $('#color-' + result.producto_id + "-" + counter).css("background-color", selectedColor.hex);
+                                }
+                                
+                                // Configurar evento de cambio de color
+                                $('#color-' + result.producto_id + "-" + counter).change(function(){
+                                    let selectedOption = $(this).find('option:selected');
+                                    $(this).css("background-color", selectedOption.data('hex'));
+                                });
+                                
+                                $("#confirm_btn").prop('disabled', false);
+                                counter++;
+                            }
+                        }
+                        
+                        // Limpiar el campo de referencia
+                        $("#ref").val("");
+                        
+                        // Cargar el siguiente producto
+                        productIndex++;
+                        setTimeout(function() {
+                            loadNextProduct();
+                        }, 200);
+                    },
+                    error: function(error) {
+                        console.error('Error loading duplicate product:', error);
+                        // Cargar el siguiente producto incluso si hay error
+                        productIndex++;
+                        setTimeout(function() {
+                            loadNextProduct();
+                        }, 200);
+                    }
+                });
+            }
+            
+            // Iniciar la carga del primer producto
+            loadNextProduct();
+        }
+        
         function remove_row(id){
           counter--;
           for(let i = 0;i< products.length;i++){
@@ -128,6 +231,7 @@
           if(counter<2){$("#confirm_btn").prop('disabled', true);}
           calcular();
         }
+        
         function request_product(){
           let ref = $("#ref").val();
           $.ajax({
@@ -169,6 +273,7 @@
             }
           });
         }
+        
         function cambiar_precio(){
           $('tbody.items tr').each(function(){
             var tr = $(this);
@@ -189,6 +294,7 @@
           });
           calcular();
         }
+        
         function cambiarColor(){
           $('tbody.items tr').each(function(){
             var tr = $(this);
@@ -205,6 +311,7 @@
             }
           });
         }
+        
         function calcular(){
           var valor_sub_total = 0;
           var disabled_form = false;
@@ -238,8 +345,8 @@
           $('#appbundle_despachoorden_total').val(valor_sub_total);
           $('#appbundle_despachoorden_total').attr('readonly', true);
           $('#appbundle_despachoorden_total').val((parseFloat($('#appbundle_despachoorden_total').val()) + parseFloat(!$('#appbundle_despachoorden_costoEnvio').val()?0:$('#appbundle_despachoorden_costoEnvio').val())).toFixed(2));
-
         }
+        
         $('tbody.items').on('keyup', '.cantidad', calcular);
         $('tbody.items').on('keyup', '.precio', calcular);
         $('tbody.items').on('change', '.color', cambiarColor);

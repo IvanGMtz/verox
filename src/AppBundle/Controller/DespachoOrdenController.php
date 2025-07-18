@@ -124,10 +124,57 @@ class DespachoOrdenController extends Controller
     {
         try {
             $despachoOrden = new Despachoorden();
+            $duplicateData = null;
+            
+            // Verificar si se está duplicando una orden
+            if ($request->query->has('duplicate')) {
+                $duplicateId = $request->query->get('duplicate');
+                $originalOrder = $this->getDoctrine()->getRepository('AppBundle:Despachoorden')->find($duplicateId);
+                
+                if ($originalOrder && $originalOrder->getFechaAnulacion() !== null) {
+                    // Prellenar datos del cliente
+                    $despachoOrden->setClienteId($originalOrder->getClienteId());
+                    $despachoOrden->setDireccionEnvio($originalOrder->getDireccionEnvio());
+                    $despachoOrden->setClienteTipo($originalOrder->getClienteTipo());
+                    $despachoOrden->setTipoPago($originalOrder->getTipoPago());
+                    $despachoOrden->setCostoEnvio($originalOrder->getCostoEnvio());
+                    
+                    // Preparar datos de productos para JavaScript
+                    $duplicateData = [
+                        'clienteData' => [
+                            'clienteId' => $originalOrder->getClienteId(),
+                            'clienteTipo' => $originalOrder->getClienteTipo(),
+                            'direccionEnvio' => $originalOrder->getDireccionEnvio(),
+                            'tipoPago' => $originalOrder->getTipoPago(),
+                            'costoEnvio' => $originalOrder->getCostoEnvio()
+                        ],
+                        'productos' => []
+                    ];
+                    
+                    // Obtener productos de la orden original
+                    $items = $this->getDoctrine()->getRepository('AppBundle:DespachoOrdenItem')
+                        ->findBy(['ordenDespacho' => $originalOrder]);
+                    
+                    foreach ($items as $item) {
+                        $duplicateData['productos'][] = [
+                            'referencia' => $item->getProducto()->getProducto()->getReferencia(),
+                            'talla_id' => $item->getProducto()->getId(),
+                            'talla_nombre' => $item->getProducto()->getNombre(),
+                            'color' => $item->getColor(),
+                            'precio' => $item->getPrecio(),
+                            'cantidad' => $item->getCantidad(),
+                            'producto_id' => $item->getProducto()->getProducto()->getId(),
+                            'producto_nombre' => $item->getProducto()->getProducto()->getNombre()
+                        ];
+                    }
+                }
+            }
+            
             $form = $this->createForm('AppBundle\Form\DespachoOrdenType', $despachoOrden);
             $form->handleRequest($request);
             $user = $this->container->get('security.token_storage')->getToken()->getUser();
             $fecha = new \DateTime();
+            
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($despachoOrden->getStatusPago() == 2) {
                     if (!$despachoOrden->getFechaPago()) {
@@ -231,12 +278,12 @@ class DespachoOrdenController extends Controller
             return $this->render('despachoorden/new.html.twig', array(
                 'despachoOrden' => $despachoOrden,
                 'form' => $form->createView(),
-                'now' => $fecha
+                'now' => $fecha,
+                'duplicateData' => $duplicateData
             ));
         } catch (\Throwable $th) {
             dump($th);exit;
         }
-        
     }
 
     /**
