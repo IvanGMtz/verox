@@ -114,7 +114,6 @@
   </table>
 </div>
 
-
 {% endblock %}
 {% block avanzu_javascripts_inline %}
   <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
@@ -209,6 +208,9 @@
       let totalEnvios = 0;
       let totalNuevos = 0;
       let totalVentaNetaNuevos = 0;
+      let totalAbonos = 0;
+      let totalPagosCompletos = 0;
+      let totalPagosRestantes = 0;
       
       if (rtipo == "Total") {
         document.getElementById("asesorSelector2").style.display = "block";
@@ -226,9 +228,9 @@
                 '<th class="nowrap">Tipo Reporte</th>' +
                 '<th class="nowrap">Fecha de Inicio</th>' +
                 '<th class="nowrap">Fecha de Cierre</th>' +
-                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Número de transacciones</th>' +
                 '<th class="nowrap">Total de unidades</th>' +
-                '<th class="nowrap">Total Venta neta</th>' +
+                '<th class="nowrap">Total efectivo recibido</th>' +
                 '<th class="nowrap">Total costo envios</th>' +
                 '<th class="nowrap">Gran total</th>' +
             '</tr>'
@@ -236,16 +238,16 @@
         
         $("#report_detail").append(
           '<tr id="instances">' +
-            '<th class="nowrap">Order ID</th>' +
-            '<th class="nowrap">Fecha</th>' +
-            '<th class="nowrap">Tipo cliente</th>' +
-            '<th class="nowrap">Estado cliente</th>' +
-            '<th class="nowrap">Venta neta</th>' +
-            '<th class="nowrap">Costo envío</th>' +
-            '<th class="nowrap">Gran Total</th>' +
+            '<th class="nowrap text-center">Order ID</th>' +
+            '<th class="nowrap text-center">Fecha</th>' +
+            '<th class="nowrap text-center">Tipo Transacción</th>' +
+            '<th class="nowrap text-center">Tipo cliente</th>' +
+            '<th class="nowrap text-center">Estado cliente</th>' +
+            '<th class="nowrap text-center">Monto Transacción</th>' +
+            '<th class="nowrap text-center">Costo envío</th>' +
+            '<th class="nowrap text-center">Total Factura</th>' +
           '</tr>'
         );
-        
         
         // Iteramos sobre cada registro del reporte
         for (let i = 0; i < reporte.length; i++) {
@@ -256,33 +258,38 @@
           
           cantidad++;
           totalEnvios += reporte[i].shipment_cost;
+          total += reporte[i].monto_transaccion; // Ahora sumamos el monto real de la transacción
+          
+          // Clasificar por tipo de transacción
+          if (reporte[i].tipo_transaccion === 'Pago Completo') {
+            totalPagosCompletos += reporte[i].monto_transaccion;
+          } else if (reporte[i].tipo_transaccion.includes('Abono')) {
+            totalAbonos += reporte[i].monto_transaccion;
+          } else if (reporte[i].tipo_transaccion === 'Pago Restante') {
+            totalPagosRestantes += reporte[i].monto_transaccion;
+          }
           
           if (reporte[i].client_type === 'Nuevo') {
             totalNuevos++;
+            totalVentaNetaNuevos += reporte[i].monto_transaccion;
           }
           
-          let subtotal = 0;
+          // Calcular prendas proporcionales al monto de la transacción
+          let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
           reporte[i].items.forEach(item => {
-            totalPrendas += item.product_qty;
-            let itemTotal = item.product_price * item.product_qty;
-            total += itemTotal;
-            subtotal += itemTotal;
+            totalPrendas += (item.product_qty * factorProporcional);
           });
-          
-          // Si el cliente es nuevo, se acumula el subtotal en totalVentaNetaNuevos
-          if (reporte[i].client_type === 'Nuevo') {
-            totalVentaNetaNuevos += subtotal;
-          }
           
           $("#detail_data").append(
             '<tr id="data' + i + '">' +
-              '<td class="nowrap">' + reporte[i].id + '</td>' +
-              '<td class="nowrap">' + reporte[i].date + '</td>' +
-              '<td class="nowrap">' + reporte[i].client_type + '</td>' +
-              '<td class="nowrap">' + reporte[i].client_state + '</td>' +
-              '<td class="nowrap">' + subtotal.toFixed(2) + '</td>' +
-              '<td class="nowrap">' + reporte[i].shipment_cost + '</td>' +
-              '<td class="nowrap">' + (subtotal + reporte[i].shipment_cost).toFixed(2) + '</td>' +
+              '<td class="nowrap text-center">' + (reporte[i].original_id || reporte[i].id) + '</td>' +
+              '<td class="nowrap text-center">' + reporte[i].date + '</td>' +
+              '<td class="nowrap text-center"><span class="badge ' + getTipoTransaccionClass(reporte[i].tipo_transaccion) + '">' + reporte[i].tipo_transaccion + '</span></td>' +
+              '<td class="nowrap text-center">' + reporte[i].client_type + '</td>' +
+              '<td class="nowrap text-center">' + reporte[i].client_state + '</td>' +
+              '<td class="nowrap text-center">' + reporte[i].monto_transaccion.toFixed(2) + '</td>' +
+              '<td class="nowrap text-center">' + reporte[i].shipment_cost.toFixed(2) + '</td>' +
+              '<td class="nowrap text-center">' + reporte[i].price.toFixed(2) + '</td>' +
             '</tr>'
           );
         }
@@ -304,14 +311,27 @@
                 '<td class="nowrap">' + start_Date + '</td>' +
                 '<td class="nowrap">' + stop_Date + '</td>' +
                 '<td class="nowrap">' + cantidad + '</td>' +
-                '<td class="nowrap">' + totalPrendas + '</td>' +
+                '<td class="nowrap">' + totalPrendas.toFixed(0) + '</td>' +
                 '<td class="nowrap">' + total.toFixed(2) + '</td>' +
                 '<td class="nowrap">' + totalEnvios.toFixed(2) + '</td>' +
                 '<td class="nowrap">' + (totalEnvios + total).toFixed(2) + '</td>' +
             '</tr>'
         );
         
-        // Fila 2: KPIs - Generamos esta fila de manera condicional
+        // Fila 2: Desglose por tipo de transacción
+        $("#reporte_principal").append(
+            '<tr class="table-info">' +
+                '<td colspan="2" class="nowrap"><strong>Desglose Transacciones</strong></td>' +
+                '<td class="nowrap">Pagos Completos:</td>' +
+                '<td class="nowrap">' + totalPagosCompletos.toFixed(2) + '</td>' +
+                '<td class="nowrap">Abonos:</td>' +
+                '<td class="nowrap">' + totalAbonos.toFixed(2) + '</td>' +
+                '<td class="nowrap">Pagos Restantes:</td>' +
+                '<td class="nowrap">' + totalPagosRestantes.toFixed(2) + '</td>' +
+            '</tr>'
+        );
+        
+        // Fila 3: KPIs - Generamos esta fila de manera condicional
         let kpiRow = '';
         if (filtros.category !== "TODOS" && kpiGenerales) {
             // Calcular umbrales de tolerancia
@@ -325,11 +345,11 @@
             kpiRow = '<tr>' +
                 '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
                 '<td class="nowrap">Ticket Promedio:</td>' +
-                '<td class="nowrap ' + claseTicket + '"><strong>' + 
-                    ticketPromedio.toFixed(2) + 
+                '<td class="nowrap ' + claseTicket + '"><strong>' +
+                    ticketPromedio.toFixed(2) +
                     ' (Meta: ' + minTicket.toFixed(2) + ')' +
                 '</strong></td>' +
-                '<td class="nowrap">Unidades por Venta:</td>' +
+                '<td class="nowrap">Unidades por Transacción:</td>' +
                 '<td class="nowrap ' + claseUnidades + '"><strong>' + 
                     unidadesPorVenta.toFixed(2) + 
                     ' (Meta: ' + minUnidades.toFixed(2) + ')' +
@@ -341,20 +361,20 @@
                 '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
                 '<td class="nowrap">Ticket Promedio:</td>' +
                 '<td class="nowrap">' + ticketPromedio.toFixed(2) + '</td>' +
-                '<td class="nowrap">Unidades por Venta:</td>' +
+                '<td class="nowrap">Unidades por Transacción:</td>' +
                 '<td class="nowrap">' + unidadesPorVenta.toFixed(2) + '</td>' +
                 '<td colspan="2"></td>' +
             '</tr>';
         }
         $("#reporte_principal").append(kpiRow);
         
-        // Fila 3: Datos de nuevos clientes
+        // Fila 4: Datos de nuevos clientes
         $("#reporte_principal").append(
             '<tr>' +
                 '<td colspan="2" class="nowrap"><strong>Nuevos Clientes</strong></td>' +
-                '<td class="nowrap">Cantidad:</td>' +
+                '<td class="nowrap">Transacciones:</td>' +
                 '<td class="nowrap">' + totalNuevos + '</td>' +
-                '<td class="nowrap">Venta Neta:</td>' +
+                '<td class="nowrap">Efectivo Recibido:</td>' +
                 '<td class="nowrap">' + totalVentaNetaNuevos.toFixed(2) + '</td>' +
                 '<td colspan="2"></td>' +
             '</tr>'
@@ -375,9 +395,9 @@
                 '<th class="nowrap">Tipo Reporte</th>' +
                 '<th class="nowrap">Fecha de Inicio</th>' +
                 '<th class="nowrap">Fecha de Cierre</th>' +
-                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Número de transacciones</th>' +
                 '<th class="nowrap">Total de unidades</th>' +
-                '<th class="nowrap">Total venta neta</th>' +
+                '<th class="nowrap">Total efectivo recibido</th>' +
                 '<th class="nowrap">Gran total</th>' +
             '</tr>'
         );
@@ -395,7 +415,12 @@
         let itemsReport = {};
         let totalUnid = 0;
         for(let i=0; i < reporte.length; i++) {
-          totalEnvios = 0;
+          totalEnvios += reporte[i].shipment_cost;
+          total += reporte[i].monto_transaccion; // Usar monto de transacción
+          cantidad++;
+          
+          let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
+          
           reporte[i].items.forEach(item=>{
             categoriasR[item.Categoría] = item.Categoría
             if(!itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color]&&item.Categoría == tag
@@ -403,7 +428,6 @@
               &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
               &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
             ){
-              cantidad++;
               itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color] = item;
               itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty = 0;
               itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val = 0;
@@ -415,10 +439,12 @@
               &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
               &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
             ){
-              total += item.product_price * item.product_qty;
-              totalUnid += item.product_qty;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += item.product_qty;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += item.product_price * item.product_qty;
+              let cantidadProporcional = item.product_qty * factorProporcional;
+              let valorProporcional = item.product_price * cantidadProporcional;
+              
+              totalUnid += cantidadProporcional;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += cantidadProporcional;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += valorProporcional;
             }
           })   
         }
@@ -439,9 +465,9 @@
                 '<td class="nowrap">' + start_Date + '</td>' +
                 '<td class="nowrap">' + stop_Date + '</td>' +
                 '<td class="nowrap">' + cantidad + '</td>' +
-                '<td class="nowrap">' + totalUnid + '</td>' +
+                '<td class="nowrap">' + totalUnid.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + (total - totalEnvios).toFixed(2) + '</td>' +
                 '<td class="nowrap">' + total.toFixed(2) + '</td>' +
-                '<td class="nowrap">' + (totalEnvios + total).toFixed(2) + '</td>' +
             '</tr>'
         );
         itemsArray.sort((a,b)=>b.qty-a.qty);
@@ -452,7 +478,7 @@
               '<td class="nowrap">'+item.product_ref+'</td>'+
               '<td class="nowrap">'+item.product_talla+'</td>'+
               '<td class="nowrap">'+item.product_color+'</td>'+
-              '<td class="nowrap">'+item.qty+'</td>'+
+              '<td class="nowrap">'+item.qty.toFixed(2)+'</td>'+
               '<td class="nowrap">'+item.val.toFixed(2)+'</td>'+
             '</tr>'
           );    
@@ -473,9 +499,9 @@
                 '<th class="nowrap">Tipo Reporte</th>' +
                 '<th class="nowrap">Fecha de Inicio</th>' +
                 '<th class="nowrap">Fecha de Cierre</th>' +
-                '<th class="nowrap">Número de ventas</th>' +
+                '<th class="nowrap">Número de transacciones</th>' +
                 '<th class="nowrap">Total de unidades</th>' +
-                '<th class="nowrap">Total venta neta</th>' +
+                '<th class="nowrap">Total efectivo recibido</th>' +
                 '<th class="nowrap">Gran total</th>' +
             '</tr>'
         );
@@ -493,6 +519,12 @@
         let itemsReport = {};
         let totalUnid = 0;
         for(let i=0; i < reporte.length; i++) {
+          totalEnvios += reporte[i].shipment_cost;
+          total += reporte[i].monto_transaccion; // Usar monto de transacción
+          cantidad++;
+          
+          let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
+          
           reporte[i].items.forEach(item=>{
             if(!itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color]&&item.Categoría == filtros.category
               &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
@@ -519,22 +551,26 @@
               &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
               &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
             ){
-              cantidad ++;
-              total += item.product_price * item.product_qty;
+              let cantidadProporcional = item.product_qty * factorProporcional;
+              let valorProporcional = item.product_price * cantidadProporcional;
+              
               categoriasR[item.Categoría] = item.Categoría;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += item.product_qty;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += item.product_price * item.product_qty;
+              totalUnid += cantidadProporcional;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += cantidadProporcional;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += valorProporcional;
             }
             else if(filtros.category == "TODOS"
               &&(filtros.refFilter!=""?(item.product_ref==filtros.refFilter?true:false):true)
               &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
               &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
             ){
-              cantidad ++;
-              total += item.product_price * item.product_qty;
+              let cantidadProporcional = item.product_qty * factorProporcional;
+              let valorProporcional = item.product_price * cantidadProporcional;
+              
               categoriasR[item.Categoría] = item.Categoría;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += item.product_qty;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += item.product_price * item.product_qty;
+              totalUnid += cantidadProporcional;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += cantidadProporcional;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += valorProporcional;
             }
           })   
         }
@@ -555,23 +591,21 @@
           }
         })
         itemsArray.sort((a,b)=>b.qty-a.qty);
-        let catTotal = 0;
         itemsArray.forEach(item=>{
-          catTotal += item.qty;
           $("#detail_data").append(
             '<tr id="data'+item.product_ref+"_"+item.product_talla+"_"+item.product_color+'">'+
               '<td class="nowrap">'+item.Categoría+'</td>'+
               '<td class="nowrap">'+item.product_ref+'</td>'+
               '<td class="nowrap">'+item.product_talla+'</td>'+
               '<td class="nowrap">'+item.product_color+'</td>'+
-              '<td class="nowrap">'+item.qty+'</td>'+
+              '<td class="nowrap">'+item.qty.toFixed(2)+'</td>'+
               '<td class="nowrap">'+item.val.toFixed(2)+'</td>'+
             '</tr>'
           );    
         })
 
         const ticketPromedio = cantidad > 0 ? total / cantidad : 0;
-        const unidadesPorVenta = cantidad > 0 ? catTotal / cantidad : 0;
+        const unidadesPorVenta = cantidad > 0 ? totalUnid / cantidad : 0;
 
         $("#reporte_principal").append(
             '<tr>' +
@@ -579,8 +613,8 @@
                 '<td class="nowrap">' + start_Date + '</td>' +
                 '<td class="nowrap">' + stop_Date + '</td>' +
                 '<td class="nowrap">' + cantidad + '</td>' +
-                '<td class="nowrap">' + catTotal + '</td>' +
-                '<td class="nowrap">' + total.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + totalUnid.toFixed(2) + '</td>' +
+                '<td class="nowrap">' + (total - totalEnvios).toFixed(2) + '</td>' +
                 '<td class="nowrap">' + total.toFixed(2) + '</td>' +
             '</tr>'
         );
@@ -591,7 +625,7 @@
                 '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
                 '<td class="nowrap">Ticket Promedio:</td>' +
                 '<td class="nowrap">' + ticketPromedio.toFixed(2) + '</td>' +
-                '<td class="nowrap">Unidades por Venta:</td>' +
+                '<td class="nowrap">Unidades por Transacción:</td>' +
                 '<td class="nowrap">' + unidadesPorVenta.toFixed(2) + '</td>' +
                 '<td></td>' + // Celda vacía para completar
             '</tr>'
@@ -621,7 +655,7 @@
                     '<td class="nowrap">' + reporte[i].color + '</td>' +
                     '<td class="nowrap">' + start_Date + '</td>' +
                     '<td class="nowrap">' + stop_Date + '</td>' +
-                    '<td class="nowrap">' + reporte[i].cantidad + '</td>' +
+                    '<td class="nowrap">' + reporte[i].cantidad.toFixed(2) + '</td>' +
                     '<td class="nowrap">' + reporte[i].total.toFixed(2) + '</td>' +
                 '</tr>'
             );
@@ -634,6 +668,22 @@
         document.getElementById("export_xls").style.display = "block";
       }
     }
+    
+    // Función para obtener la clase CSS según el tipo de transacción
+    function getTipoTransaccionClass(tipoTransaccion) {
+      switch(tipoTransaccion) {
+        case 'Pago Completo':
+          return 'badge-success';
+        case 'Abono 1':
+        case 'Abono 2':
+          return 'badge-warning';
+        case 'Pago Restante':
+          return 'badge-info';
+        default:
+          return 'badge-secondary';
+      }
+    }
+    
     function new_Repot() {
       let reset_report = document.getElementById("reporte_data");
       document.getElementById("detail_data").innerHTML = "";
@@ -642,8 +692,8 @@
       document.getElementById("reporte_principal").innerHTML = "";
 
       document.getElementById("asesores2").value = "";
-      document.getElementById("Categoria").value = "";
-      document.getElementById("Asesor").value = "";
+      if(document.getElementById("Categoria")) document.getElementById("Categoria").value = "";
+      if(document.getElementById("Asesor")) document.getElementById("Asesor").value = "";
 
       document.getElementById("table_reporte").style.display = "none";
       document.getElementById("Traer_reporte").style.display = "block";

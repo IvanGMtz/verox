@@ -92,6 +92,22 @@ AppBundle\Entity\DespachoOrden:
             type: datetime
             nullable: true
             column: fecha_pago
+        fechaAbono1:
+            type: datetime
+            nullable: true
+            column: fecha_abono_1
+        fechaAbono2:
+            type: datetime
+            nullable: true
+            column: fecha_abono_2
+        abono1:
+            type: float
+            nullable: true
+            column: abono_1
+        abono2:
+            type: float
+            nullable: true
+            column: abono_2
     oneToMany: 
         items:
             targetEntity: DespachoOrdenItem

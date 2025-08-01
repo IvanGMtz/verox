@@ -93,6 +93,26 @@ class DespachoOrden
      */
     private $fechaPago;
 
+    /**
+     * @var float|null
+     */
+    private $abono1;
+
+    /**
+     * @var float|null
+     */
+    private $abono2;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $fechaAbono1;
+
+    /**
+     * @var \DateTime|null
+     */
+    private $fechaAbono2;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -466,6 +486,165 @@ class DespachoOrden
     {
         $this->fechaPago = $fechaPago;
         return $this;
+    }
+
+    public function getAbono1(): ?float
+    {
+        return $this->abono1;
+    }
+
+    public function setAbono1(?float $abono1): self
+    {
+        $this->abono1 = $abono1;
+        return $this;
+    }
+
+    public function getAbono2(): ?float
+    {
+        return $this->abono2;
+    }
+
+    public function setAbono2(?float $abono2): self
+    {
+        $this->abono2 = $abono2;
+        return $this;
+    }
+
+    public function getFechaAbono1(): ?\DateTime
+    {
+        return $this->fechaAbono1;
+    }
+
+    public function setFechaAbono1(?\DateTime $fechaAbono1): self
+    {
+        $this->fechaAbono1 = $fechaAbono1;
+        return $this;
+    }
+
+    public function getFechaAbono2(): ?\DateTime
+    {
+        return $this->fechaAbono2;
+    }
+
+    public function setFechaAbono2(?\DateTime $fechaAbono2): self
+    {
+        $this->fechaAbono2 = $fechaAbono2;
+        return $this;
+    }
+
+    /**
+     * Calcula el total de abonos realizados
+     * @return float
+     */
+    public function getTotalAbonos()
+    {
+        return ($this->abono1 ?: 0) + ($this->abono2 ?: 0);
+    }
+
+    /**
+     * Calcula el saldo pendiente por pagar
+     * @return float
+     */
+    public function getSaldoPendiente()
+    {
+        return $this->total - $this->getTotalAbonos();
+    }
+
+    /**
+     * Verifica si tiene abonos registrados
+     * @return bool
+     */
+    public function tieneAbonos()
+    {
+        return $this->abono1 !== null || $this->abono2 !== null;
+    }
+
+    /**
+     * Verifica si puede registrar el primer abono
+     * @param float $monto
+     * @return bool
+     */
+    public function puedeRegistrarAbono1($monto)
+    {
+        return $this->abono1 === null && $monto > 0 && $monto < $this->total;
+    }
+
+    /**
+     * Verifica si puede registrar el segundo abono
+     * @param float $monto
+     * @return bool
+     */
+    public function puedeRegistrarAbono2($monto)
+    {
+        if ($this->abono1 === null || $this->abono2 !== null) {
+            return false;
+        }
+        return $monto > 0 && ($this->abono1 + $monto) < $this->total;
+    }
+
+    /**
+     * Verifica si puede completar el pago
+     * @param float $montoPagoFinal
+     * @return bool
+     */
+    public function puedeCompletarPago($montoPagoFinal)
+    {
+        $saldoPendiente = $this->getSaldoPendiente();
+        return abs($montoPagoFinal - $saldoPendiente) < 0.01; // Tolerancia de 1 centavo
+    }
+
+    /**
+     * Obtiene el texto descriptivo del estado de pago
+     * @return string
+     */
+    public function getEstadoPagoTexto()
+    {
+        switch ($this->statusPago) {
+            case 1:
+                return 'Por Pagar';
+            case 2:
+                return 'Pagado';
+            case 3:
+                return 'Abonado';
+            default:
+                return 'Estado Desconocido';
+        }
+    }
+
+    /**
+     * Registra un abono en la orden
+     * @param float $monto
+     * @param \DateTime $fecha
+     * @return bool
+     */
+    public function registrarAbono($monto, \DateTime $fecha)
+    {
+        if ($this->puedeRegistrarAbono1($monto)) {
+            $this->setAbono1($monto);
+            $this->setFechaAbono1($fecha);
+            $this->setStatusPago(3); // Estado "Abonado"
+            return true;
+        } elseif ($this->puedeRegistrarAbono2($monto)) {
+            $this->setAbono2($monto);
+            $this->setFechaAbono2($fecha);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Completa el pago de la orden
+     * @param \DateTime $fecha
+     * @return bool
+     */
+    public function completarPago(\DateTime $fecha)
+    {
+        if ($this->getSaldoPendiente() <= 0.01) { // Tolerancia de 1 centavo
+            $this->setStatusPago(2); // Estado "Pagado"
+            $this->setFechaPago($fecha);
+            return true;
+        }
+        return false;
     }
 
 }

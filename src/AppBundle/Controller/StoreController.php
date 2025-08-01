@@ -1184,78 +1184,181 @@ class StoreController extends Controller
             "asesores"=>array_unique($asesores),
         ]);        
     }
-    public function get_reporteAction(Request $request){
+    public function get_reporteAction(Request $request)
+    {
         try {
             $start_date = $request->request->get("start");
             $finish_date = $request->request->get("stop");
             $em = $this->getDoctrine()->getManager();
+            
             $categorias = $em->getRepository('AppBundle:ProductoCategoria')
-            ->createQueryBuilder('a')
-            ->getQuery()
-            ->getResult();
+                ->createQueryBuilder('a')
+                ->getQuery()
+                ->getResult();
 
             $producto = $em->getRepository('AppBundle:Producto')
-            ->createQueryBuilder('a')
-            ->getQuery()
-            ->getResult();
+                ->createQueryBuilder('a')
+                ->getQuery()
+                ->getResult();
 
             $data = [];
             $reporte_total = 0;
+            
+            // ACTUALIZADO: Incluir órdenes pagadas completamente (estado 2) Y con abonos (estado 3)
             $orders = $em->getRepository('AppBundle:DespachoOrden')
-            ->createQueryBuilder('a')
-            ->where('a.statusPago = :pago')
-            ->setParameter('pago', 2)
-            ->andWhere('a.fechaPago >= :start') 
-            ->setParameter('start', $start_date." 00:00:00")
-            ->andWhere('a.fechaPago <= :finish')
-            ->setParameter('finish', $finish_date." 23:59:00")
-            ->getQuery()
-            ->getResult();
+                ->createQueryBuilder('a')
+                ->where('a.statusPago IN (:estados)')
+                ->setParameter('estados', [2, 3]) // Pagado y Abonado
+                ->andWhere('a.fechaPago >= :start OR a.fechaAbono1 >= :start OR a.fechaAbono2 >= :start') 
+                ->setParameter('start', $start_date . " 00:00:00")
+                ->andWhere('a.fechaPago <= :finish OR a.fechaAbono1 <= :finish OR a.fechaAbono2 <= :finish')
+                ->setParameter('finish', $finish_date . " 23:59:00")
+                ->getQuery()
+                ->getResult();
+                
             $allOrders = $em->getRepository('AppBundle:DespachoOrden')
-            ->createQueryBuilder('a')
-            ->where('a.statusPago = :pago')
-            ->setParameter('pago', 2)
-            ->andWhere('a.fechaPago < :start') 
-            ->setParameter('start', $start_date." 00:00:00")
-            ->getQuery()
-            ->getResult();
+                ->createQueryBuilder('a')
+                ->where('a.statusPago IN (:estados)')
+                ->setParameter('estados', [2, 3])
+                ->andWhere('a.fechaPago < :start OR a.fechaAbono1 < :start OR a.fechaAbono2 < :start') 
+                ->setParameter('start', $start_date . " 00:00:00")
+                ->getQuery()
+                ->getResult();
+                
             foreach ($orders as $order) {
                 $ordersPerClient = 0;
                 foreach ($allOrders as $order2) {
-                    if($order2->getClienteId()->getId() == $order->getClienteId()->getId()){
-                        $ordersPerClient ++;
+                    if ($order2->getClienteId()->getId() == $order->getClienteId()->getId()) {
+                        $ordersPerClient++;
                     }
                 }
-                array_push($data, [
-                    "order_id"=>$order->getId(),
-                    "asesor"=>$order->getClienteId()->getAsesor(),
-                    "client_type"=>($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
-                    "client_state"=>$order->getClienteId()->getEstado(),
-                    "order_date"=>$order->getFechaPago()->format('Y-m-d'),
-                    "order_price"=>$order->getTotal(),
-                    "shipment_cost"=>$order->getCostoEnvio(),
-                    "items"=>[]
-                ]);
+                
+                $startDateTime = new \DateTime($start_date . " 00:00:00");
+                $finishDateTime = new \DateTime($finish_date . " 23:59:59");
+                
+                // Obtener items de la orden una sola vez
                 $order_items = $em->getRepository('AppBundle:DespachoOrdenItem')
-                ->createQueryBuilder('a')
-                ->where('a.ordenDespacho = :orden')
-                ->setParameter('orden', $order)
-                ->getQuery()
-                ->getResult();
+                    ->createQueryBuilder('a')
+                    ->where('a.ordenDespacho = :orden')
+                    ->setParameter('orden', $order)
+                    ->getQuery()
+                    ->getResult();
+                    
+                $items_array = [];
                 foreach ($order_items as $item) {
-                    foreach ($data as $key=>$order_data) {
-                        if($order_data['order_id'] == $item->getOrdenDespacho()->getId()){
-                            array_push($data[$key]['items'],[
-                                "product_id"=>$item->getProducto()->getProducto()->getId(),
-                                "product_name"=>$item->getProducto()->getProducto()->getNombre(),
-                                "product_ref"=>$item->getProducto()->getProducto()->getReferencia(),
-                                "product_color"=>$item->getColor(),
-                                "product_talla"=>$item->getProducto()->getNombre(),
-                                "product_qty"=>$item->getCantidad(),
-                                "product_price"=>$item->getPrecio(),
-                                "Categoría"=>$item->getProducto()->getProducto()->getCategoria()->getNOmbrees(),
-                            ]);
-                        }
+                    array_push($items_array, [
+                        "product_id" => $item->getProducto()->getProducto()->getId(),
+                        "product_name" => $item->getProducto()->getProducto()->getNombre(),
+                        "product_ref" => $item->getProducto()->getProducto()->getReferencia(),
+                        "product_color" => $item->getColor(),
+                        "product_talla" => $item->getProducto()->getNombre(),
+                        "product_qty" => $item->getCantidad(),
+                        "product_price" => $item->getPrecio(),
+                        "Categoría" => $item->getProducto()->getProducto()->getCategoria()->getNOmbrees(),
+                    ]);
+                }
+                
+                // NUEVA LÓGICA CORREGIDA: Crear entradas separadas para cada tipo de transacción
+                
+                // Verificar si la orden tiene abonos
+                $tieneAbonos = ($order->getAbono1() > 0 || $order->getAbono2() > 0);
+                
+                // 1. PAGO COMPLETO: Solo si está completamente pagado, la fecha está en el rango Y NO TIENE ABONOS
+                if ($order->getStatusPago() == 2 && $order->getFechaPago() && 
+                    $order->getFechaPago() >= $startDateTime && 
+                    $order->getFechaPago() <= $finishDateTime &&
+                    !$tieneAbonos) { // <- CONDICIÓN CLAVE: NO tiene abonos
+                    
+                    array_push($data, [
+                        "order_id" => $order->getId() . "_COMPLETO",
+                        "order_original_id" => $order->getId(),
+                        "asesor" => $order->getClienteId()->getAsesor(),
+                        "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                        "client_state" => $order->getClienteId()->getEstado(),
+                        "order_date" => $order->getFechaPago()->format('Y-m-d'),
+                        "order_price" => $order->getTotal(),
+                        "monto_transaccion" => $order->getTotal(),
+                        "tipo_transaccion" => 'Pago Completo',
+                        "shipment_cost" => $order->getCostoEnvio(),
+                        "estado_pago" => 'Pagado Completo',
+                        "total_abonos" => 0,
+                        "saldo_pendiente" => 0,
+                        "items" => $items_array
+                    ]);
+                }
+                
+                // 2. Si tiene abono 1 y la fecha está en el rango
+                if ($order->getFechaAbono1() && 
+                    $order->getFechaAbono1() >= $startDateTime && 
+                    $order->getFechaAbono1() <= $finishDateTime &&
+                    $order->getAbono1() > 0) {
+                    
+                    array_push($data, [
+                        "order_id" => $order->getId() . "_ABONO1",
+                        "order_original_id" => $order->getId(),
+                        "asesor" => $order->getClienteId()->getAsesor(),
+                        "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                        "client_state" => $order->getClienteId()->getEstado(),
+                        "order_date" => $order->getFechaAbono1()->format('Y-m-d'),
+                        "order_price" => $order->getTotal(),
+                        "monto_transaccion" => $order->getAbono1(),
+                        "tipo_transaccion" => 'Abono 1',
+                        "shipment_cost" => 0, // Los abonos no incluyen costo de envío
+                        "estado_pago" => 'Abono Parcial',
+                        "total_abonos" => $order->getTotalAbonos(),
+                        "saldo_pendiente" => $order->getSaldoPendiente(),
+                        "items" => $items_array
+                    ]);
+                }
+                
+                // 3. Si tiene abono 2 y la fecha está en el rango
+                if ($order->getFechaAbono2() && 
+                    $order->getFechaAbono2() >= $startDateTime && 
+                    $order->getFechaAbono2() <= $finishDateTime &&
+                    $order->getAbono2() > 0) {
+                    
+                    array_push($data, [
+                        "order_id" => $order->getId() . "_ABONO2",
+                        "order_original_id" => $order->getId(),
+                        "asesor" => $order->getClienteId()->getAsesor(),
+                        "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                        "client_state" => $order->getClienteId()->getEstado(),
+                        "order_date" => $order->getFechaAbono2()->format('Y-m-d'),
+                        "order_price" => $order->getTotal(),
+                        "monto_transaccion" => $order->getAbono2(),
+                        "tipo_transaccion" => 'Abono 2',
+                        "shipment_cost" => 0, // Los abonos no incluyen costo de envío
+                        "estado_pago" => 'Abono Parcial',
+                        "total_abonos" => $order->getTotalAbonos(),
+                        "saldo_pendiente" => $order->getSaldoPendiente(),
+                        "items" => $items_array
+                    ]);
+                }
+                
+                // 4. PAGO RESTANTE: Solo si tiene abonos, está completamente pagado y la fecha está en el rango
+                if ($order->getStatusPago() == 2 && $order->getFechaPago() && 
+                    $order->getFechaPago() >= $startDateTime && 
+                    $order->getFechaPago() <= $finishDateTime &&
+                    $tieneAbonos) { // <- Solo si tiene abonos
+                    
+                    $montoRestante = $order->getTotal() - $order->getTotalAbonos();
+                    if ($montoRestante > 0) {
+                        array_push($data, [
+                            "order_id" => $order->getId() . "_RESTANTE",
+                            "order_original_id" => $order->getId(),
+                            "asesor" => $order->getClienteId()->getAsesor(),
+                            "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                            "client_state" => $order->getClienteId()->getEstado(),
+                            "order_date" => $order->getFechaPago()->format('Y-m-d'),
+                            "order_price" => $order->getTotal(),
+                            "monto_transaccion" => $montoRestante,
+                            "tipo_transaccion" => 'Pago Restante',
+                            "shipment_cost" => $order->getCostoEnvio(), // El costo de envío va con el pago final
+                            "estado_pago" => 'Completado',
+                            "total_abonos" => $order->getTotalAbonos(),
+                            "saldo_pendiente" => 0,
+                            "items" => $items_array
+                        ]);
                     }
                 }
             }
@@ -1265,53 +1368,74 @@ class StoreController extends Controller
             
             $reporte = [];
             $pqty = [];
-            foreach($data as $key => $value){
-                if($reporte_tipo == "Total"){
-                    array_push($reporte,[
+            
+            foreach ($data as $key => $value) {
+                if ($reporte_tipo == "Total") {
+                    array_push($reporte, [
                         'id' => $value['order_id'],
+                        'original_id' => $value['order_original_id'],
                         'date' => $value['order_date'],
                         'price' => $value['order_price'],
+                        'monto_transaccion' => $value['monto_transaccion'],
+                        'tipo_transaccion' => $value['tipo_transaccion'],
+                        'estado_pago' => $value['estado_pago'],
+                        'total_abonos' => $value['total_abonos'],
+                        'saldo_pendiente' => $value['saldo_pendiente'],
                         'items' => $value['items'],
                         'shipment_cost' => $value['shipment_cost'],
                         'asesor' => $value['asesor'],
                         'client_type' => $value['client_type'],
                         'client_state' => $value['client_state']
                     ]);
-                }
-                elseif($reporte_tipo == "Categoria"){
+                } elseif ($reporte_tipo == "Categoria") {
                     $items2 = [];
-                    foreach($value['items'] as $key2 => $value2){
-                        if($reporte_tag == $value2['Categoría']){
-                            array_push($items2,$value2);
+                    foreach ($value['items'] as $key2 => $value2) {
+                        if ($reporte_tag == $value2['Categoría']) {
+                            array_push($items2, $value2);
                         }
-                    };
-                    array_push($reporte,[
-                        "items"=>$items2,
-                        'shipment_cost' => $value['shipment_cost'],
-                    ]);
-                }
-                elseif($reporte_tipo == "Top"){
-                    foreach($value['items'] as $key2 => $value2){
-                        $pqty[$value2['product_ref']] = [
-                            "cantidad" => 0,
-                            "talla" => $value2['product_talla'],
-                            "color" => $value2['product_color'],
-                            "referencia" => $value2['product_ref'],
-                            "nombre" => $value2['product_name'],
-                            "total" => 0
-                        ];
                     }
-                    foreach($value['items'] as $key2 => $value2){
-                        $pqty[$value2['product_ref']]['cantidad'] += $value2['product_qty'];
-                        $pqty[$value2['product_ref']]['total'] += ($value2['product_price'] * $value2['product_qty']);
-                    }
-                }
-                elseif($reporte_tipo == "Asesor"){
-                    if($value['asesor'] == $reporte_tag){
-                        array_push($reporte,[
+                    if (count($items2) > 0) {
+                        array_push($reporte, [
                             'id' => $value['order_id'],
+                            'original_id' => $value['order_original_id'],
+                            'date' => $value['order_date'],
+                            'monto_transaccion' => $value['monto_transaccion'],
+                            'tipo_transaccion' => $value['tipo_transaccion'],
+                            'estado_pago' => $value['estado_pago'],
+                            "items" => $items2,
+                            'shipment_cost' => $value['shipment_cost'],
+                        ]);
+                    }
+                } elseif ($reporte_tipo == "Top") {
+                    foreach ($value['items'] as $key2 => $value2) {
+                        if (!isset($pqty[$value2['product_ref']])) {
+                            $pqty[$value2['product_ref']] = [
+                                "cantidad" => 0,
+                                "talla" => $value2['product_talla'],
+                                "color" => $value2['product_color'],
+                                "referencia" => $value2['product_ref'],
+                                "nombre" => $value2['product_name'],
+                                "total" => 0
+                            ];
+                        }
+                    }
+                    foreach ($value['items'] as $key2 => $value2) {
+                        // Calcular la proporción del monto de la transacción vs el total de la orden
+                        $factorProporcional = $value['monto_transaccion'] / $value['order_price'];
+                        
+                        $pqty[$value2['product_ref']]['cantidad'] += ($value2['product_qty'] * $factorProporcional);
+                        $pqty[$value2['product_ref']]['total'] += ($value2['product_price'] * $value2['product_qty'] * $factorProporcional);
+                    }
+                } elseif ($reporte_tipo == "Asesor") {
+                    if ($value['asesor'] == $reporte_tag) {
+                        array_push($reporte, [
+                            'id' => $value['order_id'],
+                            'original_id' => $value['order_original_id'],
                             'date' => $value['order_date'],
                             'price' => $value['order_price'],
+                            'monto_transaccion' => $value['monto_transaccion'],
+                            'tipo_transaccion' => $value['tipo_transaccion'],
+                            'estado_pago' => $value['estado_pago'],
                             'asesor' => $value['asesor'],
                             'shipment_cost' => $value['shipment_cost'],
                             'items' => $value['items']
@@ -1319,11 +1443,12 @@ class StoreController extends Controller
                     }
                 }
             }
-            if($reporte_tipo=="Top"){
+            
+            if ($reporte_tipo == "Top") {
                 foreach ($pqty as $key3 => $value3) {
-                    array_push($reporte,[
-                        'id' => $value['order_id'],
-                        'date' => $value['order_date'],
+                    array_push($reporte, [
+                        'id' => '',
+                        'date' => '',
                         'total' => $value3['total'],
                         'cantidad' => $value3['cantidad'],
                         'nombre' => $value3['nombre'],
@@ -1332,14 +1457,14 @@ class StoreController extends Controller
                     ]);
                 }
             }
+            
             $response = new Response(json_encode($reporte));
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         } catch (\Throwable $th) {
-            $response = new Response($th);
+            $response = new Response($th->getMessage());
             return $response;
         }
     }
-
 }
 ?>

@@ -17,13 +17,154 @@
   <!-- /.content-header -->
 {% endblock %}
 {% block avanzu_page_content %} 
-{% if despachoOrden.anulada %}
-<div class="alert alert-danger">
-    <strong>¡ORDEN ANULADA!</strong><br>
-    Fecha de anulación: {{ despachoOrden.fechaAnulacion|date('d/m/Y H:i') }}<br>
-    Razón: Orden cancelada por el usuario {{despachoOrden.usuarioCreacion }}
+{% if not despachoOrden.anulada %}
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="card card-info collapsed-card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-dollar-sign"></i> Información de Abonos y Pagos
+        </h3>
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body" style="display: none;">
+        <div class="row">
+          <!-- Estado actual y resumen -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Estado de Pago Actual</label>
+              <div class="d-flex align-items-center">
+                <span class="badge badge-lg mr-2
+                  {% if despachoOrden.statusPago == 1 %}badge-warning
+                  {% elseif despachoOrden.statusPago == 2 %}badge-success
+                  {% elseif despachoOrden.statusPago == 3 %}badge-info
+                  {% endif %}">
+                  {% if despachoOrden.statusPago == 1 %}Por Pagar
+                  {% elseif despachoOrden.statusPago == 2 %}Pagado
+                  {% elseif despachoOrden.statusPago == 3 %}Abonado
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            
+            <table class="table table-sm table-bordered">
+              <tr>
+                <td><strong>Total de la Orden:</strong></td>
+                <td class="text-right">${{ despachoOrden.total|number_format(2, '.', ',') }}</td>
+              </tr>
+              {% if despachoOrden.abono1 is not null %}
+              <tr class="table-info">
+                <td>Abono 1 ({{ despachoOrden.fechaAbono1|date('d/m/Y H:i') }}):</td>
+                <td class="text-right text-info">${{ despachoOrden.abono1|number_format(2, '.', ',') }}</td>
+              </tr>
+              {% endif %}
+              {% if despachoOrden.abono2 is not null %}
+              <tr class="table-info">
+                <td>Abono 2 ({{ despachoOrden.fechaAbono2|date('d/m/Y H:i') }}):</td>
+                <td class="text-right text-info">${{ despachoOrden.abono2|number_format(2, '.', ',') }}</td>
+              </tr>
+              {% endif %}
+            </table>
+          </div>
+          <div class="col-md-6">
+            {% if info_abonos.puede_abonar and not info_abonos.abonos_completos %}
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                <h5 class="card-title">
+                  <i class="fas fa-plus-circle"></i>
+                  {% if despachoOrden.abono1 is null %}
+                    Registrar Primer Abono
+                  {% else %}
+                    Registrar Segundo Abono
+                  {% endif %}
+                </h5>
+              </div>
+              <div class="card-body">
+                <form method="post" action="{{ path('despachoorden_registrar_abono', {'id': despachoOrden.id}) }}">
+                  <div class="form-group">
+                    <label for="monto_abono">Monto del Abono</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                      </div>
+                      <input type="number" 
+                             class="form-control" 
+                             id="monto_abono" 
+                             name="monto_abono" 
+                             step="0.01" 
+                             min="0.01" 
+                             max="{{ info_abonos.saldo_pendiente - 0.01 }}"
+                             placeholder="0.00" 
+                             required>
+                    </div>
+                    <small class="form-text text-muted">
+                      Máximo: ${{ (info_abonos.saldo_pendiente - 0.01)|number_format(2, '.', ',') }}
+                    </small>
+                  </div>
+                  <button type="submit" class="btn btn-info btn-block">
+                    <i class="fas fa-save"></i> Registrar Abono
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% endif %}
+
+            {# {% if info_abonos.puede_completar_pago %}
+            <div class="card card-outline card-success">
+              <div class="card-header">
+                <h5 class="card-title">
+                  <i class="fas fa-check-circle"></i> Completar Pago Final
+                </h5>
+              </div>
+              <div class="card-body">
+                <form method="post" action="{{ path('despachoorden_completar_pago', {'id': despachoOrden.id}) }}">
+                  <div class="form-group">
+                    <label for="monto_pago_final">Monto Final</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                      </div>
+                      <input type="number" 
+                             class="form-control" 
+                             id="monto_pago_final" 
+                             name="monto_pago_final" 
+                             step="0.01" 
+                             value="{{ info_abonos.saldo_pendiente }}"
+                             readonly
+                             required>
+                    </div>
+                    <small class="form-text text-muted">
+                      Este monto completará el pago total de la orden.
+                    </small>
+                  </div>
+                  <button type="submit" class="btn btn-success btn-block" onclick="return confirm('¿Está seguro de completar el pago de esta orden?')">
+                    <i class="fas fa-check"></i> Completar Pago
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% endif %} #}
+
+            {% if despachoOrden.statusPago == 2 %}
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle"></i> <strong>Pagado Completamente</strong><br>
+              {% if despachoOrden.fechaPago %}
+              Fecha: {{ despachoOrden.fechaPago|date('d/m/Y H:i') }}
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endif %}
+
 <div class="modal" tabindex="-1" role="dialog" id="modal-link_pago">
   <div class="modal-dialog modal-md">
     <div class="modal-content">
@@ -84,103 +225,340 @@
         <i class="fa fa-refresh fa-spin"></i>
       </div>
       <div class="card-body">
-        <h4>
-          ACPM FASHION GROUP<br>
-          <small class="float-right text-right">
-            Fechas<br>
-            <small>Creacion: {{ despachoOrden.fechaCreacion|date('d-m-Y h:i a') }}</small><br>
-            {% if despachoOrden.fechaPago %}
-              <small class="text-right">Pago: {{ despachoOrden.fechaPago|date('d-m-Y h:i a') }}</small><br>
-            {% endif %}
-            {% if despachoOrden.fechaDespacho %}
-              <small class="text-right">Despacho: {{ despachoOrden.fechaDespacho|date('d-m-Y h:i a') }}</small><br>
-            {% endif %}
-            <small>{{ despachoOrden.clienteId.asesor ?? despachoOrden.usuarioCreacion }}</small>
-        </small> 
+        <div class="row">
+          <div class="col-md-8">
+<div class="mb-4">
+ <div class="row align-items-center mb-3">
+   <div class="col-md-8 text-right">
+     <h3 class="mb-1 font-weight-bold">ACPM FASHION GROUP</h3>
+     <h5 class="text-muted mb-0">ORDEN DE DESPACHO #{{ despachoOrden.id }}</h5>
+   </div>
+ </div>
+ 
+ <div class="card border-0 shadow-sm">
+   <div class="card-body py-3">
+     <div class="row">
+       <div class="col-md-6">
+         <div class="mb-2">
+           <span class="text-muted small">CLIENTE</span>
+           <div class="font-weight-bold">{{ despachoOrden.clienteId.nombre }} {{ despachoOrden.clienteId.apellidos }}</div>
+         </div>
+         <div class="mb-2">
+           <span class="text-muted small">ASESOR</span>
+           <div class="font-weight-semibold">{{ despachoOrden.clienteId.asesor ?? despachoOrden.usuarioCreacion }}</div>
+         </div>
+       </div>
+       <div class="col-md-6">
+         <div class="contact-info">
+           <div class="d-flex align-items-center mb-2">
+             <i class="fas fa-map-marker-alt mr-2"></i>
+             <div>
+               <span class="text-muted small d-block">DIRECCIÓN DE ENTREGA</span>
+               <span class="small">{{ despachoOrden.direccionEnvio }}</span>
+             </div>
+           </div>
+           <div class="d-flex align-items-center mb-2">
+             <i class="fas fa-phone mr-2"></i>
+             <div>
+               <span class="text-muted small d-block">TELÉFONO</span>
+               <span class="small">{{ despachoOrden.clienteId.telefono }}</span>
+             </div>
+           </div>
+           <div class="d-flex align-items-center">
+             <i class="fas fa-envelope mr-2"></i>
+             <div>
+               <span class="text-muted small d-block">EMAIL</span>
+               <span class="small">{{ despachoOrden.clienteId.email }}</span>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+</div>
+            
+            <!-- Tabla de productos arriba del historial -->
+            {% set subtotal = 0 %}
+            {% set qty_items = 0 %}
+            <div class="table-responsive mt-3">
+              <table class="table table-sm table-bordered table-striped">
+                <thead>
+                    <tr>
+                      <th class="nowrap">Referencia</th>
+                      <th class="nowrap">Nombre</th>
+                      <th class="nowrap">Talla</th>
+                      <th class="nowrap">Color</th>
+                      <th class="nowrap">Precio</th>
+                      <th class="nowrap">Cantidad</th>
+                      <th class="nowrap">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody class="items" id="product_table">
+                  {% if despachoOrden.statusPago == 2 %}
+                    {# Ordenar por referencia si se cumplen las condiciones #}
+                      {% for item in items|sort((a, b) => a.producto.producto.referencia <=> b.producto.producto.referencia) %}
+                        {% set precio = item.precio %}
+                        <tr>
+                          <td>{{ item.producto.producto.referencia }}</td>
+                          <td>{{ item.producto.producto.nombre }}</td>
+                          <td>{{ item.producto.nombre }}</td>
+                          <td>{{ item.color }}</td>
+                          <td>{{ precio }}</td>
+                          <td>{{ item.cantidad }}</td>
+                          <td>{{ item.cantidad * precio }}</td>
+                          {% set subtotal = subtotal + (item.cantidad * precio) %}
+                          {% set qty_items = qty_items + item.cantidad %}
+                        </tr>
+                      {% endfor %}
+                  {% else %}
+                    {# Mostrar sin ordenar si no se cumplen las condiciones #}
+                    {% for item in items %}
+                      {% set precio = item.precio %}
+                      <tr>
+                        <td>{{ item.producto.producto.referencia }}</td>
+                        <td>{{ item.producto.producto.nombre }}</td>
+                        <td>{{ item.producto.nombre }}</td>
+                        <td>{{ item.color }}</td>
+                        <td>{{ precio }}</td>
+                        <td>{{ item.cantidad }}</td>
+                        <td>{{ item.cantidad * precio }}</td>
+                        {% set subtotal = subtotal + (item.cantidad * precio) %}
+                        {% set qty_items = qty_items + item.cantidad %}
+                      </tr>
+                    {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-history"></i> Historial de la Orden
+                </h3>
+              </div>
+              <div class="card-body p-0">
+                <div class="timeline timeline-inverse">
+                  <!-- Creación de la orden -->
+                  <div class="time-label">
+                    <span class="bg-green">{{ despachoOrden.fechaCreacion|date('d/m/Y') }}</span>
+                  </div>
+                  <div>
+                    <i class="fas fa-plus bg-green"></i>
+                    <div class="timeline-item">
+                      <span class="time">
+                        <i class="fas fa-clock"></i> {{ despachoOrden.fechaCreacion|date('H:i') }}
+                      </span>
+                      <h3 class="timeline-header">
+                        <strong>Orden Creada</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        Orden VRX-{{ despachoOrden.id }} registrada en el sistema
+                        <br><small class="text-muted">Total: ${{ despachoOrden.total|number_format(2, '.', ',') }}</small>
+                      </div>
+                    </div>
+                  </div>
 
-          <span class="float-end">ORDEN DE DESPACHO #{{ despachoOrden.id }}</span>
-        </h4>
-        <div class="row invoice-info">
-          <div class="col-sm-6 invoice-col">
-            Cliente: <b>{{ despachoOrden.clienteId.nombre }} {{ despachoOrden.clienteId.apellidos }}</b>
-            <address>
-              <ul class="ml-4 mb-0 fa-ul text-muted">
-                <li><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Direcciónde entrega: {{ despachoOrden.direccionEnvio }}</li>
-                <li><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Teléfono #: {{ despachoOrden.clienteId.telefono }}</li>
-                <li><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: {{ despachoOrden.clienteId.email }}</li>
-              </ul>
-            </address>
+                  {# Información de anulación en el historial #}
+                  {% if despachoOrden.anulada %}
+                  {% if despachoOrden.fechaAnulacion|date('d/m/Y') != despachoOrden.fechaCreacion|date('d/m/Y') %}
+                  <div class="time-label">
+                    <span class="bg-danger">{{ despachoOrden.fechaAnulacion|date('d/m/Y') }}</span>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <i class="fas fa-ban bg-danger"></i>
+                    <div class="timeline-item">
+                      <span class="time">
+                        <i class="fas fa-clock"></i> {{ despachoOrden.fechaAnulacion|date('H:i') }}
+                      </span>
+                      <h3 class="timeline-header">
+                        <strong class="text-danger">Orden Anulada</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        Orden cancelada por el usuario {{ despachoOrden.usuarioCreacion }}
+                        <br><small class="text-muted text-danger">Estado: Anulada</small>
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  {# Solo mostrar historial de pagos y despachos si NO está anulada #}
+                  
+                  <!-- Primer Abono -->
+                  {% if despachoOrden.fechaAbono1 %}
+                  {% if despachoOrden.fechaAbono1|date('d/m/Y') != despachoOrden.fechaCreacion|date('d/m/Y') %}
+                  <div class="time-label">
+                    <span class="bg-blue">{{ despachoOrden.fechaAbono1|date('d/m/Y') }}</span>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <i class="fas fa-dollar-sign bg-blue"></i>
+                    <div class="timeline-item">
+                      <span class="time">
+                        <i class="fas fa-clock"></i> {{ despachoOrden.fechaAbono1|date('H:i') }}
+                      </span>
+                      <h3 class="timeline-header">
+                        <strong>Primer Abono</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        Abono registrado por ${{ despachoOrden.abono1|number_format(2, '.', ',') }}
+                        <br><small class="text-muted">Estado: Abonado</small>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  <!-- Segundo Abono -->
+                  {% if despachoOrden.fechaAbono2 %}
+                  {% if despachoOrden.fechaAbono2|date('d/m/Y') != despachoOrden.fechaAbono1|date('d/m/Y') %}
+                  <div class="time-label">
+                    <span class="bg-blue">{{ despachoOrden.fechaAbono2|date('d/m/Y') }}</span>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <i class="fas fa-dollar-sign bg-blue"></i>
+                    <div class="timeline-item">
+                      <span class="time">
+                        <i class="fas fa-clock"></i> {{ despachoOrden.fechaAbono2|date('H:i') }}
+                      </span>
+                      <h3 class="timeline-header">
+                        <strong>Segundo Abono</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        Abono registrado por ${{ despachoOrden.abono2|number_format(2, '.', ',') }}
+                        <br><small class="text-muted">Total abonado: ${{ despachoOrden.totalAbonos|number_format(2, '.', ',') }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  <!-- Pago Final Completado -->
+                  {% if despachoOrden.fechaPago %}
+                  {% set showDateLabel = true %}
+                  {% if despachoOrden.fechaAbono2 and despachoOrden.fechaPago|date('d/m/Y') == despachoOrden.fechaAbono2|date('d/m/Y') %}
+                      {% set showDateLabel = false %}
+                  {% elseif despachoOrden.fechaAbono1 and not despachoOrden.fechaAbono2 and despachoOrden.fechaPago|date('d/m/Y') == despachoOrden.fechaAbono1|date('d/m/Y') %}
+                      {% set showDateLabel = false %}
+                  {% elseif not despachoOrden.tieneAbonos and despachoOrden.fechaPago|date('d/m/Y') == despachoOrden.fechaCreacion|date('d/m/Y') %}
+                      {% set showDateLabel = false %}
+                  {% endif %}
+
+                  {% if showDateLabel %}
+                  <div class="time-label">
+                    <span class="bg-success">{{ despachoOrden.fechaPago|date('d/m/Y') }}</span>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <i class="fas fa-check bg-success"></i>
+                    <div class="timeline-item">
+                      <span class="time">
+                        <i class="fas fa-clock"></i> {{ despachoOrden.fechaPago|date('H:i') }}
+                      </span>
+                      <h3 class="timeline-header">
+                        <strong>Pago Completado</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        {% if despachoOrden.tieneAbonos %}
+                        Pago final completado
+                        <br><small class="text-muted">Monto final: ${{ despachoOrden.saldoPendiente|number_format(2, '.', ',') }}</small>
+                        {% else %}
+                        Pago completo recibido
+                        <br><small class="text-muted">Total: ${{ despachoOrden.total|number_format(2, '.', ',') }}</small>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  <!-- Despacho -->
+                  {% if despachoOrden.fechaDespacho %}
+                  {% set showDateLabel = true %}
+                  {% if despachoOrden.fechaPago and despachoOrden.fechaDespacho|date('d/m/Y') == despachoOrden.fechaPago|date('d/m/Y') %}
+                      {% set showDateLabel = false %}
+                  {% endif %}
+
+                  {% if showDateLabel %}
+                  <div class="time-label">
+                    <span class="bg-purple">{{ despachoOrden.fechaDespacho|date('d/m/Y') }}</span>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <i class="fas fa-shipping-fast bg-purple"></i>
+                    <div class="timeline-item">
+                      <span class="time">
+                        <i class="fas fa-clock"></i> {{ despachoOrden.fechaDespacho|date('H:i') }}
+                      </span>
+                      <h3 class="timeline-header">
+                        <strong>Orden Despachada</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        Productos enviados al cliente
+                        <br><small class="text-muted">Estado: Despachado</small>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  <!-- Estado actual si no está completo -->
+                  {% if despachoOrden.statusPago != 2 or despachoOrden.statusOrden != 2 %}
+                  <div>
+                    <i class="fas fa-clock bg-gray"></i>
+                    <div class="timeline-item">
+                      <h3 class="timeline-header">
+                        <strong>Estado Actual</strong>
+                      </h3>
+                      <div class="timeline-body">
+                        <span class="badge {% if despachoOrden.statusPago == 1 %}badge-warning{% elseif despachoOrden.statusPago == 3 %}badge-info{% endif %}">
+                          {% if despachoOrden.statusPago == 1 %}Por Pagar
+                          {% elseif despachoOrden.statusPago == 3 %}Abonado
+                          {% endif %}
+                        </span>
+                        <span class="badge {% if despachoOrden.statusOrden == 1 %}badge-warning{% endif %} ml-1">
+                          {% if despachoOrden.statusOrden == 1 %}Por Despachar{% endif %}
+                        </span>
+                        {% if despachoOrden.tieneAbonos and despachoOrden.statusPago != 2 %}
+                        <br><small class="text-muted">Pendiente: ${{ despachoOrden.saldoPendiente|number_format(2, '.', ',') }}</small>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+                  {% endif %} {# Fin del if para orden NO anulada #}
+                  
+                  <!-- Fin del timeline -->
+                  <div>
+                    <i class="fas fa-clock bg-gray"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        {% set subtotal = 0 %}
-        {% set qty_items = 0 %}
-        <div class="table-responsive">
-          <table class="table table-sm table-bordered table-striped">
-            <thead>
-                <tr>
-                  <th class="nowrap">Referencia</th>
-                  <th class="nowrap">Nombre</th>
-                  <th class="nowrap">Talla</th>
-                  <th class="nowrap">Color</th>
-                  <th class="nowrap">Precio</th>
-                  <th class="nowrap">Cantidad</th>
-                  <th class="nowrap">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody class="items" id="product_table">
-              {% if despachoOrden.statusPago == 2 %}
-                {# Ordenar por referencia si se cumplen las condiciones #}
-                  {% for item in items|sort((a, b) => a.producto.producto.referencia <=> b.producto.producto.referencia) %}
-                    {% set precio = item.precio %}
-                    <tr>
-                      <td>{{ item.producto.producto.referencia }}</td>
-                      <td>{{ item.producto.producto.nombre }}</td>
-                      <td>{{ item.producto.nombre }}</td>
-                      <td>{{ item.color }}</td>
-                      <td>{{ precio }}</td>
-                      <td>{{ item.cantidad }}</td>
-                      <td>{{ item.cantidad * precio }}</td>
-                      {% set subtotal = subtotal + (item.cantidad * precio) %}
-                      {% set qty_items = qty_items + item.cantidad %}
-                    </tr>
-                  {% endfor %}
-              {% else %}
-                {# Mostrar sin ordenar si no se cumplen las condiciones #}
-                {% for item in items %}
-                  {% set precio = item.precio %}
-                  <tr>
-                    <td>{{ item.producto.producto.referencia }}</td>
-                    <td>{{ item.producto.producto.nombre }}</td>
-                    <td>{{ item.producto.nombre }}</td>
-                    <td>{{ item.color }}</td>
-                    <td>{{ precio }}</td>
-                    <td>{{ item.cantidad }}</td>
-                    <td>{{ item.cantidad * precio }}</td>
-                    {% set subtotal = subtotal + (item.cantidad * precio) %}
-                    {% set qty_items = qty_items + item.cantidad %}
-                  </tr>
-                {% endfor %}
-              {% endif %}
-            </tbody>
-          </table>
-        </div>
+
          <div class="row">
           <div class="col-6">
             <p class="lead">Método de pago: {{ despachoOrden.tipoPago }}</p>
-            {% if despachoOrden.statusPago == 1 %}
+            {% if despachoOrden.anulada %}
               <br>
-              <h4>PENDIENTE PAGO</h4>
-            {% elseif despachoOrden.statusPago == 2 %}
-              <br>
-              <h4>PAGADA</h4>
-            {% elseif despachoOrden.statusPago == 3 %}
-              <br>
-              <h4>PAGO RECHAZADO O ANULADO</h4>
-            {% endif %}
-            {% if despachoOrden.statusOrden == 1 %}
-              <h4>PENDIENTE POR DESPACHAR</h4>
+              <h4 class="text-danger">ORDEN ANULADA</h4>
             {% else %}
-              <h4>DESPACHADA</h4>
+              {% if despachoOrden.statusPago == 1 %}
+                <br>
+                <h4>PENDIENTE PAGO</h4>
+              {% elseif despachoOrden.statusPago == 2 %}
+                <br>
+                <h4>PAGADA</h4>
+              {% elseif despachoOrden.statusPago == 3 %}
+                <br>
+                <h4>ABONADO</h4>
+              {% endif %}
+              {% if despachoOrden.statusOrden == 1 %}
+                <h4>PENDIENTE POR DESPACHAR</h4>
+              {% else %}
+                <h4>DESPACHADA</h4>
+              {% endif %}
             {% endif %}
             <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
               {{ despachoOrden.notas }}
@@ -209,6 +587,19 @@
                     <th>Costo Envío</th>
                     <td class="text-right">{{ despachoOrden.costoEnvio }}</td>
                   </tr>
+                  <!-- NUEVA SECCIÓN: Información de abonos en el resumen (solo si NO está anulada) -->
+                  {% if despachoOrden.tieneAbonos and not despachoOrden.anulada %}
+                    <tr>
+                      <th>Total Abonos:</th>
+                      <td class="text-right">${{ despachoOrden.totalAbonos|number_format(2, '.', ',') }}</td>
+                    </tr>
+                    <tr>
+                      <th>Saldo Pendiente:</th>
+                      <td class="text-right {% if despachoOrden.saldoPendiente > 0 %}text-warning{% else %}text-success{% endif %}">
+                        <strong>${{ despachoOrden.saldoPendiente|number_format(2, '.', ',') }}</strong>
+                      </td>
+                    </tr>
+                  {% endif %}
                   <tr>
                     <th>Total</th>
                     <td class="text-right">{{ despachoOrden.total }}</td>
@@ -218,7 +609,6 @@
             </div>
           </div>
         </div>
-        
       </div>
       <div class="card-footer clearfix no-print">
       <a href="#!" onClick="window.print()" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Imprimir</a> 
@@ -259,7 +649,7 @@
               {% if despachoOrden.statusOrden == 1 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS')) %}
                   <button onclick="add_guia()"  class="btn btn-primary"><i class="fa fa-check"></i> Confirmar Despacho</button>
               {% endif %}
-              {% if despachoOrden.statusPago == 1 %}
+              {% if despachoOrden.statusPago == 1 and not despachoOrden.tieneAbonos %}
                   {% if is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS') or is_granted('ROLE_DESPACHOS') %}
                       &nbsp;
                       <a href="{{ path('despachoorden_pagado', { 'id': despachoOrden.id }) }}" class="btn btn-success"><i class="far fa-credit-card"></i> Confirmar Pago</a>

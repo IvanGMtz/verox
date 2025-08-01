@@ -61,13 +61,9 @@
             {{ form_row(edit_form.statusOrden) }}
             </address>
           </div>
-          <div class="col-sm-4 invoice-col">
-            <address>
-            {{ form_row(edit_form.fechaCreacion) }}
-            </address>
-          </div>
           {% endif %}
         </div>
+
         {% set subtotal = 0 %}
         {% set items_array = {} %}
         <div class="table-responsive">
@@ -325,6 +321,55 @@
         if($('#appbundle_despachoorden_costoEnvio').val()){
           $('#appbundle_despachoorden_costoEnvio').val(parseFloat($('#appbundle_despachoorden_costoEnvio').val().toString().replace(',', '.')))
         }
+
+        // NUEVA FUNCIONALIDAD: Validación de estado de pago con abonos
+        $(document).ready(function() {
+            // Validación de estado de pago en formulario de edición
+            const statusPagoSelect = document.querySelector('#appbundle_despachoorden_statusPago');
+            if (statusPagoSelect) {
+                const totalAbonos = {{ info_abonos.total_abonos|default(0) }};
+                const saldoPendiente = {{ info_abonos.saldo_pendiente|default(0) }};
+                const tieneAbonos = {{ despachoOrden.tieneAbonos ? 'true' : 'false' }};
+                
+                statusPagoSelect.addEventListener('change', function() {
+                    const nuevoEstado = parseInt(this.value);
+                    
+                    if (nuevoEstado === 3 && !tieneAbonos) {
+                        alert('⚠️ No se puede establecer como "Abonado" sin registrar abonos primero.\n\nPara registrar abonos, vaya a la vista de detalle de la orden.');
+                        this.value = '1'; // Revertir a "Por Pagar"
+                        return false;
+                    }
+                    
+                    if (nuevoEstado === 2 && saldoPendiente > 0.01) {
+                        alert('⚠️ No se puede marcar como "Pagado" mientras exista saldo pendiente.\n\nSaldo pendiente: $' + saldoPendiente.toFixed(2) + '\n\nComplete el pago en la vista de detalle primero.');
+                        this.value = tieneAbonos ? '3' : '1'; // Revertir al estado apropiado
+                        return false;
+                    }
+                    
+                    // Confirmación para cambios importantes
+                    if (nuevoEstado === 2 && saldoPendiente <= 0.01) {
+                        if (!confirm('¿Confirma que desea marcar esta orden como completamente pagada?')) {
+                            this.value = tieneAbonos ? '3' : '1';
+                            return false;
+                        }
+                    }
+                });
+            }
+            
+            // Mostrar alertas al cargar la página si hay inconsistencias
+            {% if despachoOrden.statusPago == 3 and not despachoOrden.tieneAbonos %}
+            setTimeout(function() {
+                alert('⚠️ Atención: Esta orden está marcada como "Abonado" pero no tiene abonos registrados.\n\nPor favor, verifique y corrija el estado.');
+            }, 1000);
+            {% endif %}
+            
+            {% if despachoOrden.statusPago == 2 and despachoOrden.saldoPendiente > 0.01 %}
+            setTimeout(function() {
+                alert('⚠️ Atención: Esta orden está marcada como "Pagado" pero tiene saldo pendiente.\n\nSaldo pendiente: ${{ despachoOrden.saldoPendiente|number_format(2, ".", ",") }}\n\nPor favor, verifique y corrija el estado.');
+            }, 1000);
+            {% endif %}
+        });
+
         calcular();
         pull_stock();
     </script>
