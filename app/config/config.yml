@@ -163,3 +163,22 @@ vich_uploader:
             uri_prefix:         /uploads/images/store_tienda/slider
             upload_destination: '%kernel.root_dir%/../web/uploads/images/store_tienda/slider'
             namer:              vich_uploader.namer_uniqid
+monolog:
+    channels: ["cierre_mensual", "orden_anulada"]
+    handlers:
+        main:
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            level: debug
+        cierre_mensual:
+            type: rotating_file
+            path: '%kernel.logs_dir%/cierre_mensual.log'
+            level: info
+            channels: ["cierre_mensual"]
+            max_files: 12
+        orden_anulada:
+            type: rotating_file
+            path: '%kernel.logs_dir%/orden_anulada.log'
+            level: info
+            channels: ["orden_anulada"]
+            max_files: 24

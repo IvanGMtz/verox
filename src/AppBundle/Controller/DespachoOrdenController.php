@@ -680,16 +680,27 @@ class DespachoOrdenController extends Controller
                 return $this->redirectToRoute('despachoorden_index');
             }
             
-            $despachoOrden->setAnulada(1);
-            $despachoOrden->setFechaAnulacion(new \DateTime());
-            $despachoOrden->setUsuarioCreacion($user);
+            $now = new \DateTime();
+            $ordenInfo = [
+                'id' => $despachoOrden->getId(),
+                'usuario_anulacion' => $user->getName(),
+                'fecha_anulacion' => $now->format('Y-m-d H:i:s'),
+                'cliente' => $despachoOrden->getClienteId()->getNombre() . ' ' . $despachoOrden->getClienteId()->getApellidos(),
+                'items_liberados' => 0
+            ];
+
+            $this->get('monolog.logger.orden_anulada')->info("=== INICIO ANULACIÓN ORDEN ===", $ordenInfo);
             
-            $fecha = new \DateTime();
+            $despachoOrden->setAnulada(1);
+            $despachoOrden->setFechaAnulacion($now);
+            $despachoOrden->setUsuarioCreacion($user);
+
             $items = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy([
                 'ordenDespacho' => $despachoOrden->getId(),
                 'estatus' => 1 
             ]);
             
+            $itemsLiberados = 0;
             foreach ($items as $item) {
                 $productoTalla = $item->getProducto();
                 $colorNombre = $item->getColor();
@@ -709,13 +720,32 @@ class DespachoOrdenController extends Controller
                     ]);
                     
                     if ($inventario) {
-                        if ($bodega == 'DETAL') {
-                            $inventario->setQtyActualDetal($inventario->getQtyActualDetal());
-                        } elseif ($bodega == 'MAYORISTA') {
-                            $inventario->setQtyActualMayorista($inventario->getQtyActualMayorista());
-                        }
-                        $em->persist($inventario);
+                        $cantidadAnterior = ($bodega == 'MAYORISTA') ? 
+                            $inventario->getQtyActualMayorista() : 
+                            $inventario->getQtyActualDetal();
                         
+                        if ($bodega == 'MAYORISTA') {
+                            $inventario->setQtyActualMayorista($inventario->getQtyActualMayorista() + $cantidad);
+                        } else {
+                            $inventario->setQtyActualDetal($inventario->getQtyActualDetal() + $cantidad);
+                        }
+                        
+                        $cantidadNueva = ($bodega == 'MAYORISTA') ? 
+                            $inventario->getQtyActualMayorista() : 
+                            $inventario->getQtyActualDetal();
+                        
+                        $em->persist($inventario);
+
+                        $this->get('monolog.logger.orden_anulada')->info("Inventario liberado", [
+                            'orden_id' => $despachoOrden->getId(),
+                            'producto' => $productoPadre->getNombre() . " Talla: " . $productoTalla->getNombre(),
+                            'color' => $colorNombre,
+                            'bodega' => $bodega,
+                            'cantidad_liberada' => $cantidad,
+                            'stock_anterior' => $cantidadAnterior,
+                            'stock_nuevo' => $cantidadNueva
+                        ]);
+
                         $movimiento = new ProductoInventarioMovimiento();
                         $movimiento->setProducto($productoPadre->getNombre() . " Talla: " . $productoTalla->getNombre());
                         $movimiento->setColor($colorNombre);
@@ -724,19 +754,20 @@ class DespachoOrdenController extends Controller
                         $movimiento->setBodega(strtolower($bodega));
                         $movimiento->setInformacion("Anulación orden VRX-" . $despachoOrden->getId());
                         $movimiento->setUsuario($user->getName());
-                        $movimiento->setFecha($fecha);
+                        $movimiento->setFecha($now);
                         $em->persist($movimiento);
+                        
+                        $itemsLiberados++;
                     }
                 }
                 
                 $item->setEstatus(0);
                 $em->persist($item);
             }
-            
-            // 4. Actualizar items ya despachados (estado 2) solo marcarlos como anulados
+
             $despachados = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy([
                 'ordenDespacho' => $despachoOrden->getId(),
-                'estatus' => 2 // Items ya despachados
+                'estatus' => 2
             ]);
             
             foreach ($despachados as $item) {
@@ -744,13 +775,23 @@ class DespachoOrdenController extends Controller
                 $em->persist($item);
             }
             
+            $ordenInfo['items_liberados'] = $itemsLiberados;
+            $ordenInfo['items_despachados_anulados'] = count($despachados);
+            
             try {
                 $em->flush();
+                $this->get('monolog.logger.orden_anulada')->info("Orden anulada exitosamente", $ordenInfo);
+                
             } catch (\Exception $e) {
+                $this->get('monolog.logger.orden_anulada')->error("Error al anular orden", [
+                    'orden_id' => $despachoOrden->getId(),
+                    'error' => $e->getMessage(),
+                    'usuario' => $user->getName()
+                ]);
+                
                 $this->addFlash('error', 'Error al anular: ' . $e->getMessage());
                 return $this->redirectToRoute('despachoorden_index');
             }
-            
             try {
                 $items_str = "";
                 $orden_items = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy([
@@ -783,7 +824,9 @@ class DespachoOrdenController extends Controller
                             "email_subject" => "Orden de despacho anulada: VRX-".$despachoOrden->getId(),
                             "email_body" => '<h1>Se ha anulado la orden de despacho!</h1>
                                 <span>A continuación los datos de la orden:</span><br><br>
-                                <span>Anulada por: '.$user->getName().'</span>
+                                <span>Anulada por: '.$user->getName().'</span><br>
+                                <span>Fecha: '.$now->format('Y-m-d H:i:s').'</span><br>
+                                <span>Items liberados: '.$itemsLiberados.'</span><br><br>
                                 <table style="text-align: center;border:1px solid black">
                                     <tr>
                                         <th style="text-align: center;border:1px solid black;padding:10px;">Item</th>
@@ -803,11 +846,27 @@ class DespachoOrdenController extends Controller
                     ]
                 ];
                 $client3->post($url, $options);
+                
+                $this->get('monolog.logger.orden_anulada')->info("Email de anulación enviado", [
+                    'orden_id' => $despachoOrden->getId(),
+                    'usuario' => $user->getName()
+                ]);
+                
             } catch (\Throwable $th) {
-                error_log("Error enviando correo: " . $th->getMessage());
+                $this->get('monolog.logger.orden_anulada')->error("Error enviando email de anulación", [
+                    'orden_id' => $despachoOrden->getId(),
+                    'error' => $th->getMessage(),
+                    'usuario' => $user->getName()
+                ]);
             }
             
-            $this->addFlash('success', 'Orden anulada correctamente');
+            $this->get('monolog.logger.orden_anulada')->info("=== FIN ANULACIÓN ORDEN ===", [
+                'orden_id' => $despachoOrden->getId(),
+                'resultado' => 'exitoso',
+                'items_liberados' => $itemsLiberados
+            ]);
+            
+            $this->addFlash('success', "Orden anulada correctamente. Items liberados: $itemsLiberados");
         }
 
         return $this->redirectToRoute('despachoorden_index');
@@ -841,9 +900,11 @@ class DespachoOrdenController extends Controller
         return $this->redirectToRoute('despachoorden_index');
     }
 
-    public function pagadoAction(DespachoOrden $despachoOrden){
+    public function pagadoAction(DespachoOrden $despachoOrden)
+    {
         $em = $this->getDoctrine()->getManager();
-        if ($despachoOrden->getSaldoPendiente() > 0.01) {
+        
+        if ($despachoOrden->tieneAbonos() && $despachoOrden->getSaldoPendiente() > 0.01) {
             $this->addFlash('error', 'Esta orden tiene saldo pendiente. Complete los pagos primero.');
             return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
         }
@@ -854,24 +915,35 @@ class DespachoOrdenController extends Controller
         }
         $em->persist($despachoOrden);
         $em->flush($despachoOrden);
+        
         $deleteForm = $this->createDeleteForm($despachoOrden);
         $items = $em->getRepository('AppBundle:DespachoOrdenItem')
-              ->createQueryBuilder('a')
-              ->where('a.ordenDespacho = :orden')
-              ->setParameter('orden', $despachoOrden)
-              ->getQuery()
-              ->getResult();
+            ->createQueryBuilder('a')
+            ->where('a.ordenDespacho = :orden')
+            ->setParameter('orden', $despachoOrden)
+            ->getQuery()
+            ->getResult();
 
-        $this->addFlash(
-            'success',
-            'Registro editado correctamente'
-        );
+        // NUEVO: Calcular información de abonos para la vista
+        $infoAbonos = [
+            'total_abonos' => $despachoOrden->getTotalAbonos(),
+            'saldo_pendiente' => $despachoOrden->getSaldoPendiente(),
+            'puede_abonar' => false, // Ya está pagado
+            'abonos_completos' => $despachoOrden->getAbono1() !== null && $despachoOrden->getAbono2() !== null,
+            'puede_completar_pago' => false // Ya está pagado
+        ];
+
+        $this->addFlash('success', 'Pago confirmado correctamente');
+        
         return $this->render('despachoorden/show.html.twig', array(
             'despachoOrden' => $despachoOrden,
             'delete_form' => $deleteForm->createView(),
-            "items"=>$items
+            'items' => $items,
+            'info_abonos' => $infoAbonos,
+            'user' => strtoupper($this->container->get('security.token_storage')->getToken()->getUser()->getName())
         ));
     }
+
     public function despachadoAction(DespachoOrden $despachoOrden,Request $request){
         $fecha = new \DateTime();
         $em = $this->getDoctrine()->getManager();
@@ -1010,14 +1082,15 @@ class DespachoOrdenController extends Controller
         $startDate = new \DateTime('first day of last month');
         $endDate = new \DateTime('last day of last month');
         $endDate->setTime(23, 59, 59);
-        
-        // CORREGIDO: Solo incluir órdenes NO PAGADAS (estado 1)
-        // Las órdenes pagadas (estado 2) y abonadas (estado 3) NO se anulan
+
+        $mesAnterior = $startDate->format('F Y');
+        $mesAnteriorEsp = $this->traducirMes($startDate->format('n'), $startDate->format('Y'));
+
         $ordenes = $em->getRepository('AppBundle:DespachoOrden')->createQueryBuilder('o')
             ->where('o.statusPago = :statusPago')
             ->andWhere('o.anulada = :anulada')
             ->andWhere('o.fechaCreacion BETWEEN :start AND :end')
-            ->setParameter('statusPago', 1) // Solo estado 1 = no pagado
+            ->setParameter('statusPago', 1)
             ->setParameter('anulada', 0)
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate)
@@ -1026,18 +1099,34 @@ class DespachoOrdenController extends Controller
         
         $contador = 0;
         $now = new \DateTime();
+        $ordenesAnuladas = [];
+
+        $this->get('monolog.logger.cierre_mensual')->info("=== INICIO CIERRE MENSUAL ===", [
+            'mes_procesado' => $mesAnteriorEsp,
+            'fecha_cierre' => $now->format('Y-m-d H:i:s'),
+            'total_ordenes_encontradas' => count($ordenes),
+            'rango_fechas' => $startDate->format('Y-m-d') . ' al ' . $endDate->format('Y-m-d')
+        ]);
         
         foreach ($ordenes as $orden) {
-            // Anular la orden
+            $ordenInfo = [
+                'id' => $orden->getId(),
+                'numero_orden' => $orden->getId(),
+                'cliente' => $orden->getClienteId(),
+                'fecha_creacion' => $orden->getFechaCreacion()->format('Y-m-d H:i:s'),
+                'total' => $orden->getTotal(),
+                'items_liberados' => 0
+            ];
+
             $orden->setAnulada(1);
             $orden->setFechaAnulacion($now);
-            
-            // Agregar nota de anulación
-            $notas = $orden->getNotas() . "\n\nANULADA POR CIERRE MENSUAL - " . $now->format('Y-m-d H:i') . " (Orden sin pagos)";
+
+            $notas = $orden->getNotas() . "\n\nANULADA POR CIERRE MENSUAL - " . $now->format('Y-m-d H:i') . 
+                    " (Orden sin pagos - Mes: $mesAnteriorEsp)";
             $orden->setNotas($notas);
-            
-            // Liberar inventario reservado
+
             $items = $em->getRepository('AppBundle:DespachoOrdenItem')->findBy(['ordenDespacho' => $orden->getId()]);
+            $itemsLiberados = 0;
 
             foreach ($items as $item) {
                 if ($item->getEstatus() == 1) {
@@ -1049,26 +1138,91 @@ class DespachoOrdenController extends Controller
                             ->findOneBy(['producto' => $item->getProducto(), 'color' => $prodColor]);
                         
                         if ($inventario) {
+                            $cantidadAnterior = $item->getBodega() == 'MAYORISTA' ? 
+                                $inventario->getQtyActualMayorista() : 
+                                $inventario->getQtyActualDetal();
+                                
                             if ($item->getBodega() == 'MAYORISTA') {
                                 $inventario->setQtyActualMayorista($inventario->getQtyActualMayorista() + $item->getCantidad());
                             } else {
                                 $inventario->setQtyActualDetal($inventario->getQtyActualDetal() + $item->getCantidad());
                             }
+                            
+                            $cantidadNueva = $item->getBodega() == 'MAYORISTA' ? 
+                                $inventario->getQtyActualMayorista() : 
+                                $inventario->getQtyActualDetal();
+
+                            $this->get('monolog.logger.cierre_mensual')->info("Inventario liberado", [
+                                'orden_id' => $orden->getId(),
+                                'producto' => $item->getProducto()->getNombre() ?? 'N/A',
+                                'color' => $item->getColor(),
+                                'bodega' => $item->getBodega(),
+                                'cantidad_liberada' => $item->getCantidad(),
+                                'stock_anterior' => $cantidadAnterior,
+                                'stock_nuevo' => $cantidadNueva
+                            ]);
+                            
                             $em->persist($inventario);
+                            $itemsLiberados++;
                         }
                     }
                 }
             }
+            
+            $ordenInfo['items_liberados'] = $itemsLiberados;
+            $ordenesAnuladas[] = $ordenInfo;
+
+            $this->get('monolog.logger.cierre_mensual')->info("Orden anulada", $ordenInfo);
             
             $em->persist($orden);
             $contador++;
         }
         
         $em->flush();
-        
-        $this->addFlash('success', "Cierre mensual realizado: $contador órdenes anuladas");
+
+        $this->get('logger')->info("=== FIN CIERRE MENSUAL ===", [
+            'mes_procesado' => $mesAnteriorEsp,
+            'fecha_cierre' => $now->format('Y-m-d H:i:s'),
+            'total_ordenes_anuladas' => $contador,
+            'ordenes_anuladas' => array_column($ordenesAnuladas, 'id')
+        ]);
+
+        $mensaje = "Cierre mensual de $mesAnteriorEsp realizado exitosamente: $contador órdenes anuladas";
+        $this->addFlash('success', $mensaje);
+
+        if ($contador > 0) {
+            $this->get('monolog.logger.cierre_mensual')->notice("CIERRE MENSUAL EJECUTADO", [
+                'mes' => $mesAnteriorEsp,
+                'ordenes_anuladas' => $contador,
+                'usuario' => $this->getUser() ? $this->getUser()->getUsername() : 'Sistema',
+                'ip' => $this->get('request_stack')->getCurrentRequest()->getClientIp()
+            ]);
+        }
         
         return $this->redirectToRoute('despachoorden_index');
+    }
+
+    /**
+     * Traduce el número del mes al español
+     */
+    private function traducirMes($numeroMes, $year)
+    {
+        $meses = [
+            1 => 'Enero',
+            2 => 'Febrero', 
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
+        ];
+        
+        return $meses[$numeroMes] . ' ' . $year;
     }
 
     /**
@@ -1094,24 +1248,44 @@ class DespachoOrdenController extends Controller
                 return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
             }
 
-            // Intentar registrar el abono
-            if (!$despachoOrden->registrarAbono($monto, $fecha)) {
-                if ($despachoOrden->getAbono1() === null) {
-                    $this->addFlash('error', 'El primer abono no puede ser mayor o igual al total de la orden');
-                } elseif ($despachoOrden->getAbono2() === null) {
-                    $this->addFlash('error', 'El segundo abono excede el saldo pendiente o ya se registraron 2 abonos');
-                } else {
-                    $this->addFlash('error', 'No se pueden registrar más abonos para esta orden');
-                }
+            // CORREGIDO: Lógica directa para registrar abonos
+            $saldoPendiente = $despachoOrden->getSaldoPendiente();
+            
+            if ($monto >= $despachoOrden->getTotal()) {
+                $this->addFlash('error', 'El abono no puede ser mayor o igual al total de la orden');
+                return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
+            }
+            
+            if ($monto > $saldoPendiente) {
+                $this->addFlash('error', 'El abono excede el saldo pendiente');
                 return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
             }
 
+            // Registrar el abono en el campo correspondiente
+            if ($despachoOrden->getAbono1() === null) {
+                $despachoOrden->setAbono1($monto);
+                $despachoOrden->setFechaAbono1($fecha);
+                $numeroAbono = 1;
+            } elseif ($despachoOrden->getAbono2() === null) {
+                $despachoOrden->setAbono2($monto);
+                $despachoOrden->setFechaAbono2($fecha);
+                $numeroAbono = 2;
+            } else {
+                $this->addFlash('error', 'No se pueden registrar más de 2 abonos para esta orden');
+                return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
+            }
+
+            // Actualizar estado a "Abonado" si no está pagado completamente
+            if ($despachoOrden->getStatusPago() != 2) {
+                $despachoOrden->setStatusPago(3); // Estado abonado
+            }
+
+            $em->persist($despachoOrden);
             $em->flush();
 
             // Enviar email de notificación de abono
             $this->enviarEmailAbono($despachoOrden, $monto, $user);
 
-            $numeroAbono = $despachoOrden->getAbono2() !== null ? 2 : 1;
             $this->addFlash('success', "Abono #{$numeroAbono} registrado correctamente por $" . number_format($monto, 2));
             
             return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
@@ -1147,12 +1321,11 @@ class DespachoOrdenController extends Controller
                 return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
             }
 
-            // Completar el pago
-            if (!$despachoOrden->completarPago($fecha)) {
-                $this->addFlash('error', 'No se pudo completar el pago');
-                return $this->redirectToRoute('despachoorden_show', ['id' => $despachoOrden->getId()]);
-            }
-
+            // CORREGIDO: Lógica directa para completar el pago sin función externa
+            $despachoOrden->setStatusPago(2); // Marcar como pagado
+            $despachoOrden->setFechaPago($fecha); // Establecer fecha de pago
+            
+            $em->persist($despachoOrden);
             $em->flush();
 
             // Enviar email de confirmación de pago completo
