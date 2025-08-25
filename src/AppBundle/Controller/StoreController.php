@@ -1353,7 +1353,7 @@ class StoreController extends Controller
                             "order_price" => $order->getTotal(),
                             "monto_transaccion" => $montoRestante,
                             "tipo_transaccion" => 'Pago Restante',
-                            "shipment_cost" => $order->getCostoEnvio(), // El costo de envío va con el pago final
+                            "shipment_cost" => $order->getCostoEnvio(),
                             "estado_pago" => 'Completado',
                             "total_abonos" => $order->getTotalAbonos(),
                             "saldo_pendiente" => 0,

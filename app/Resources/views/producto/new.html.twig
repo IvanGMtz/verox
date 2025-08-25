@@ -139,6 +139,20 @@
     <script>
       $(document).ready(function() {
         $('#summernote').summernote();
+        function convertToUppercase(event) {
+            const input = event.target;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            
+            input.value = input.value.toUpperCase();
+            input.setSelectionRange(start, end);
+        }
+        $('.row.colores').on('input', 'input[name*="[nombre]"]', convertToUppercase);
+      });
+    </script>
+    <script>
+      $(document).ready(function() {
+        $('#summernote').summernote();
       });
     </script>
     <script>

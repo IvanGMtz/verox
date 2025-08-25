@@ -248,19 +248,16 @@
             '<th class="nowrap text-center">Total Factura</th>' +
           '</tr>'
         );
-        
-        // Iteramos sobre cada registro del reporte
+
         for (let i = 0; i < reporte.length; i++) {
-          // Si se ha seleccionado un asesor específico y este registro no coincide, se omite.
           if (filtros.category !== "TODOS" && reporte[i].asesor !== filtros.category) {
             continue;
           }
           
           cantidad++;
           totalEnvios += reporte[i].shipment_cost;
-          total += reporte[i].monto_transaccion; // Ahora sumamos el monto real de la transacción
-          
-          // Clasificar por tipo de transacción
+          total += reporte[i].monto_transaccion;
+
           if (reporte[i].tipo_transaccion === 'Pago Completo') {
             totalPagosCompletos += reporte[i].monto_transaccion;
           } else if (reporte[i].tipo_transaccion.includes('Abono')) {
@@ -273,8 +270,7 @@
             totalNuevos++;
             totalVentaNetaNuevos += reporte[i].monto_transaccion;
           }
-          
-          // Calcular prendas proporcionales al monto de la transacción
+
           let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
           reporte[i].items.forEach(item => {
             totalPrendas += (item.product_qty * factorProporcional);
@@ -303,8 +299,7 @@
                 unidadesPorVenta: unidadesPorVenta
             };
         }
-        
-        // Fila 1: Datos principales
+
         $("#reporte_principal").append(
             '<tr>' +
                 '<td class="nowrap">' + rtipo + '</td>' +
@@ -317,8 +312,7 @@
                 '<td class="nowrap">' + (totalEnvios + total).toFixed(2) + '</td>' +
             '</tr>'
         );
-        
-        // Fila 2: Desglose por tipo de transacción
+
         $("#reporte_principal").append(
             '<tr class="table-info">' +
                 '<td colspan="2" class="nowrap"><strong>Desglose Transacciones</strong></td>' +
@@ -330,15 +324,12 @@
                 '<td class="nowrap">' + totalPagosRestantes.toFixed(2) + '</td>' +
             '</tr>'
         );
-        
-        // Fila 3: KPIs - Generamos esta fila de manera condicional
+
         let kpiRow = '';
         if (filtros.category !== "TODOS" && kpiGenerales) {
-            // Calcular umbrales de tolerancia
             const minTicket = kpiGenerales.ticketPromedio * (1 - toleranciaKPI);
             const minUnidades = kpiGenerales.unidadesPorVenta * (1 - toleranciaKPI);
-            
-            // Determinar clases según cumplimiento
+
             const claseTicket = ticketPromedio >= minTicket ? 'text-success' : 'text-danger';
             const claseUnidades = unidadesPorVenta >= minUnidades ? 'text-success' : 'text-danger';
             
@@ -367,8 +358,7 @@
             '</tr>';
         }
         $("#reporte_principal").append(kpiRow);
-        
-        // Fila 4: Datos de nuevos clientes
+
         $("#reporte_principal").append(
             '<tr>' +
                 '<td colspan="2" class="nowrap"><strong>Nuevos Clientes</strong></td>' +
@@ -416,7 +406,7 @@
         let totalUnid = 0;
         for(let i=0; i < reporte.length; i++) {
           totalEnvios += reporte[i].shipment_cost;
-          total += reporte[i].monto_transaccion; // Usar monto de transacción
+          total += reporte[i].monto_transaccion; 
           cantidad++;
           
           let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
@@ -439,14 +429,14 @@
               &&(filtros.tallaFilter!=""?(item.product_talla==filtros.tallaFilter?true:false):true)
               &&(filtros.colorFilter!=""?(item.product_color==filtros.colorFilter?true:false):true)
             ){
-              let cantidadProporcional = item.product_qty * factorProporcional;
-              let valorProporcional = item.product_price * cantidadProporcional;
+              let cantidadReal = parseFloat(item.product_qty) || 0;
+              let valorReal = parseFloat(item.product_price) * cantidadReal || 0;
               
-              totalUnid += cantidadProporcional;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += cantidadProporcional;
-              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += valorProporcional;
+              totalUnid += cantidadReal;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].qty += cantidadReal;
+              itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color].val += valorReal;
             }
-          })   
+          }) 
         }
         let itemsArray = [];
         Object.keys(itemsReport).forEach(itemR=>{
@@ -520,7 +510,7 @@
         let totalUnid = 0;
         for(let i=0; i < reporte.length; i++) {
           totalEnvios += reporte[i].shipment_cost;
-          total += reporte[i].monto_transaccion; // Usar monto de transacción
+          total += reporte[i].monto_transaccion; 
           cantidad++;
           
           let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
@@ -618,8 +608,7 @@
                 '<td class="nowrap">' + total.toFixed(2) + '</td>' +
             '</tr>'
         );
-        
-        // Fila 2: KPIs
+
         $("#reporte_principal").append(
             '<tr>' +
                 '<td colspan="2" class="nowrap"><strong>KPIs</strong></td>' +
@@ -627,7 +616,7 @@
                 '<td class="nowrap">' + ticketPromedio.toFixed(2) + '</td>' +
                 '<td class="nowrap">Unidades por Transacción:</td>' +
                 '<td class="nowrap">' + unidadesPorVenta.toFixed(2) + '</td>' +
-                '<td></td>' + // Celda vacía para completar
+                '<td></td>' + 
             '</tr>'
         );
       }
@@ -669,7 +658,6 @@
       }
     }
     
-    // Función para obtener la clase CSS según el tipo de transacción
     function getTipoTransaccionClass(tipoTransaccion) {
       switch(tipoTransaccion) {
         case 'Pago Completo':
