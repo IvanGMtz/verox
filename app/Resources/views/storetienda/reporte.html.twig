@@ -211,6 +211,7 @@
       let totalAbonos = 0;
       let totalPagosCompletos = 0;
       let totalPagosRestantes = 0;
+      let clientesNuevosUnicos = new Set();
       
       if (rtipo == "Total") {
         document.getElementById("asesorSelector2").style.display = "block";
@@ -255,6 +256,9 @@
           }
           
           cantidad++;
+          const montoTransaccion = parseFloat(reporte[i].monto_transaccion) || 0;
+          const shipmentCost = parseFloat(reporte[i].shipment_cost) || 0;
+          const price = parseFloat(reporte[i].price) || 0;
           totalEnvios += reporte[i].shipment_cost;
           total += reporte[i].monto_transaccion;
 
@@ -269,9 +273,12 @@
           if (reporte[i].client_type === 'Nuevo') {
             totalNuevos++;
             totalVentaNetaNuevos += reporte[i].monto_transaccion;
+            if (reporte[i].cliente_id) {
+              clientesNuevosUnicos.add(reporte[i].cliente_id);
+            }
           }
 
-          let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
+          let factorProporcional = price > 0 ? montoTransaccion / price : 0;
           reporte[i].items.forEach(item => {
             totalPrendas += (item.product_qty * factorProporcional);
           });
@@ -283,9 +290,9 @@
               '<td class="nowrap text-center"><span class="badge ' + getTipoTransaccionClass(reporte[i].tipo_transaccion) + '">' + reporte[i].tipo_transaccion + '</span></td>' +
               '<td class="nowrap text-center">' + reporte[i].client_type + '</td>' +
               '<td class="nowrap text-center">' + reporte[i].client_state + '</td>' +
-              '<td class="nowrap text-center">' + reporte[i].monto_transaccion.toFixed(2) + '</td>' +
-              '<td class="nowrap text-center">' + reporte[i].shipment_cost.toFixed(2) + '</td>' +
-              '<td class="nowrap text-center">' + reporte[i].price.toFixed(2) + '</td>' +
+              '<td class="nowrap text-center">' + montoTransaccion.toFixed(2) + '</td>' +
+              '<td class="nowrap text-center">' + shipmentCost.toFixed(2) + '</td>' +
+              '<td class="nowrap text-center">' + price.toFixed(2) + '</td>' +
             '</tr>'
           );
         }
@@ -362,11 +369,12 @@
         $("#reporte_principal").append(
             '<tr>' +
                 '<td colspan="2" class="nowrap"><strong>Nuevos Clientes</strong></td>' +
+                '<td class="nowrap">Clientes Únicos:</td>' +
+                '<td class="nowrap">' + clientesNuevosUnicos.size + '</td>' +
                 '<td class="nowrap">Transacciones:</td>' +
                 '<td class="nowrap">' + totalNuevos + '</td>' +
-                '<td class="nowrap">Efectivo Recibido:</td>' +
+                '<td class="nowrap">Efectivo:</td>' +
                 '<td class="nowrap">' + totalVentaNetaNuevos.toFixed(2) + '</td>' +
-                '<td colspan="2"></td>' +
             '</tr>'
         );
       }
@@ -405,11 +413,15 @@
         let itemsReport = {};
         let totalUnid = 0;
         for(let i=0; i < reporte.length; i++) {
-          totalEnvios += reporte[i].shipment_cost;
-          total += reporte[i].monto_transaccion; 
+          const montoTransaccion = parseFloat(reporte[i].monto_transaccion) || 0;
+          const shipmentCost = parseFloat(reporte[i].shipment_cost) || 0;
+          const price = parseFloat(reporte[i].price) || 0;
+          
+          totalEnvios += shipmentCost;
+          total += montoTransaccion; 
           cantidad++;
           
-          let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
+          let factorProporcional = price > 0 ? montoTransaccion / price : 0;
           
           reporte[i].items.forEach(item=>{
             categoriasR[item.Categoría] = item.Categoría
@@ -513,7 +525,7 @@
           total += reporte[i].monto_transaccion; 
           cantidad++;
           
-          let factorProporcional = reporte[i].monto_transaccion / reporte[i].price;
+          let factorProporcional = price > 0 ? montoTransaccion / price : 0;
           
           reporte[i].items.forEach(item=>{
             if(!itemsReport[item.product_ref+"_"+item.product_talla+"_"+item.product_color]&&item.Categoría == filtros.category
@@ -690,13 +702,64 @@
       document.getElementById("search_report").style.display = "block";
     }
     function ExportToExcel(type, fn, dl) {
+        var wb = XLSX.utils.book_new();
         var elt = document.getElementById('details');
-        var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+        var ws1 = XLSX.utils.table_to_sheet(elt);
+        XLSX.utils.book_append_sheet(wb, ws1, "Transacciones");
+
         let rtipo = document.getElementById("reporteTipo").value;
+        if (rtipo == "Total") {
+            var clientesNuevosData = [];
+            var clientesUnicos = new Map();
+            reporteData.forEach(function(transaccion) {
+                if (transaccion.client_type === 'Nuevo' && transaccion.cliente_id) {
+                    if (!clientesUnicos.has(transaccion.cliente_id)) {
+                        clientesUnicos.set(transaccion.cliente_id, {
+                            'Cliente ID': transaccion.cliente_id,
+                            'Nombre': transaccion.cliente_nombre || '',
+                            'Apellidos': transaccion.cliente_apellidos || '',
+                            'Email': transaccion.cliente_email || '',
+                            'Teléfono': transaccion.cliente_telefono || '',
+                            'Asesor': transaccion.asesor || '',
+                            'Estado': transaccion.client_state || '',
+                            'Primera Compra': transaccion.date,
+                            'Total Gastado': 0,
+                            'Transacciones': 0
+                        });
+                    }
+                    var cliente = clientesUnicos.get(transaccion.cliente_id);
+                    cliente['Total Gastado'] += parseFloat(transaccion.monto_transaccion) || 0;
+                    cliente['Transacciones'] += 1;
+                }
+            });
+            clientesUnicos.forEach(function(cliente) {
+                cliente['Total Gastado'] = cliente['Total Gastado'].toFixed(2);
+                clientesNuevosData.push(cliente);
+            });
+            clientesNuevosData.sort((a, b) => parseFloat(b['Total Gastado']) - parseFloat(a['Total Gastado']));
+            if (clientesNuevosData.length > 0) {
+                var ws2 = XLSX.utils.json_to_sheet(clientesNuevosData);
+
+                ws2['!cols'] = [
+                    {wch: 12},
+                    {wch: 20},
+                    {wch: 20},
+                    {wch: 30},
+                    {wch: 15},
+                    {wch: 20},
+                    {wch: 15},
+                    {wch: 12}, 
+                    {wch: 12}, 
+                    {wch: 12}
+                ];
+                XLSX.utils.book_append_sheet(wb, ws2, "Clientes Nuevos");
+            }
+        }
         let start_Date = document.getElementById("start").value;
         let stop_Date = document.getElementById("stop").value;
         let asesor = document.getElementById("asesores2")?.value;
         let tag = (rtipo=="Total" || rtipo=="Top")? "":document.getElementById(rtipo).value;
+        
         return dl ?
             XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
             XLSX.writeFile(wb, fn || (rtipo +(asesor?'-'+asesor:'')+(tag!=""?" "+tag:"") + ' '+start_Date +' a '+stop_Date + '.'+(type || 'xlsx')));

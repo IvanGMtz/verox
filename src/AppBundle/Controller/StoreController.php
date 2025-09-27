@@ -1203,40 +1203,49 @@ class StoreController extends Controller
 
             $data = [];
             $reporte_total = 0;
-            
-            // ACTUALIZADO: Incluir órdenes pagadas completamente (estado 2) Y con abonos (estado 3)
+
             $orders = $em->getRepository('AppBundle:DespachoOrden')
                 ->createQueryBuilder('a')
                 ->where('a.statusPago IN (:estados)')
-                ->setParameter('estados', [2, 3]) // Pagado y Abonado
+                ->setParameter('estados', [2, 3])
                 ->andWhere('a.fechaPago >= :start OR a.fechaAbono1 >= :start OR a.fechaAbono2 >= :start') 
                 ->setParameter('start', $start_date . " 00:00:00")
                 ->andWhere('a.fechaPago <= :finish OR a.fechaAbono1 <= :finish OR a.fechaAbono2 <= :finish')
                 ->setParameter('finish', $finish_date . " 23:59:00")
                 ->getQuery()
                 ->getResult();
-                
-            $allOrders = $em->getRepository('AppBundle:DespachoOrden')
+
+            $firstTransactions = $em->getRepository('AppBundle:DespachoOrden')
                 ->createQueryBuilder('a')
+                ->select('IDENTITY(a.clienteId) as cliente_id')
+                ->addSelect('MIN(COALESCE(a.fechaPago, a.fechaAbono1, a.fechaAbono2)) as primera_transaccion')
                 ->where('a.statusPago IN (:estados)')
                 ->setParameter('estados', [2, 3])
-                ->andWhere('a.fechaPago < :start OR a.fechaAbono1 < :start OR a.fechaAbono2 < :start') 
-                ->setParameter('start', $start_date . " 00:00:00")
+                ->andWhere('a.clienteId IS NOT NULL')
+                ->andWhere('COALESCE(a.fechaPago, a.fechaAbono1, a.fechaAbono2) IS NOT NULL')
+                ->groupBy('a.clienteId')
                 ->getQuery()
                 ->getResult();
+            
+            $clientesPrimeraTransaccion = [];
+            $startDateTime = new \DateTime($start_date . " 00:00:00");
+            $finishDateTime = new \DateTime($finish_date . " 23:59:59");
+            
+            foreach ($firstTransactions as $transaction) {
+                $fechaPrimera = new \DateTime($transaction['primera_transaccion']);
+                $clientesPrimeraTransaccion[$transaction['cliente_id']] = $fechaPrimera;
+            }
                 
             foreach ($orders as $order) {
-                $ordersPerClient = 0;
-                foreach ($allOrders as $order2) {
-                    if ($order2->getClienteId()->getId() == $order->getClienteId()->getId()) {
-                        $ordersPerClient++;
+                $clienteId = $order->getClienteId() ? $order->getClienteId()->getId() : null;
+                $client_type = 'Nuevo';
+                if ($clienteId && isset($clientesPrimeraTransaccion[$clienteId])) {
+                    $fechaPrimera = $clientesPrimeraTransaccion[$clienteId];
+                    if ($fechaPrimera < $startDateTime) {
+                        $client_type = 'Antiguo';
                     }
                 }
-                
-                $startDateTime = new \DateTime($start_date . " 00:00:00");
-                $finishDateTime = new \DateTime($finish_date . " 23:59:59");
-                
-                // Obtener items de la orden una sola vez
+
                 $order_items = $em->getRepository('AppBundle:DespachoOrdenItem')
                     ->createQueryBuilder('a')
                     ->where('a.ordenDespacho = :orden')
@@ -1258,22 +1267,23 @@ class StoreController extends Controller
                     ]);
                 }
                 
-                // NUEVA LÓGICA CORREGIDA: Crear entradas separadas para cada tipo de transacción
-                
-                // Verificar si la orden tiene abonos
                 $tieneAbonos = ($order->getAbono1() > 0 || $order->getAbono2() > 0);
-                
-                // 1. PAGO COMPLETO: Solo si está completamente pagado, la fecha está en el rango Y NO TIENE ABONOS
+
                 if ($order->getStatusPago() == 2 && $order->getFechaPago() && 
                     $order->getFechaPago() >= $startDateTime && 
                     $order->getFechaPago() <= $finishDateTime &&
-                    !$tieneAbonos) { // <- CONDICIÓN CLAVE: NO tiene abonos
+                    !$tieneAbonos) {
                     
                     array_push($data, [
                         "order_id" => $order->getId() . "_COMPLETO",
                         "order_original_id" => $order->getId(),
+                        "cliente_id" => $clienteId,
+                        "cliente_nombre" => $order->getClienteId()->getNombre(),
+                        "cliente_apellidos" => $order->getClienteId()->getApellidos(),
+                        "cliente_email" => $order->getClienteId()->getEmail(),
+                        "cliente_telefono" => $order->getClienteId()->getTelefono(),
                         "asesor" => $order->getClienteId()->getAsesor(),
-                        "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                        "client_type" => $client_type,
                         "client_state" => $order->getClienteId()->getEstado(),
                         "order_date" => $order->getFechaPago()->format('Y-m-d'),
                         "order_price" => $order->getTotal(),
@@ -1286,8 +1296,7 @@ class StoreController extends Controller
                         "items" => $items_array
                     ]);
                 }
-                
-                // 2. Si tiene abono 1 y la fecha está en el rango
+
                 if ($order->getFechaAbono1() && 
                     $order->getFechaAbono1() >= $startDateTime && 
                     $order->getFechaAbono1() <= $finishDateTime &&
@@ -1296,22 +1305,26 @@ class StoreController extends Controller
                     array_push($data, [
                         "order_id" => $order->getId() . "_ABONO1",
                         "order_original_id" => $order->getId(),
+                        "cliente_id" => $clienteId,
+                        "cliente_nombre" => $order->getClienteId()->getNombre(),
+                        "cliente_apellidos" => $order->getClienteId()->getApellidos(),
+                        "cliente_email" => $order->getClienteId()->getEmail(),
+                        "cliente_telefono" => $order->getClienteId()->getTelefono(),
                         "asesor" => $order->getClienteId()->getAsesor(),
-                        "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                        "client_type" => $client_type,
                         "client_state" => $order->getClienteId()->getEstado(),
                         "order_date" => $order->getFechaAbono1()->format('Y-m-d'),
                         "order_price" => $order->getTotal(),
                         "monto_transaccion" => $order->getAbono1(),
                         "tipo_transaccion" => 'Abono 1',
-                        "shipment_cost" => 0, // Los abonos no incluyen costo de envío
+                        "shipment_cost" => 0,
                         "estado_pago" => 'Abono Parcial',
                         "total_abonos" => $order->getTotalAbonos(),
                         "saldo_pendiente" => $order->getSaldoPendiente(),
                         "items" => $items_array
                     ]);
                 }
-                
-                // 3. Si tiene abono 2 y la fecha está en el rango
+
                 if ($order->getFechaAbono2() && 
                     $order->getFechaAbono2() >= $startDateTime && 
                     $order->getFechaAbono2() <= $finishDateTime &&
@@ -1320,34 +1333,43 @@ class StoreController extends Controller
                     array_push($data, [
                         "order_id" => $order->getId() . "_ABONO2",
                         "order_original_id" => $order->getId(),
+                        "cliente_id" => $clienteId,
+                        "cliente_nombre" => $order->getClienteId()->getNombre(),
+                        "cliente_apellidos" => $order->getClienteId()->getApellidos(),
+                        "cliente_email" => $order->getClienteId()->getEmail(),
+                        "cliente_telefono" => $order->getClienteId()->getTelefono(),
                         "asesor" => $order->getClienteId()->getAsesor(),
-                        "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                        "client_type" => $client_type,
                         "client_state" => $order->getClienteId()->getEstado(),
                         "order_date" => $order->getFechaAbono2()->format('Y-m-d'),
                         "order_price" => $order->getTotal(),
                         "monto_transaccion" => $order->getAbono2(),
                         "tipo_transaccion" => 'Abono 2',
-                        "shipment_cost" => 0, // Los abonos no incluyen costo de envío
+                        "shipment_cost" => 0,
                         "estado_pago" => 'Abono Parcial',
                         "total_abonos" => $order->getTotalAbonos(),
                         "saldo_pendiente" => $order->getSaldoPendiente(),
                         "items" => $items_array
                     ]);
                 }
-                
-                // 4. PAGO RESTANTE: Solo si tiene abonos, está completamente pagado y la fecha está en el rango
+
                 if ($order->getStatusPago() == 2 && $order->getFechaPago() && 
                     $order->getFechaPago() >= $startDateTime && 
                     $order->getFechaPago() <= $finishDateTime &&
-                    $tieneAbonos) { // <- Solo si tiene abonos
+                    $tieneAbonos) {
                     
                     $montoRestante = $order->getTotal() - $order->getTotalAbonos();
                     if ($montoRestante > 0) {
                         array_push($data, [
                             "order_id" => $order->getId() . "_RESTANTE",
                             "order_original_id" => $order->getId(),
+                            "cliente_id" => $clienteId,
+                            "cliente_nombre" => $order->getClienteId()->getNombre(),
+                            "cliente_apellidos" => $order->getClienteId()->getApellidos(),
+                            "cliente_email" => $order->getClienteId()->getEmail(),
+                            "cliente_telefono" => $order->getClienteId()->getTelefono(),
                             "asesor" => $order->getClienteId()->getAsesor(),
-                            "client_type" => ($ordersPerClient > 0) ? 'Antiguo' : 'Nuevo',
+                            "client_type" => $client_type,
                             "client_state" => $order->getClienteId()->getEstado(),
                             "order_date" => $order->getFechaPago()->format('Y-m-d'),
                             "order_price" => $order->getTotal(),
@@ -1374,6 +1396,11 @@ class StoreController extends Controller
                     array_push($reporte, [
                         'id' => $value['order_id'],
                         'original_id' => $value['order_original_id'],
+                        'cliente_id' => $value['cliente_id'],
+                        'cliente_nombre' => $value['cliente_nombre'],
+                        'cliente_apellidos' => $value['cliente_apellidos'],
+                        'cliente_email' => $value['cliente_email'],
+                        'cliente_telefono' => $value['cliente_telefono'],
                         'date' => $value['order_date'],
                         'price' => $value['order_price'],
                         'monto_transaccion' => $value['monto_transaccion'],
@@ -1420,7 +1447,6 @@ class StoreController extends Controller
                         }
                     }
                     foreach ($value['items'] as $key2 => $value2) {
-                        // Calcular la proporción del monto de la transacción vs el total de la orden
                         $factorProporcional = $value['monto_transaccion'] / $value['order_price'];
                         
                         $pqty[$value2['product_ref']]['cantidad'] += ($value2['product_qty'] * $factorProporcional);
