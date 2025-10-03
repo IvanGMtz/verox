@@ -1,0 +1,160 @@
+AppBundle\Entity\SupplierInvoice:
+    type: entity
+    table: supplier_invoice
+    indexes:
+        proveedor:
+            columns:
+                - proveedor_id
+        estado:
+            columns:
+                - estado
+        fecha_emision:
+            columns:
+                - fecha_emision
+        usuario_creacion:
+            columns:
+                - usuario_creacion
+        invoice_number:
+            columns:
+                - invoice_number
+    uniqueConstraints:
+        unique_invoice_proveedor:
+            columns: [invoice_number, proveedor_id]
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        invoiceNumber:
+            type: string
+            nullable: false
+            length: 100
+            column: invoice_number
+        internalReference:
+            type: string
+            nullable: true
+            length: 100
+            column: internal_reference
+        issueDate:
+            type: date
+            nullable: false
+            column: fecha_emision
+        dueDate:
+            type: date
+            nullable: true
+            column: fecha_vencimiento
+        currency:
+            type: string
+            nullable: false
+            length: 10
+            options:
+                default: 'COP'
+        exchangeRate:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 4
+            options:
+                default: 1.0000
+            column: exchange_rate
+        subtotal:
+            type: decimal
+            nullable: false
+            precision: 15
+            scale: 2
+            options:
+                default: 0.00
+        taxAmount:
+            type: decimal
+            nullable: false
+            precision: 15
+            scale: 2
+            options:
+                default: 0.00
+            column: tax_amount
+        logisticCosts:
+            type: decimal
+            nullable: false
+            precision: 15
+            scale: 2
+            options:
+                default: 0.00
+            column: logistic_costs
+        totalAmount:
+            type: decimal
+            nullable: false
+            precision: 15
+            scale: 2
+            options:
+                default: 0.00
+            column: total_amount
+        attachmentPath:
+            type: string
+            nullable: true
+            length: 500
+            column: attachment_path
+        notes:
+            type: text
+            nullable: true
+        estado:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+                default: 1
+        inventoryUpdated:
+            type: boolean
+            nullable: false
+            options:
+                default: false
+            column: inventory_updated
+        fechaCreacion:
+            type: datetime
+            nullable: false
+            column: fecha_creacion
+        fechaActualizacion:
+            type: datetime
+            nullable: true
+            column: fecha_actualizacion
+    oneToMany:
+        items:
+            targetEntity: SupplierInvoiceItem
+            mappedBy: supplierInvoice
+            cascade: [persist, remove]
+    manyToOne:
+        proveedor:
+            targetEntity: Proveedor
+            cascade: []
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                proveedor_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioCreacion:
+            targetEntity: FosUser
+            cascade: []
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_creacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+        usuarioActualizacion:
+            targetEntity: FosUser
+            cascade: []
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                usuario_actualizacion:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {}

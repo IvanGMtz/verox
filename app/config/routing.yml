@@ -58,3 +58,58 @@ app_public_test_email:
     path:     /public/testemail/
     defaults: { _controller: "AppBundle:Default:testEmail" }
     methods:  [GET, POST]
+
+supplierinvoice_index:
+    path: /supplier-invoices
+    defaults: { _controller: AppBundle:SupplierInvoice:index }
+    methods: [GET, POST]
+
+supplierinvoice_new:
+    path: /supplier-invoices/new
+    defaults: { _controller: AppBundle:SupplierInvoice:new }
+    methods: [GET, POST]
+
+supplierinvoice_show:
+    path: /supplier-invoices/{id}
+    defaults: { _controller: AppBundle:SupplierInvoice:show }
+    methods: [GET]
+    requirements:
+        id: \d+
+
+supplierinvoice_edit:
+    path: /supplier-invoices/{id}/edit
+    defaults: { _controller: AppBundle:SupplierInvoice:edit }
+    methods: [GET, POST]
+    requirements:
+        id: \d+
+
+supplierinvoice_delete:
+    path: /supplier-invoices/{id}/delete
+    defaults: { _controller: AppBundle:SupplierInvoice:delete }
+    methods: [DELETE]
+    requirements:
+        id: \d+
+
+supplierinvoice_confirm:
+    path: /supplier-invoices/{id}/confirm
+    defaults: { _controller: AppBundle:SupplierInvoice:confirm }
+    methods: [GET]
+    requirements:
+        id: \d+
+
+supplierinvoice_cancel:
+    path: /supplier-invoices/{id}/cancel
+    defaults: { _controller: AppBundle:SupplierInvoice:cancel }
+    methods: [GET]
+    requirements:
+        id: \d+
+
+supplierinvoice_search_materials:
+    path: /supplier-invoices/search-materials
+    defaults: { _controller: AppBundle:SupplierInvoice:searchMaterials }
+    methods: [GET]
+
+supplierinvoice_mark_as_paid:
+    path:     /{id}/mark-as-paid
+    defaults: { _controller: AppBundle:SupplierInvoice:markAsPaid }
+    methods:  [GET]

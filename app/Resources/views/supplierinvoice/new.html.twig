@@ -1,0 +1,438 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+
+{% block avanzu_document_title %}Nueva Factura Proveedor{% endblock %}
+{% block avanzu_page_title %}Nueva Factura Proveedor{% endblock %}
+
+{% block titulo_pagina %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Nueva Factura Proveedor</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block avanzu_page_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 bg-light">
+                    <li class="breadcrumb-item"><a href="{{ path('supplierinvoice_index') }}" class="text-decoration-none text-primary">Facturas</a></li>
+                    <li class="breadcrumb-item active text-muted">Nueva Factura</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-1 text-dark font-weight-bold">Nueva Factura de Proveedor</h1>
+            <p class="text-muted mb-0">Registra una nueva factura en el sistema</p>
+        </div>
+        <div class="btn-group">
+            <a href="{{ path('supplierinvoice_index') }}" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title font-weight-semibold">
+                <i class="fa fa-plus-circle text-primary"></i> Formulario de Registro
+            </h3>
+        </div>
+
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'supplier-invoice-form', 'enctype': 'multipart/form-data'}}) }}
+
+            <div class="card card-outline card-secondary mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 font-weight-semibold">
+                        <i class="fa fa-info-circle text-secondary"></i> Información Básica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.invoiceNumber) }}
+                                {{ form_widget(form.invoiceNumber) }}
+                                {{ form_errors(form.invoiceNumber) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.internalReference) }}
+                                {{ form_widget(form.internalReference) }}
+                                {{ form_errors(form.internalReference) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.proveedor) }}
+                                {{ form_widget(form.proveedor) }}
+                                {{ form_errors(form.proveedor) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(form.issueDate) }}
+                                {{ form_widget(form.issueDate) }}
+                                {{ form_errors(form.issueDate) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(form.dueDate) }}
+                                {{ form_widget(form.dueDate) }}
+                                {{ form_errors(form.dueDate) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-success mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 font-weight-semibold">
+                        <i class="fa fa-money text-success"></i> Información Financiera
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(form.currency) }}
+                                {{ form_widget(form.currency) }}
+                                {{ form_errors(form.currency) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(form.exchangeRate) }}
+                                {{ form_widget(form.exchangeRate) }}
+                                {{ form_errors(form.exchangeRate) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(form.taxAmount) }}
+                                {{ form_widget(form.taxAmount) }}
+                                {{ form_errors(form.taxAmount) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(form.logisticCosts) }}
+                                {{ form_widget(form.logisticCosts) }}
+                                {{ form_errors(form.logisticCosts) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-info mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 font-weight-semibold">
+                        <i class="fa fa-paperclip text-info"></i> Información Adicional
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.attachment) }}
+                                {{ form_widget(form.attachment) }}
+                                {{ form_errors(form.attachment) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(form.notes) }}
+                                {{ form_widget(form.notes) }}
+                                {{ form_errors(form.notes) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-warning">
+                <div class="card-header bg-warning text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0 font-weight-semibold">
+                            <i class="fa fa-list"></i> Items de la Factura
+                        </h4>
+                        <button type="button" class="btn btn-light btn-sm" id="add-item">
+                            <i class="fa fa-plus"></i> Agregar Item
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="items-container" class="mb-4"></div>
+
+                    <div id="empty-items-message" class="text-center text-muted py-4">
+                        <i class="fa fa-inbox fa-3x mb-3"></i>
+                        <p class="mb-0">No hay items agregados</p>
+                        <p class="small">Haz clic en "Agregar Item" para comenzar</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <div class="card card-outline card-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="card-title mb-0 font-weight-semibold">
+                                        <i class="fa fa-calculator"></i> Totales
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tr>
+                                            <td class="text-muted">Subtotal:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-subtotal">$ 0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Impuestos:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-taxes">$ 0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Costos Logísticos:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-logistics">$ 0</td>
+                                        </tr>
+                                        <tr class="bg-light">
+                                            <td class="font-weight-bold">TOTAL:</td>
+                                            <td class="text-right font-weight-bold h6 mb-0" id="invoice-total">$ 0</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_rest(form) }}
+
+            <div class="card card-outline card-primary mt-4">
+                <div class="card-body text-center">
+                    <div class="btn-group btn-group-lg">
+                        <button type="submit" class="btn btn-primary px-5">
+                            <i class="fa fa-save"></i> Guardar Factura
+                        </button>
+                        <a href="{{ path('supplierinvoice_index') }}" class="btn btn-secondary px-5">
+                            <i class="fa fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<div id="item-template" style="display: none;">
+    <div class="item-row card card-outline card-light mb-3">
+        <div class="card-body">
+            <div class="row align-items-end">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Producto</label>
+                        <select name="supplier_invoice[items][__INDEX__][product]" 
+                            class="form-control product-select" required>
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                        <input type="hidden" name="supplier_invoice[items][__INDEX__][productoId]" class="producto-id">
+                        <input type="hidden" name="supplier_invoice[items][__INDEX__][productoTallaId]" class="talla-id">
+                        <input type="hidden" name="supplier_invoice[items][__INDEX__][productoColorId]" class="color-id">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Cantidad</label>
+                        <input type="number" name="supplier_invoice[items][__INDEX__][quantity]"
+                            class="form-control item-quantity" min="0.01" step="0.01" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Precio Unitario</label>
+                        <input type="number" name="supplier_invoice[items][__INDEX__][unitPrice]"
+                            class="form-control item-unit-price" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Total</label>
+                        <input type="text" name="supplier_invoice[items][__INDEX__][totalPrice]"
+                            class="form-control item-total-price" readonly>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-danger remove-item">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group mb-0">
+                        <label class="font-weight-semibold text-muted small">Notas</label>
+                        <input type="text" name="supplier_invoice[items][__INDEX__][notes]"
+                            class="form-control" placeholder="Notas adicionales...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="productos-data">
+{
+    "productos": [
+        {% if productos is defined %}
+            {% for producto in productos %}
+            {
+                "id": {{ producto.id }},
+                "referencia": "{{ producto.referencia|e('js') }}",
+                "nombre": "{{ producto.nombre|e('js') }}",
+                "tallas": [
+                    {% if producto.tallas is defined %}
+                        {% for talla in producto.tallas %}
+                        {"id": {{ talla.id }}, "nombre": "{{ talla.nombre|e('js') }}"}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                ],
+                "colores": [
+                    {% if producto.colores is defined %}
+                        {% for color in producto.colores %}
+                        {"id": {{ color.id }}, "nombre": "{{ color.nombre|e('js') }}"}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                ]
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        {% endif %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block avanzu_javascripts %}
+{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}
+{% endblock %}
+
+{% block avanzu_javascripts_inline %}
+<script>
+$(document).ready(function() {
+    var productosData = {};
+    try {
+        productosData = JSON.parse(document.getElementById('productos-data').textContent);
+    } catch (e) {
+        console.error('Error parsing productos:', e);
+        productosData = { productos: [] };
+    }
+
+    var itemIndex = 0;
+    var productos = productosData.productos || [];
+
+    $('#add-item').on('click', function(e) {
+        e.preventDefault();
+        var template = document.getElementById('item-template');
+        var newItem = template.innerHTML.replace(/__INDEX__/g, itemIndex);
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newItem;
+        
+        var productSelect = tempDiv.querySelector('.product-select');
+        if (productSelect && productos.length > 0) {
+            productos.forEach(function(producto) {
+                if (producto.tallas && producto.colores && producto.tallas.length > 0 && producto.colores.length > 0) {
+                    producto.tallas.forEach(function(talla) {
+                        producto.colores.forEach(function(color) {
+                            var option = document.createElement('option');
+                            option.value = producto.id + '_' + talla.id + '_' + color.id;
+                            option.textContent = producto.referencia + ' - ' + producto.nombre + 
+                                               ' | Talla: ' + talla.nombre + ' | Color: ' + color.nombre;
+                            option.setAttribute('data-producto-id', producto.id);
+                            option.setAttribute('data-talla-id', talla.id);
+                            option.setAttribute('data-color-id', color.id);
+                            productSelect.appendChild(option);
+                        });
+                    });
+                }
+            });
+        }
+        
+        $('#items-container').append(tempDiv.innerHTML);
+        $('#empty-items-message').hide();
+        itemIndex++;
+        updateTotals();
+    });
+
+    $(document).on('click', '.remove-item', function() {
+        $(this).closest('.item-row').remove();
+        if ($('.item-row').length === 0) {
+            $('#empty-items-message').show();
+        }
+        updateTotals();
+    });
+
+    $(document).on('change', '.product-select', function() {
+        var selectedOption = $(this).find('option:selected');
+        var row = $(this).closest('.item-row');
+        row.find('.producto-id').val(selectedOption.data('producto-id') || '');
+        row.find('.talla-id').val(selectedOption.data('talla-id') || '');
+        row.find('.color-id').val(selectedOption.data('color-id') || '');
+        console.log('Producto:', selectedOption.data('producto-id'), 'Talla:', selectedOption.data('talla-id'), 'Color:', selectedOption.data('color-id'));
+    });
+
+    $(document).on('input', '.item-quantity, .item-unit-price', function() {
+        var row = $(this).closest('.item-row');
+        var quantity = parseFloat(row.find('.item-quantity').val()) || 0;
+        var unitPrice = parseFloat(row.find('.item-unit-price').val()) || 0;
+        row.find('.item-total-price').val((quantity * unitPrice).toFixed(2));
+        updateTotals();
+    });
+
+    $(document).on('input', 'input[id*="taxAmount"], input[id*="logisticCosts"]', function() {
+        updateTotals();
+    });
+
+    function updateTotals() {
+        var subtotal = 0;
+        $('.item-total-price').each(function() {
+            subtotal += parseFloat($(this).val()) || 0;
+        });
+        var taxes = parseFloat($('input[id*="taxAmount"]').val()) || 0;
+        var logistics = parseFloat($('input[id*="logisticCosts"]').val()) || 0;
+        var total = subtotal + taxes + logistics;
+
+        $('#invoice-subtotal').text('$ ' + subtotal.toLocaleString('es-CO'));
+        $('#invoice-taxes').text('$ ' + taxes.toLocaleString('es-CO'));
+        $('#invoice-logistics').text('$ ' + logistics.toLocaleString('es-CO'));
+        $('#invoice-total').text('$ ' + total.toLocaleString('es-CO'));
+    }
+
+    if ($('.item-row').length === 0) $('#empty-items-message').show();
+    updateTotals();
+    
+    $('form').on('submit', function() {
+        console.log('=== ENVIANDO FORMULARIO ===');
+        $('.item-row').each(function(i) {
+            var row = $(this);
+            console.log('Item ' + i + ':', {
+                productoId: row.find('.producto-id').val(),
+                tallaId: row.find('.talla-id').val(),
+                colorId: row.find('.color-id').val(),
+                quantity: row.find('.item-quantity').val(),
+                unitPrice: row.find('.item-unit-price').val()
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

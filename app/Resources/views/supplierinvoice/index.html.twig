@@ -1,0 +1,184 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Facturas Proveedores{% endblock %}
+{% block avanzu_page_title %}Facturas Proveedores{% endblock %}
+{% block titulo_pagina %}
+{% endblock %}
+{% block avanzu_page_content %}
+{% block body %}
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-dark fw-bold">Facturas de Proveedores</h1>
+            <p class="text-muted mb-0">Gestiona y administra las facturas de tus proveedores</p>
+        </div>
+        <a href="{{ path('supplierinvoice_new') }}" class="btn btn-primary btn-lg shadow-sm">
+            <i class="fa fa-plus me-2"></i>Nueva Factura
+        </a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <!-- Search Filters -->
+            <div class="p-4 bg-light border-bottom">
+                <form method="post">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-semibold">Número de Factura</label>
+                            <input type="text" name="q[invoiceNumber]" value="{{ q.invoiceNumber|default('') }}" 
+                                   class="form-control form-control-lg border-0 shadow-sm" 
+                                   placeholder="Buscar por número...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-semibold">Proveedor</label>
+                            <input type="text" name="q[proveedor]" value="{{ q.proveedor|default('') }}" 
+                                   class="form-control form-control-lg border-0 shadow-sm" 
+                                   placeholder="Buscar proveedor...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label text-muted small fw-semibold">Estado</label>
+                            <select name="q[estado]" class="form-select form-select-lg border-0 shadow-sm">
+                                <option value="">Todos</option>
+                                <option value="0" {% if q.estado|default('') == '0' %}selected{% endif %}>Cancelada</option>
+                                <option value="1" {% if q.estado|default('') == '1' %}selected{% endif %}>Borrador</option>
+                                <option value="2" {% if q.estado|default('') == '2' %}selected{% endif %}>Confirmada</option>
+                                <option value="3" {% if q.estado|default('') == '3' %}selected{% endif %}>Pagada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">
+                                <i class="fa fa-search me-2"></i>Buscar
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ path('supplierinvoice_index') }}" class="btn btn-outline-secondary w-100 btn-lg">
+                                <i class="fa fa-refresh me-2"></i>Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="border-0 text-muted small fw-bold text-uppercase ps-4">ID</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase">Número</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase">Proveedor</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase">Fecha</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase">Moneda</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase text-end">Total</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase text-center">Estado</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase text-center">Inventario</th>
+                            <th class="border-0 text-muted small fw-bold text-uppercase text-center pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in supplierInvoices %}
+                        <tr class="border-bottom">
+                            <td class="ps-4">
+                                <span class="text-muted small">#{{ invoice.id }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">{{ invoice.invoiceNumber }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-medium">{{ invoice.proveedor.nombre }}</div>
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ invoice.issueDate|date('d/m/Y') }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ invoice.currency }}</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="fw-bold text-dark">
+                                    {% if invoice.currency != 'COP' %}
+                                        {{ invoice.currency }} {{ invoice.totalAmount|number_format(2, ',', '.') }}
+                                    {% else %}
+                                        $ {{ invoice.totalAmount|number_format(0, ',', '.') }}
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if invoice.estado == 0 %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">Cancelada</span>
+                                {% elseif invoice.estado == 1 %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">Borrador</span>
+                                {% elseif invoice.estado == 2 %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">Confirmada</span>
+                                {% elseif invoice.estado == 3 %}
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2">Pagada</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if invoice.inventoryUpdated %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                                        <i class="fa fa-check me-1"></i>Actualizado
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">
+                                        <i class="fa fa-clock-o me-1"></i>Pendiente
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center pe-4">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ path('supplierinvoice_show', {'id': invoice.id}) }}" 
+                                       class="btn btn-sm btn-outline-primary" title="Ver">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    {% if not invoice.inventoryUpdated %}
+                                        <a href="{{ path('supplierinvoice_edit', {'id': invoice.id}) }}" 
+                                           class="btn btn-sm btn-outline-warning" title="Editar">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if invoice.estado == 1 and not invoice.inventoryUpdated and is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('supplierinvoice_confirm', {'id': invoice.id}) }}" 
+                                           class="btn btn-sm btn-outline-success" title="Confirmar"
+                                           onclick="return confirm('¿Está seguro de confirmar esta factura? Se actualizará el inventario.')">
+                                            <i class="fa fa-check"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if not invoice.inventoryUpdated %}
+                                        <a href="{{ path('supplierinvoice_cancel', {'id': invoice.id}) }}" 
+                                           class="btn btn-sm btn-outline-danger" title="Cancelar"
+                                           onclick="return confirm('¿Está seguro de cancelar esta factura?')">
+                                            <i class="fa fa-ban"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fa fa-file-text-o fa-3x mb-3 opacity-25"></i>
+                                    <p class="mb-0">No se encontraron facturas</p>
+                                    <p class="small">Intenta ajustar los filtros de búsqueda</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pageCount > 1 %}
+            <div class="p-4 border-top bg-light">
+                <div class="d-flex justify-content-center">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% endblock %}

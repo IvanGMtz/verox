@@ -1,0 +1,577 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Facturas Proveedores{% endblock %}
+{% block avanzu_page_title %}Facturas Proveedores{% endblock %}
+{% block titulo_pagina %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Editar Factura Proveedor</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block avanzu_page_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 bg-light">
+                    <li class="breadcrumb-item"><a href="{{ path('supplierinvoice_index') }}"
+                            class="text-decoration-none text-primary">Facturas</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('supplierinvoice_show', {'id': supplierInvoice.id}) }}"
+                            class="text-decoration-none text-primary">{{ supplierInvoice.invoiceNumber }}</a></li>
+                    <li class="breadcrumb-item active text-muted">Editar</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-1 text-dark font-weight-bold">Editar Factura #{{ supplierInvoice.invoiceNumber }}</h1>
+            <p class="text-muted mb-0">Modifica los detalles de la factura del proveedor</p>
+        </div>
+
+        <div class="btn-group">
+            <a href="{{ path('supplierinvoice_show', {'id': supplierInvoice.id}) }}" class="btn btn-info">
+                <i class="fa fa-eye"></i> Ver
+            </a>
+            <a href="{{ path('supplierinvoice_index') }}" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title font-weight-semibold">
+                <i class="fa fa-edit text-primary"></i> Formulario de Edición
+            </h3>
+        </div>
+
+        <div class="card-body">
+            {% if supplierInvoice.inventoryUpdated %}
+            <div class="alert alert-warning border-0">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-exclamation-triangle fa-2x text-warning mr-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">Atención</h5>
+                        <p class="mb-0">Esta factura ya ha actualizado el inventario y no puede ser editada.</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            {{ form_start(edit_form, {'attr': {'class': 'supplier-invoice-form', 'enctype': 'multipart/form-data'}}) }}
+
+            <!-- Basic Information Section -->
+            <div class="card card-outline card-secondary mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 font-weight-semibold">
+                        <i class="fa fa-info-circle text-secondary"></i> Información Básica
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(edit_form.invoiceNumber, null, {'label_attr': {'class':
+                                'font-weight-semibold text-muted small'}}) }}
+                                {{ form_widget(edit_form.invoiceNumber, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.invoiceNumber) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(edit_form.internalReference, null, {'label_attr': {'class':
+                                'font-weight-semibold text-muted small'}}) }}
+                                {{ form_widget(edit_form.internalReference, {'attr': {'class': 'form-control
+                                form-control-lg border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.internalReference) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(edit_form.proveedor, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                {{ form_widget(edit_form.proveedor, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.proveedor) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(edit_form.issueDate, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                {{ form_widget(edit_form.issueDate, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.issueDate) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(edit_form.dueDate, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                {{ form_widget(edit_form.dueDate, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.dueDate) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Information Section -->
+            <div class="card card-outline card-success mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 font-weight-semibold">
+                        <i class="fa fa-money text-success"></i> Información Financiera
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(edit_form.currency, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                {{ form_widget(edit_form.currency, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.currency) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(edit_form.exchangeRate, null, {'label_attr': {'class':
+                                'font-weight-semibold text-muted small'}}) }}
+                                {{ form_widget(edit_form.exchangeRate, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.exchangeRate) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(edit_form.taxAmount, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                {{ form_widget(edit_form.taxAmount, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.taxAmount) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{ form_label(edit_form.logisticCosts, null, {'label_attr': {'class':
+                                'font-weight-semibold text-muted small'}}) }}
+                                {{ form_widget(edit_form.logisticCosts, {'attr': {'class': 'form-control form-control-lg
+                                border-0 bg-light shadow-sm'}}) }}
+                                {{ form_errors(edit_form.logisticCosts) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information Section -->
+            <div class="card card-outline card-info mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 font-weight-semibold">
+                        <i class="fa fa-paperclip text-info"></i> Información Adicional
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(edit_form.attachment, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                <div class="custom-file">
+                                    {{ form_widget(edit_form.attachment, {'attr': {'class': 'custom-file-input'}}) }}
+                                    <label class="custom-file-label bg-light border-0 shadow-sm"
+                                        for="{{ edit_form.attachment.vars.id }}">
+                                        Seleccionar archivo...
+                                    </label>
+                                </div>
+                                {{ form_errors(edit_form.attachment) }}
+                                {% if supplierInvoice.attachmentPath %}
+                                <div class="mt-2 p-2 bg-info bg-opacity-10 rounded border border-info">
+                                    <small class="text-muted d-block">Archivo actual:</small>
+                                    <a href="{{ asset(supplierInvoice.attachmentPath) }}" target="_blank"
+                                        class="btn btn-sm btn-outline-info mt-1">
+                                        <i class="fa fa-download"></i> Ver archivo actual
+                                    </a>
+                                </div>
+                                {% endif %}
+                                <small class="form-text text-muted">Máximo 10MB. Formatos: PDF, JPG, PNG</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_label(edit_form.notes, null, {'label_attr': {'class': 'font-weight-semibold
+                                text-muted small'}}) }}
+                                {{ form_widget(edit_form.notes, {'attr': {'class': 'form-control border-0 bg-light
+                                shadow-sm', 'rows': 4, 'placeholder': 'Notas adicionales sobre la factura...'}}) }}
+                                {{ form_errors(edit_form.notes) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Section -->
+            <div class="card card-outline card-warning">
+                <div class="card-header bg-warning text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0 font-weight-semibold">
+                            <i class="fa fa-list"></i> Items de la Factura
+                        </h4>
+                        <button type="button" class="btn btn-light btn-sm" id="add-item">
+                            <i class="fa fa-plus"></i> Agregar Item
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="items-container" class="mb-4">
+                        {% for item in supplierInvoice.items %}
+                        <div class="item-row card card-outline card-light mb-3" data-item-index="{{ loop.index0 }}">
+                            <div class="card-body">
+                                <div class="row align-items-end">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="font-weight-semibold text-muted small">Producto</label>
+                                            <select name="supplier_invoice[items][{{ loop.index0 }}][product]"
+                                                class="form-control form-control-lg product-select border-0 bg-light shadow-sm"
+                                                required>
+                                                <option value="">Seleccionar producto...</option>
+                                            </select>
+                                            <input type="hidden"
+                                                name="supplier_invoice[items][{{ loop.index0 }}][productoId]"
+                                                class="producto-id" value="{{ item.productoId }}">
+                                            <input type="hidden"
+                                                name="supplier_invoice[items][{{ loop.index0 }}][productoTallaId]"
+                                                class="talla-id" value="{{ item.productoTallaId }}">
+                                            <input type="hidden"
+                                                name="supplier_invoice[items][{{ loop.index0 }}][productoColorId]"
+                                                class="color-id" value="{{ item.productoColorId }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="font-weight-semibold text-muted small">Cantidad</label>
+                                            <input type="number"
+                                                name="supplier_invoice[items][{{ loop.index0 }}][quantity]"
+                                                class="form-control form-control-lg item-quantity border-0 bg-light shadow-sm"
+                                                value="{{ item.quantity }}" min="0.01" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="font-weight-semibold text-muted small">Precio Unitario</label>
+                                            <input type="number"
+                                                name="supplier_invoice[items][{{ loop.index0 }}][unitPrice]"
+                                                class="form-control form-control-lg item-unit-price border-0 bg-light shadow-sm"
+                                                value="{{ item.unitPrice }}" min="0" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="font-weight-semibold text-muted small">Total</label>
+                                            <input type="text"
+                                                class="form-control form-control-lg item-total-price border-0 bg-secondary"
+                                                value="{{ item.totalPrice }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-danger btn-lg remove-item">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-0">
+                                            <label class="font-weight-semibold text-muted small">Notas</label>
+                                            <input type="text" name="supplier_invoice[items][{{ loop.index0 }}][notes]"
+                                                class="form-control border-0 bg-light shadow-sm"
+                                                value="{{ item.notes }}" placeholder="Notas adicionales del item...">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div id="empty-items-message" class="text-center text-muted py-4" style="display:none;">
+                        <i class="fa fa-inbox fa-3x mb-3 opacity-25"></i>
+                        <p class="mb-0">No hay items agregados</p>
+                        <p class="small">Haz clic en "Agregar Item" para comenzar</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <div class="card card-outline card-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="card-title mb-0 font-weight-semibold">
+                                        <i class="fa fa-calculator"></i> Totales
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tr>
+                                            <td class="text-muted">Subtotal:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-subtotal">$ 0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Impuestos:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-taxes">$ 0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Costos Logísticos:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-logistics">$ 0</td>
+                                        </tr>
+                                        <tr class="bg-light">
+                                            <td class="font-weight-bold">TOTAL:</td>
+                                            <td class="text-right font-weight-bold h6 mb-0" id="invoice-total">$ 0</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Token CSRF - Esencial para la seguridad del formulario #}
+            {{ form_widget(edit_form._token) }}
+
+            <div class="card card-outline card-primary mt-4">
+                <div class="card-body text-center">
+                    <div class="btn-group btn-group-lg">
+                        <button type="submit" class="btn btn-primary px-5">
+                            <i class="fa fa-save"></i> Actualizar Factura
+                        </button>
+                        <a href="{{ path('supplierinvoice_show', {'id': supplierInvoice.id}) }}"
+                            class="btn btn-secondary px-5">
+                            <i class="fa fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_end(edit_form, {'render_rest': false}) }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="item-template" style="display: none;">
+    <div class="item-row card card-outline card-light mb-3">
+        <div class="card-body">
+            <div class="row align-items-end">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Producto</label>
+                        <select name="supplier_invoice[items][__INDEX__][product]"
+                            class="form-control form-control-lg product-select border-0 bg-light shadow-sm" required>
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                        <input type="hidden" name="supplier_invoice[items][__INDEX__][productoId]" class="producto-id">
+                        <input type="hidden" name="supplier_invoice[items][__INDEX__][productoTallaId]"
+                            class="talla-id">
+                        <input type="hidden" name="supplier_invoice[items][__INDEX__][productoColorId]"
+                            class="color-id">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Cantidad</label>
+                        <input type="number" name="supplier_invoice[items][__INDEX__][quantity]"
+                            class="form-control form-control-lg item-quantity border-0 bg-light shadow-sm"
+                            placeholder="0" min="0.01" step="0.01" value="0" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Precio Unitario</label>
+                        <input type="number" name="supplier_invoice[items][__INDEX__][unitPrice]"
+                            class="form-control form-control-lg item-unit-price border-0 bg-light shadow-sm"
+                            placeholder="0.00" min="0" step="0.01" value="0" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">Total</label>
+                        <input type="text" class="form-control form-control-lg item-total-price border-0 bg-secondary"
+                            placeholder="0.00" value="0.00" readonly>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-danger btn-lg remove-item">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group mb-0">
+                        <label class="font-weight-semibold text-muted small">Notas</label>
+                        <input type="text" name="supplier_invoice[items][__INDEX__][notes]"
+                            class="form-control border-0 bg-light shadow-sm"
+                            placeholder="Notas adicionales del item...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="productos-data">
+{
+    "productos": [
+        {% if productos is defined %}
+            {% for producto in productos %}
+            {
+                "id": {{ producto.id }},
+                "referencia": "{{ producto.referencia|e('js') }}",
+                "nombre": "{{ producto.nombre|e('js') }}",
+                "tallas": [
+                    {% if producto.tallas is defined %}
+                        {% for talla in producto.tallas %}
+                        { "id": {{ talla.id }}, "nombre": "{{ talla.nombre|e('js') }}" }{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                ],
+                "colores": [
+                    {% if producto.colores is defined %}
+                        {% for color in producto.colores %}
+                        { "id": {{ color.id }}, "nombre": "{{ color.nombre|e('js') }}" }{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                ]
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        {% endif %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock
+%}
+
+{% block avanzu_javascripts_inline %}
+<script>
+    $(document).ready(function () {
+        var productosData = {};
+        try {
+            productosData = JSON.parse(document.getElementById('productos-data').textContent);
+        } catch (e) {
+            console.error('Error parsing productos data:', e);
+            productosData = { productos: [] };
+        }
+
+        var itemIndex = parseInt('{{ supplierInvoice.items|length }}');
+        var productos = productosData.productos || [];
+
+        function populateProductSelect(selectElement, selectedValue) {
+            selectElement.innerHTML = '<option value="">Seleccionar producto...</option>';
+            productos.forEach(function (producto) {
+                if (producto.tallas && producto.colores && producto.tallas.length > 0 && producto.colores.length > 0) {
+                    producto.tallas.forEach(function (talla) {
+                        producto.colores.forEach(function (color) {
+                            var option = document.createElement('option');
+                            var value = producto.id + '_' + talla.id + '_' + color.id;
+                            option.value = value;
+                            option.textContent = producto.referencia + ' - ' + producto.nombre +
+                                ' | Talla: ' + talla.nombre + ' | Color: ' + color.nombre;
+                            option.setAttribute('data-producto-id', producto.id);
+                            option.setAttribute('data-talla-id', talla.id);
+                            option.setAttribute('data-color-id', color.id);
+                            if (selectedValue && selectedValue === value) {
+                                option.selected = true;
+                            }
+                            selectElement.appendChild(option);
+                        });
+                    });
+                }
+            });
+        }
+
+        // Populate existing items
+        $('.item-row').each(function () {
+            var row = $(this);
+            var productoId = row.find('.producto-id').val();
+            var tallaId = row.find('.talla-id').val();
+            var colorId = row.find('.color-id').val();
+            var selectedValue = productoId + '_' + tallaId + '_' + colorId;
+            populateProductSelect(row.find('.product-select')[0], selectedValue);
+        });
+
+        $('#add-item').on('click', function (e) {
+            e.preventDefault();
+            var template = document.getElementById('item-template');
+            var newItem = template.innerHTML.replace(/__INDEX__/g, itemIndex);
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newItem;
+            var newRow = $(tempDiv.firstElementChild);
+            newRow.attr('data-item-index', itemIndex);
+            populateProductSelect(newRow.find('.product-select')[0]);
+            $('#items-container').append(newRow);
+            $('#empty-items-message').hide();
+            itemIndex++;
+            updateTotals();
+        });
+
+        $(document).on('click', '.remove-item', function () {
+            $(this).closest('.item-row').remove();
+            if ($('.item-row').length === 0) {
+                $('#empty-items-message').show();
+            }
+            updateTotals();
+        });
+
+        $(document).on('change', '.product-select', function () {
+            var selectedOption = $(this).find('option:selected');
+            var row = $(this).closest('.item-row');
+            row.find('.producto-id').val(selectedOption.data('producto-id') || '');
+            row.find('.talla-id').val(selectedOption.data('talla-id') || '');
+            row.find('.color-id').val(selectedOption.data('color-id') || '');
+        });
+
+        $(document).on('input', '.item-quantity, .item-unit-price', function () {
+            var row = $(this).closest('.item-row');
+            var quantity = parseFloat(row.find('.item-quantity').val()) || 0;
+            var unitPrice = parseFloat(row.find('.item-unit-price').val()) || 0;
+            row.find('.item-total-price').val((quantity * unitPrice).toFixed(2));
+            updateTotals();
+        });
+
+        $(document).on('input', 'input[id*="taxAmount"], input[id*="logisticCosts"]', function () {
+            updateTotals();
+        });
+
+        $('.custom-file-input').on('change', function () {
+            var fileName = $(this).val().split('\\').pop();
+            $(this).siblings('.custom-file-label').html(fileName || 'Seleccionar archivo...');
+        });
+
+        function updateTotals() {
+            var subtotal = 0;
+            $('.item-total-price').each(function () {
+                subtotal += parseFloat($(this).val()) || 0;
+            });
+            var taxes = parseFloat($('input[id*="taxAmount"]').val()) || 0;
+            var logistics = parseFloat($('input[id*="logisticCosts"]').val()) || 0;
+            var total = subtotal + taxes + logistics;
+
+            $('#invoice-subtotal').text('$ ' + subtotal.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+            $('#invoice-taxes').text('$ ' + taxes.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+            $('#invoice-logistics').text('$ ' + logistics.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+            $('#invoice-total').text('$ ' + total.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+        }
+
+        if ($('.item-row').length === 0) $('#empty-items-message').show();
+        updateTotals();
+    });
+</script>
+{% endblock %}

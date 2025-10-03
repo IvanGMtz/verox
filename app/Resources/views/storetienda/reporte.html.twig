@@ -702,67 +702,119 @@
       document.getElementById("search_report").style.display = "block";
     }
     function ExportToExcel(type, fn, dl) {
-        var wb = XLSX.utils.book_new();
-        var elt = document.getElementById('details');
-        var ws1 = XLSX.utils.table_to_sheet(elt);
-        XLSX.utils.book_append_sheet(wb, ws1, "Transacciones");
+      var wb = XLSX.utils.book_new();
 
-        let rtipo = document.getElementById("reporteTipo").value;
-        if (rtipo == "Total") {
-            var clientesNuevosData = [];
-            var clientesUnicos = new Map();
-            reporteData.forEach(function(transaccion) {
-                if (transaccion.client_type === 'Nuevo' && transaccion.cliente_id) {
-                    if (!clientesUnicos.has(transaccion.cliente_id)) {
-                        clientesUnicos.set(transaccion.cliente_id, {
-                            'Cliente ID': transaccion.cliente_id,
-                            'Nombre': transaccion.cliente_nombre || '',
-                            'Apellidos': transaccion.cliente_apellidos || '',
-                            'Email': transaccion.cliente_email || '',
-                            'Teléfono': transaccion.cliente_telefono || '',
-                            'Asesor': transaccion.asesor || '',
-                            'Estado': transaccion.client_state || '',
-                            'Primera Compra': transaccion.date,
-                            'Total Gastado': 0,
-                            'Transacciones': 0
-                        });
-                    }
-                    var cliente = clientesUnicos.get(transaccion.cliente_id);
-                    cliente['Total Gastado'] += parseFloat(transaccion.monto_transaccion) || 0;
-                    cliente['Transacciones'] += 1;
-                }
-            });
-            clientesUnicos.forEach(function(cliente) {
-                cliente['Total Gastado'] = cliente['Total Gastado'].toFixed(2);
-                clientesNuevosData.push(cliente);
-            });
-            clientesNuevosData.sort((a, b) => parseFloat(b['Total Gastado']) - parseFloat(a['Total Gastado']));
-            if (clientesNuevosData.length > 0) {
-                var ws2 = XLSX.utils.json_to_sheet(clientesNuevosData);
+      var elt = document.getElementById('details');
+      var ws1 = XLSX.utils.table_to_sheet(elt);
+      XLSX.utils.book_append_sheet(wb, ws1, "Transacciones");
 
-                ws2['!cols'] = [
-                    {wch: 12},
-                    {wch: 20},
-                    {wch: 20},
-                    {wch: 30},
-                    {wch: 15},
-                    {wch: 20},
-                    {wch: 15},
-                    {wch: 12}, 
-                    {wch: 12}, 
-                    {wch: 12}
-                ];
-                XLSX.utils.book_append_sheet(wb, ws2, "Clientes Nuevos");
-            }
-        }
-        let start_Date = document.getElementById("start").value;
-        let stop_Date = document.getElementById("stop").value;
-        let asesor = document.getElementById("asesores2")?.value;
-        let tag = (rtipo=="Total" || rtipo=="Top")? "":document.getElementById(rtipo).value;
-        
-        return dl ?
-            XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
-            XLSX.writeFile(wb, fn || (rtipo +(asesor?'-'+asesor:'')+(tag!=""?" "+tag:"") + ' '+start_Date +' a '+stop_Date + '.'+(type || 'xlsx')));
-    }
+      let rtipo = document.getElementById("reporteTipo").value;
+      if (rtipo == "Total") {
+          var clientesNuevosData = [];
+          var clientesRecurrentesData = [];
+          var clientesNuevosUnicos = new Map();
+          var clientesRecurrentesUnicos = new Map();
+
+          reporteData.forEach(function(transaccion) {
+              if (transaccion.cliente_id) {
+                  if (transaccion.client_type === 'Nuevo') {
+                      if (!clientesNuevosUnicos.has(transaccion.cliente_id)) {
+                          clientesNuevosUnicos.set(transaccion.cliente_id, {
+                              'Cliente ID': transaccion.cliente_id,
+                              'Nombre': transaccion.cliente_nombre || '',
+                              'Apellidos': transaccion.cliente_apellidos || '',
+                              'Email': transaccion.cliente_email || '',
+                              'Teléfono': transaccion.cliente_telefono || '',
+                              'Asesor': transaccion.asesor || '',
+                              'Estado': transaccion.client_state || '',
+                              'Primera Compra': transaccion.date,
+                              'Total Gastado': 0,
+                              'Transacciones': 0
+                          });
+                      }
+                      var clienteNuevo = clientesNuevosUnicos.get(transaccion.cliente_id);
+                      clienteNuevo['Total Gastado'] += parseFloat(transaccion.monto_transaccion) || 0;
+                      clienteNuevo['Transacciones'] += 1;
+                  }
+                  else if (transaccion.client_type === 'Antiguo') {
+                      if (!clientesRecurrentesUnicos.has(transaccion.cliente_id)) {
+                          clientesRecurrentesUnicos.set(transaccion.cliente_id, {
+                              'Cliente ID': transaccion.cliente_id,
+                              'Nombre': transaccion.cliente_nombre || '',
+                              'Apellidos': transaccion.cliente_apellidos || '',
+                              'Email': transaccion.cliente_email || '',
+                              'Teléfono': transaccion.cliente_telefono || '',
+                              'Asesor': transaccion.asesor || '',
+                              'Estado': transaccion.client_state || '',
+                              'Total Gastado (Período)': 0,
+                              'Transacciones (Período)': 0
+                          });
+                      }
+                      var clienteRecurrente = clientesRecurrentesUnicos.get(transaccion.cliente_id);
+                      clienteRecurrente['Total Gastado (Período)'] += parseFloat(transaccion.monto_transaccion) || 0;
+                      clienteRecurrente['Transacciones (Período)'] += 1;
+                  }
+              }
+          });
+
+          clientesNuevosUnicos.forEach(function(cliente) {
+              cliente['Total Gastado'] = cliente['Total Gastado'].toFixed(2);
+              clientesNuevosData.push(cliente);
+          });
+
+          clientesRecurrentesUnicos.forEach(function(cliente) {
+              cliente['Total Gastado (Período)'] = cliente['Total Gastado (Período)'].toFixed(2);
+              clientesRecurrentesData.push(cliente);
+          });
+
+          clientesNuevosData.sort((a, b) => parseFloat(b['Total Gastado']) - parseFloat(a['Total Gastado']));
+          clientesRecurrentesData.sort((a, b) => parseFloat(b['Total Gastado (Período)']) - parseFloat(a['Total Gastado (Período)']));
+
+          if (clientesNuevosData.length > 0) {
+              var ws2 = XLSX.utils.json_to_sheet(clientesNuevosData);
+
+              ws2['!cols'] = [
+                  {wch: 12}, 
+                  {wch: 20}, 
+                  {wch: 20}, 
+                  {wch: 30},                   
+                  {wch: 15}, 
+                  {wch: 20}, 
+                  {wch: 15}, 
+                  {wch: 12}, 
+                  {wch: 12}, 
+                  {wch: 12}  
+              ];
+              
+              XLSX.utils.book_append_sheet(wb, ws2, "Clientes Nuevos");
+          }
+
+          if (clientesRecurrentesData.length > 0) {
+              var ws3 = XLSX.utils.json_to_sheet(clientesRecurrentesData);
+
+              ws3['!cols'] = [
+                  {wch: 12}, 
+                  {wch: 20}, 
+                  {wch: 20}, 
+                  {wch: 30}, 
+                  {wch: 15}, 
+                  {wch: 20}, 
+                  {wch: 15}, 
+                  {wch: 15} 
+              ];
+              
+              XLSX.utils.book_append_sheet(wb, ws3, "Clientes Recurrentes");
+          }
+      }
+
+      let start_Date = document.getElementById("start").value;
+      let stop_Date = document.getElementById("stop").value;
+      let asesor = document.getElementById("asesores2")?.value;
+      let tag = (rtipo=="Total" || rtipo=="Top")? "":document.getElementById(rtipo).value;
+      
+      return dl ?
+          XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+          XLSX.writeFile(wb, fn || (rtipo +(asesor?'-'+asesor:'')+(tag!=""?" "+tag:"") + ' '+start_Date +' a '+stop_Date + '.'+(type || 'xlsx')));
+  }
   </script>
 {% endblock %}

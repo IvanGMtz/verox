@@ -103,3 +103,9 @@ services:
         public: false
         tags:
             - { name: twig.extension.text }
+
+    app.supplier_invoice:
+        class: AppBundle\Service\SupplierInvoiceService
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        public: true

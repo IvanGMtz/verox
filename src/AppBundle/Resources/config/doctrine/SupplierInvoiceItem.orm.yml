@@ -1,0 +1,76 @@
+AppBundle\Entity\SupplierInvoiceItem:
+    type: entity
+    table: supplier_invoice_item
+    indexes:
+        idx_invoice:
+            columns:
+                - invoice_id
+        idx_producto:
+            columns:
+                - producto_id
+        idx_talla:
+            columns:
+                - talla_id
+        idx_color:
+            columns:
+                - color_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        productoId:
+            type: integer
+            nullable: false
+            column: producto_id
+        productoTallaId:
+            type: integer
+            nullable: false
+            column: talla_id
+        productoColorId:
+            type: integer
+            nullable: false
+            column: color_id
+        quantity:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            options:
+                default: 0.00
+        unitPrice:
+            type: decimal
+            nullable: false
+            precision: 15
+            scale: 4
+            options:
+                default: 0.0000
+            column: unit_price
+        totalPrice:
+            type: decimal
+            nullable: false
+            precision: 15
+            scale: 2
+            options:
+                default: 0.00
+            column: total_price
+        notes:
+            type: text
+            nullable: true
+    manyToOne:
+        supplierInvoice:
+            targetEntity: SupplierInvoice
+            cascade: []
+            fetch: LAZY
+            inversedBy: items
+            joinColumns:
+                invoice_id:
+                    referencedColumnName: id
+                    onDelete: CASCADE
+            orphanRemoval: false
+    lifecycleCallbacks: {}

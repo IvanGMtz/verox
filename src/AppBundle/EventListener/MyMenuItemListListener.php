@@ -48,9 +48,11 @@ class MyMenuItemListListener {
           array_push($menuItems, $despacho_orden = new MenuItemModel('despachoorden_index', 'ORDENES DE DESPACHO', 'despachoorden_index', array(), 'fas fa-cubes'));
           array_push($menuItems, $despacho_orden_new = new MenuItemModel('despachoorden_new', 'NUEVA ORDEN DE DESPACHO', 'despachoorden_new', array(), 'fas fa-cubes'));
           array_push($menuItems, $reporte = new MenuItemModel('store_reporte', 'REPORTES', 'store_reporte', array(), 'fas fa-line-chart'));
+          array_push($menuItems, $supplier_invoices = new MenuItemModel('supplierinvoice_index', 'FACTURAS PROVEEDORES', 'supplierinvoice_index', array(), 'fas fa-file-invoice-dollar'));
         }
         if($this->user->hasRole('ROLE_INVENTARIO')){
           array_push($menuItems, $inventario = new MenuItemModel('productoinventario_index', 'INVENTARIO', 'productoinventario_index', array(), 'fas fa-cubes'));
+          array_push($menuItems, $supplier_invoices = new MenuItemModel('supplierinvoice_index', 'FACTURAS PROVEEDORES', 'supplierinvoice_index', array(), 'fas fa-file-invoice-dollar'));
         }
         if($this->user && !is_string($this->user) && ($this->user->hasRole('ROLE_VENDEDOR'))){
           // array_push($menuItems, $productos = new MenuItemModel('producto_index', 'MIS PRODUCTOS', 'producto_index', array(), 'fas fa-shopping-bag'));

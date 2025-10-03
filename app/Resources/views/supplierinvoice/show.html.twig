@@ -1,0 +1,379 @@
+{% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
+{% block avanzu_document_title %}Facturas Proveedores{% endblock %}
+{% block avanzu_page_title %}Facturas Proveedores{% endblock %}
+{% block titulo_pagina %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Detalle Facturas Proveedores</h1>
+      </div>
+      <div class="col-sm-6">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block avanzu_page_content %}
+{% block body %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 bg-light">
+                    <li class="breadcrumb-item"><a href="{{ path('supplierinvoice_index') }}" class="text-decoration-none text-primary">Facturas</a></li>
+                    <li class="breadcrumb-item active text-muted">{{ supplierInvoice.invoiceNumber }}</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-1 text-dark font-weight-bold">Factura #{{ supplierInvoice.invoiceNumber }}</h1>
+            <p class="text-muted mb-0">Detalles completos de la factura del proveedor</p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="btn-group">
+            {% if not supplierInvoice.inventoryUpdated %}
+                <a href="{{ path('supplierinvoice_edit', {'id': supplierInvoice.id}) }}" 
+                class="btn btn-warning">
+                    <i class="fa fa-edit"></i> Editar
+                </a>
+            {% endif %}
+            
+            <!-- Botón Confirmar - Solo para facturas en borrador -->
+            {% if supplierInvoice.estado == 1 and not supplierInvoice.inventoryUpdated and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS')) %}
+                <a href="{{ path('supplierinvoice_confirm', {'id': supplierInvoice.id}) }}" 
+                class="btn btn-success"
+                onclick="return confirm('¿Está seguro de confirmar esta factura? Se actualizará el inventario.')">
+                    <i class="fa fa-check"></i> Confirmar
+                </a>
+            {% endif %}
+            
+            <!-- Botón Marcar como Pagada - Solo para facturas confirmadas -->
+            {% if supplierInvoice.estado == 2 and (is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_ADMIN_VENTAS')) %}
+                <a href="{{ path('supplierinvoice_mark_as_paid', {'id': supplierInvoice.id}) }}" 
+                class="btn btn-info"
+                onclick="return confirm('¿Está seguro de marcar esta factura como pagada?')">
+                    <i class="fa fa-credit-card"></i> Marcar como Pagada
+                </a>
+            {% endif %}
+            
+            <!-- Botón Cancelar - Solo para facturas en borrador -->
+            {% if not supplierInvoice.inventoryUpdated and supplierInvoice.estado == 1 %}
+                <a href="{{ path('supplierinvoice_cancel', {'id': supplierInvoice.id}) }}" 
+                class="btn btn-danger"
+                onclick="return confirm('¿Está seguro de cancelar esta factura?')">
+                    <i class="fa fa-ban"></i> Cancelar
+                </a>
+            {% endif %}
+            
+            <a href="{{ path('supplierinvoice_index') }}" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Left Column - Invoice Info -->
+        <div class="col-lg-8">
+            <!-- General Information -->
+            <div class="card card-outline card-info mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-semibold">
+                        <i class="fa fa-info-circle text-info"></i> Información General
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td class="text-muted">Número de Factura:</td>
+                                    <td class="font-weight-semibold">{{ supplierInvoice.invoiceNumber }}</td>
+                                </tr>
+                                {% if supplierInvoice.internalReference %}
+                                <tr>
+                                    <td class="text-muted">Referencia Interna:</td>
+                                    <td class="font-weight-semibold">{{ supplierInvoice.internalReference }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td class="text-muted">Proveedor:</td>
+                                    <td class="font-weight-semibold">{{ supplierInvoice.proveedor.nombre }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Creado por:</td>
+                                    <td class="font-weight-semibold">{{ supplierInvoice.usuarioCreacion.username }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td class="text-muted">Estado:</td>
+                                    <td>
+                                        {% if supplierInvoice.estado == 0 %}
+                                            <span class="badge badge-danger badge-pill px-3 py-2">Cancelada</span>
+                                        {% elseif supplierInvoice.estado == 1 %}
+                                            <span class="badge badge-warning badge-pill px-3 py-2">Borrador</span>
+                                        {% elseif supplierInvoice.estado == 2 %}
+                                            <span class="badge badge-success badge-pill px-3 py-2">Confirmada</span>
+                                        {% elseif supplierInvoice.estado == 3 %}
+                                            <span class="badge badge-info badge-pill px-3 py-2">Pagada</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Inventario:</td>
+                                    <td>
+                                        {% if supplierInvoice.inventoryUpdated %}
+                                            <span class="badge badge-success badge-pill px-3 py-2">
+                                                <i class="fa fa-check"></i> Actualizado
+                                            </span>
+                                        {% else %}
+                                            <span class="badge badge-warning badge-pill px-3 py-2">
+                                                <i class="fa fa-clock-o"></i> Pendiente
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Moneda:</td>
+                                    <td><span class="badge badge-light text-dark border">{{ supplierInvoice.currency }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Fecha de Creación:</td>
+                                    <td class="font-weight-semibold">{{ supplierInvoice.fechaCreacion|date('d/m/Y H:i') }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dates Section -->
+            <div class="card card-outline card-secondary mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-semibold">
+                        <i class="fa fa-calendar text-secondary"></i> Fechas y Moneda
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded border">
+                                <i class="fa fa-calendar-o text-muted mb-2 fa-2x"></i>
+                                <div class="small text-muted">Fecha de Emisión</div>
+                                <div class="font-weight-bold">{{ supplierInvoice.issueDate|date('d/m/Y') }}</div>
+                            </div>
+                        </div>
+                        {% if supplierInvoice.dueDate %}
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded border">
+                                <i class="fa fa-clock-o text-muted mb-2 fa-2x"></i>
+                                <div class="small text-muted">Fecha de Vencimiento</div>
+                                <div class="font-weight-bold">{{ supplierInvoice.dueDate|date('d/m/Y') }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if supplierInvoice.currency != 'COP' %}
+                        <div class="col-md-3">
+                            <div class="text-center p-3 bg-light rounded border">
+                                <i class="fa fa-exchange text-muted mb-2 fa-2x"></i>
+                                <div class="small text-muted">Tasa de Cambio</div>
+                                <div class="font-weight-bold">{{ supplierInvoice.exchangeRate }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attachment Section -->
+            {% if supplierInvoice.attachmentPath %}
+            <div class="card card-outline card-secondary mb-4">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-semibold">
+                        <i class="fa fa-paperclip text-secondary"></i> Archivo Adjunto
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <a href="{{ asset(supplierInvoice.attachmentPath) }}" target="_blank" 
+                       class="btn btn-outline-primary btn-lg">
+                        <i class="fa fa-download"></i> Descargar Factura
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column - Summary -->
+        <div class="col-lg-4">
+            <!-- Totals Card -->
+            <div class="card card-outline card-primary mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title font-weight-semibold mb-0">
+                        <i class="fa fa-calculator"></i> Resumen de Totales
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td class="text-muted">Subtotal:</td>
+                            <td class="text-right font-weight-semibold">
+                                {% if supplierInvoice.currency != 'COP' %}
+                                    {{ supplierInvoice.currency }} {{ supplierInvoice.subtotal|number_format(2, ',', '.') }}
+                                {% else %}
+                                    $ {{ supplierInvoice.subtotal|number_format(0, ',', '.') }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if supplierInvoice.taxAmount > 0 %}
+                        <tr>
+                            <td class="text-muted">Impuestos:</td>
+                            <td class="text-right font-weight-semibold">
+                                {% if supplierInvoice.currency != 'COP' %}
+                                    {{ supplierInvoice.currency }} {{ supplierInvoice.taxAmount|number_format(2, ',', '.') }}
+                                {% else %}
+                                    $ {{ supplierInvoice.taxAmount|number_format(0, ',', '.') }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if supplierInvoice.logisticCosts > 0 %}
+                        <tr>
+                            <td class="text-muted">Costos Logísticos:</td>
+                            <td class="text-right font-weight-semibold">
+                                {% if supplierInvoice.currency != 'COP' %}
+                                    {{ supplierInvoice.currency }} {{ supplierInvoice.logisticCosts|number_format(2, ',', '.') }}
+                                {% else %}
+                                    $ {{ supplierInvoice.logisticCosts|number_format(0, ',', '.') }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                    <div class="bg-primary bg-gradient text-white p-3 rounded mt-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold">TOTAL:</span>
+                            <span class="font-weight-bold h5 mb-0">
+                                {% if supplierInvoice.currency != 'COP' %}
+                                    {{ supplierInvoice.currency }} {{ supplierInvoice.totalAmount|number_format(2, ',', '.') }}
+                                {% else %}
+                                    $ {{ supplierInvoice.totalAmount|number_format(0, ',', '.') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items Section -->
+    <div class="card card-outline card-primary mt-4">
+        <div class="card-header">
+            <h3 class="card-title font-weight-semibold">
+                <i class="fa fa-list text-primary"></i> Items de la Factura
+            </h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-muted small font-weight-bold text-uppercase">Producto</th>
+                            <th class="text-center text-muted small font-weight-bold text-uppercase">Cantidad</th>
+                            <th class="text-right text-muted small font-weight-bold text-uppercase">Precio Unit.</th>
+                            <th class="text-right text-muted small font-weight-bold text-uppercase">Total</th>
+                            <th class="text-muted small font-weight-bold text-uppercase">Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in supplierInvoice.items %}
+                        <tr>
+                            <td>
+                                {% set producto = null %}
+                                {% set talla = null %}
+                                {% set color = null %}
+                                
+                                {% if item.productoId %}
+                                    {% for p in productos %}
+                                        {% if p.id == item.productoId %}
+                                            {% set producto = p %}
+                                            {% for t in p.tallas %}
+                                                {% if t.id == item.productoTallaId %}
+                                                    {% set talla = t %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% for c in p.colores %}
+                                                {% if c.id == item.productoColorId %}
+                                                    {% set color = c %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+
+                                <div class="font-weight-semibold text-dark">
+                                    {% if producto %}
+                                        {{ producto.referencia }} - {{ producto.nombre }}
+                                    {% else %}
+                                        Producto no encontrado
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted">
+                                    {% if talla %}Talla: {{ talla.nombre }}{% endif %}
+                                    {% if color %} - Color: {{ color.nombre }}{% endif %}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="font-weight-semibold">{{ item.quantity }}</span>
+                            </td>
+                            <td class="text-right">
+                                {% if supplierInvoice.currency != 'COP' %}
+                                    {{ supplierInvoice.currency }} {{ item.unitPrice|number_format(4, ',', '.') }}
+                                {% else %}
+                                    $ {{ item.unitPrice|number_format(0, ',', '.') }}
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                <span class="font-weight-semibold">
+                                    {% if supplierInvoice.currency != 'COP' %}
+                                        {{ supplierInvoice.currency }} {{ item.totalPrice|number_format(2, ',', '.') }}
+                                    {% else %}
+                                        $ {{ item.totalPrice|number_format(0, ',', '.') }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if item.notes %}
+                                    <span class="small text-muted">{{ item.notes }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Section -->
+    {% if supplierInvoice.notes %}
+    <div class="card card-outline card-secondary mt-4">
+        <div class="card-header">
+            <h3 class="card-title font-weight-semibold">
+                <i class="fa fa-sticky-note-o text-secondary"></i> Notas
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="bg-light p-3 rounded border">
+                <p class="mb-0">{{ supplierInvoice.notes|nl2br }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% endblock %}
