@@ -196,7 +196,11 @@
                                             <td class="text-right font-weight-semibold" id="invoice-subtotal">$ 0</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-muted">Impuestos:</td>
+                                            <td class="text-muted">IVA Items:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-items-tax">$ 0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Impuestos Adicionales:</td>
                                             <td class="text-right font-weight-semibold" id="invoice-taxes">$ 0</td>
                                         </tr>
                                         <tr>
@@ -239,7 +243,7 @@
     <div class="item-row card card-outline card-light mb-3">
         <div class="card-body">
             <div class="row align-items-end">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="font-weight-semibold text-muted small">Producto</label>
                         <select name="supplier_invoice[items][__INDEX__][product]" 
@@ -255,7 +259,7 @@
                     <div class="form-group">
                         <label class="font-weight-semibold text-muted small">Cantidad</label>
                         <input type="number" name="supplier_invoice[items][__INDEX__][quantity]"
-                            class="form-control item-quantity" min="0.01" step="0.01" required>
+                            class="form-control item-quantity" min="1" step="1" required>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -263,6 +267,15 @@
                         <label class="font-weight-semibold text-muted small">Precio Unitario</label>
                         <input type="number" name="supplier_invoice[items][__INDEX__][unitPrice]"
                             class="form-control item-unit-price" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">IVA</label>
+                        <select name="supplier_invoice[items][__INDEX__][taxRate]" class="form-control item-tax-rate" required>
+                            <option value="0">0%</option>
+                            <option value="19">19% (IVA)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -390,11 +403,17 @@ $(document).ready(function() {
         console.log('Producto:', selectedOption.data('producto-id'), 'Talla:', selectedOption.data('talla-id'), 'Color:', selectedOption.data('color-id'));
     });
 
-    $(document).on('input', '.item-quantity, .item-unit-price', function() {
+    $(document).on('input change', '.item-quantity, .item-unit-price, .item-tax-rate', function() {
         var row = $(this).closest('.item-row');
         var quantity = parseFloat(row.find('.item-quantity').val()) || 0;
         var unitPrice = parseFloat(row.find('.item-unit-price').val()) || 0;
-        row.find('.item-total-price').val((quantity * unitPrice).toFixed(2));
+        var taxRate = parseFloat(row.find('.item-tax-rate').val()) || 0;
+        
+        var subtotal = quantity * unitPrice;
+        var tax = subtotal * (taxRate / 100);
+        var total = subtotal + tax;
+        
+        row.find('.item-total-price').val(total.toFixed(2));
         updateTotals();
     });
 
@@ -404,17 +423,30 @@ $(document).ready(function() {
 
     function updateTotals() {
         var subtotal = 0;
-        $('.item-total-price').each(function() {
-            subtotal += parseFloat($(this).val()) || 0;
+        var itemsTaxTotal = 0;
+        
+        $('.item-row').each(function() {
+            var row = $(this);
+            var quantity = parseFloat(row.find('.item-quantity').val()) || 0;
+            var unitPrice = parseFloat(row.find('.item-unit-price').val()) || 0;
+            var taxRate = parseFloat(row.find('.item-tax-rate').val()) || 0;
+            
+            var itemSubtotal = quantity * unitPrice;
+            var itemTax = itemSubtotal * (taxRate / 100);
+            
+            subtotal += itemSubtotal;
+            itemsTaxTotal += itemTax;
         });
-        var taxes = parseFloat($('input[id*="taxAmount"]').val()) || 0;
+        
+        var additionalTaxes = parseFloat($('input[id*="taxAmount"]').val()) || 0;
         var logistics = parseFloat($('input[id*="logisticCosts"]').val()) || 0;
-        var total = subtotal + taxes + logistics;
+        var total = subtotal + itemsTaxTotal + additionalTaxes + logistics;
 
-        $('#invoice-subtotal').text('$ ' + subtotal.toLocaleString('es-CO'));
-        $('#invoice-taxes').text('$ ' + taxes.toLocaleString('es-CO'));
-        $('#invoice-logistics').text('$ ' + logistics.toLocaleString('es-CO'));
-        $('#invoice-total').text('$ ' + total.toLocaleString('es-CO'));
+        $('#invoice-subtotal').text('$ ' + subtotal.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+        $('#invoice-items-tax').text('$ ' + itemsTaxTotal.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+        $('#invoice-taxes').text('$ ' + additionalTaxes.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+        $('#invoice-logistics').text('$ ' + logistics.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+        $('#invoice-total').text('$ ' + total.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
     }
 
     if ($('.item-row').length === 0) $('#empty-items-message').show();
@@ -429,7 +461,8 @@ $(document).ready(function() {
                 tallaId: row.find('.talla-id').val(),
                 colorId: row.find('.color-id').val(),
                 quantity: row.find('.item-quantity').val(),
-                unitPrice: row.find('.item-unit-price').val()
+                unitPrice: row.find('.item-unit-price').val(),
+                taxRate: row.find('.item-tax-rate').val()
             });
         });
     });

@@ -408,6 +408,8 @@ class SupplierInvoiceController extends Controller
 
             // Procesar items manualmente
             $subtotal = 0;
+            $itemsTaxTotal = 0;
+            
             if (!empty($itemsData)) {
                 foreach ($itemsData as $itemData) {
                     // Validar que tenga datos
@@ -423,20 +425,33 @@ class SupplierInvoiceController extends Controller
                     $item->setQuantity($itemData['quantity']);
                     $item->setUnitPrice($itemData['unitPrice']);
                     
-                    // El totalPrice se calcula automáticamente en el setter
+                    // Establecer tasa de impuesto del item (0% o 19%)
+                    $taxRate = isset($itemData['taxRate']) ? floatval($itemData['taxRate']) : 0;
+                    $item->setTax($taxRate);
+                    
+                    // Calcular subtotal del item (sin impuesto)
+                    $itemSubtotal = floatval($itemData['quantity']) * floatval($itemData['unitPrice']);
+                    $subtotal += $itemSubtotal;
+                    
+                    // Calcular impuesto del item
+                    $itemTax = $itemSubtotal * ($taxRate / 100);
+                    $itemsTaxTotal += $itemTax;
+                    
+                    // El precio total del item incluye el impuesto
+                    $item->setTotalPrice($itemSubtotal + $itemTax);
+                    
                     if (isset($itemData['notes'])) {
                         $item->setNotes($itemData['notes']);
                     }
 
-                    $subtotal += $item->getTotalPrice();
                     $em->persist($item);
                 }
             }
 
             // Calcular y guardar totales
-            $taxAmount = floatval($supplierInvoice->getTaxAmount() ?? 0);
+            $additionalTaxes = floatval($supplierInvoice->getTaxAmount() ?? 0);
             $logisticCosts = floatval($supplierInvoice->getLogisticCosts() ?? 0);
-            $totalAmount = $subtotal + $taxAmount + $logisticCosts;
+            $totalAmount = $subtotal + $itemsTaxTotal + $additionalTaxes + $logisticCosts;
             
             $supplierInvoice->setSubtotal($subtotal);
             $supplierInvoice->setTotalAmount($totalAmount);
@@ -459,6 +474,16 @@ class SupplierInvoiceController extends Controller
      */
     public function editAction(Request $request, SupplierInvoice $supplierInvoice)
     {
+        if ($supplierInvoice->getEstado() == 0) {
+            $this->addFlash('error', 'No se puede editar una factura cancelada');
+            return $this->redirectToRoute('supplierinvoice_show', ['id' => $supplierInvoice->getId()]);
+        }
+
+        if ($supplierInvoice->getEstado() != 1) {
+            $this->addFlash('error', 'Solo se pueden editar facturas en estado borrador');
+            return $this->redirectToRoute('supplierinvoice_show', ['id' => $supplierInvoice->getId()]);
+        }
+
         if ($supplierInvoice->getInventoryUpdated()) {
             $this->addFlash('error', 'No se puede editar una factura que ya ha actualizado el inventario');
             return $this->redirectToRoute('supplierinvoice_show', ['id' => $supplierInvoice->getId()]);
@@ -467,8 +492,7 @@ class SupplierInvoiceController extends Controller
         $em = $this->getDoctrine()->getManager();
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         $fecha = new \DateTime();
-        
-        // Cargar productos con tallas y colores para el formulario
+
         $productos = $em->getRepository('AppBundle:Producto')
             ->createQueryBuilder('p')
             ->leftJoin('p.tallas', 't')
@@ -477,7 +501,6 @@ class SupplierInvoiceController extends Controller
             ->getQuery()
             ->getResult();
 
-        // Guardar items originales para detectar eliminaciones
         $originalItems = new ArrayCollection();
         foreach ($supplierInvoice->getItems() as $item) {
             $originalItems->add($item);
@@ -541,6 +564,10 @@ class SupplierInvoiceController extends Controller
             // Obtener datos de items del request
             $itemsData = $request->request->get('supplier_invoice')['items'] ?? [];
 
+            // Calcular totales
+            $subtotal = 0;
+            $itemsTaxTotal = 0;
+
             // Actualizar items existentes y crear nuevos
             if (!empty($itemsData)) {
                 foreach ($itemsData as $index => $itemData) {
@@ -552,7 +579,6 @@ class SupplierInvoiceController extends Controller
                     // Buscar si es un item existente o nuevo
                     $item = null;
                     foreach ($supplierInvoice->getItems() as $existingItem) {
-                        // Si coincide el índice o posición, actualizarlo
                         if ($existingItem->getId() && isset($itemData['id']) && $existingItem->getId() == $itemData['id']) {
                             $item = $existingItem;
                             break;
@@ -573,6 +599,21 @@ class SupplierInvoiceController extends Controller
                     $item->setQuantity($itemData['quantity']);
                     $item->setUnitPrice($itemData['unitPrice']);
                     
+                    // Establecer tasa de impuesto del item (0% o 19%)
+                    $taxRate = isset($itemData['taxRate']) ? floatval($itemData['taxRate']) : 0;
+                    $item->setTax($taxRate);
+                    
+                    // Calcular subtotal del item (sin impuesto)
+                    $itemSubtotal = floatval($itemData['quantity']) * floatval($itemData['unitPrice']);
+                    $subtotal += $itemSubtotal;
+                    
+                    // Calcular impuesto del item
+                    $itemTax = $itemSubtotal * ($taxRate / 100);
+                    $itemsTaxTotal += $itemTax;
+                    
+                    // El precio total del item incluye el impuesto
+                    $item->setTotalPrice($itemSubtotal + $itemTax);
+                    
                     if (isset($itemData['notes'])) {
                         $item->setNotes($itemData['notes']);
                     }
@@ -581,9 +622,15 @@ class SupplierInvoiceController extends Controller
                 }
             }
 
+            // Calcular y guardar totales de la factura
+            $additionalTaxes = floatval($supplierInvoice->getTaxAmount() ?? 0);
+            $logisticCosts = floatval($supplierInvoice->getLogisticCosts() ?? 0);
+            $totalAmount = $subtotal + $itemsTaxTotal + $additionalTaxes + $logisticCosts;
+            
+            $supplierInvoice->setSubtotal($subtotal);
+            $supplierInvoice->setTotalAmount($totalAmount);
             $supplierInvoice->setUsuarioActualizacion($user);
             $supplierInvoice->setFechaActualizacion($fecha);
-            $supplierInvoice->calculateTotals();
 
             $em->flush();
 

@@ -50,6 +50,11 @@ class SupplierInvoiceItem
     private $notes;
 
     /**
+     * @var string
+     */
+    private $tax;
+
+    /**
      * @var \AppBundle\Entity\SupplierInvoice
      */
     private $supplierInvoice;
@@ -184,5 +189,16 @@ class SupplierInvoiceItem
     public function __toString()
     {
         return 'Item ID: ' . $this->id . ' - Cant: ' . $this->quantity;
+    }
+
+    public function setTax($tax)
+    {
+        $this->tax = $tax;
+        return $this;
+    }
+
+    public function getTax()
+    {
+        return $this->tax;
     }
 }

@@ -234,7 +234,7 @@
                         <div class="item-row card card-outline card-light mb-3" data-item-index="{{ loop.index0 }}">
                             <div class="card-body">
                                 <div class="row align-items-end">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="font-weight-semibold text-muted small">Producto</label>
                                             <select name="supplier_invoice[items][{{ loop.index0 }}][product]"
@@ -259,7 +259,7 @@
                                             <input type="number"
                                                 name="supplier_invoice[items][{{ loop.index0 }}][quantity]"
                                                 class="form-control form-control-lg item-quantity border-0 bg-light shadow-sm"
-                                                value="{{ item.quantity }}" min="0.01" step="0.01" required>
+                                                value="{{ item.quantity }}" min="1" step="1" required>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -269,6 +269,16 @@
                                                 name="supplier_invoice[items][{{ loop.index0 }}][unitPrice]"
                                                 class="form-control form-control-lg item-unit-price border-0 bg-light shadow-sm"
                                                 value="{{ item.unitPrice }}" min="0" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="form-group">
+                                            <label class="font-weight-semibold text-muted small">IVA</label>
+                                            <select name="supplier_invoice[items][{{ loop.index0 }}][taxRate]" 
+                                                class="form-control form-control-lg item-tax-rate border-0 bg-light shadow-sm" required>
+                                                <option value="0" {% if item.tax|default(0) == 0 %}selected{% endif %}>0%</option>
+                                                <option value="19" {% if item.tax|default(0) == 19 %}selected{% endif %}>19%</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -322,7 +332,11 @@
                                             <td class="text-right font-weight-semibold" id="invoice-subtotal">$ 0</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-muted">Impuestos:</td>
+                                            <td class="text-muted">IVA Items:</td>
+                                            <td class="text-right font-weight-semibold" id="invoice-items-tax">$ 0</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Impuestos Adicionales:</td>
                                             <td class="text-right font-weight-semibold" id="invoice-taxes">$ 0</td>
                                         </tr>
                                         <tr>
@@ -368,7 +382,7 @@
     <div class="item-row card card-outline card-light mb-3">
         <div class="card-body">
             <div class="row align-items-end">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label class="font-weight-semibold text-muted small">Producto</label>
                         <select name="supplier_invoice[items][__INDEX__][product]"
@@ -396,6 +410,16 @@
                         <input type="number" name="supplier_invoice[items][__INDEX__][unitPrice]"
                             class="form-control form-control-lg item-unit-price border-0 bg-light shadow-sm"
                             placeholder="0.00" min="0" step="0.01" value="0" required>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label class="font-weight-semibold text-muted small">IVA</label>
+                        <select name="supplier_invoice[items][__INDEX__][taxRate]" 
+                            class="form-control form-control-lg item-tax-rate border-0 bg-light shadow-sm" required>
+                            <option value="0">0%</option>
+                            <option value="19">19%</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -456,8 +480,7 @@
 </script>
 {% endblock %}
 
-{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock
-%}
+{% block avanzu_javascripts %}{% include 'AvanzuAdminThemeBundle:Partials:_scripts-form-extra.html.twig' %}{% endblock %}
 
 {% block avanzu_javascripts_inline %}
 <script>
@@ -538,11 +561,17 @@
             row.find('.color-id').val(selectedOption.data('color-id') || '');
         });
 
-        $(document).on('input', '.item-quantity, .item-unit-price', function () {
+        $(document).on('input change', '.item-quantity, .item-unit-price, .item-tax-rate', function () {
             var row = $(this).closest('.item-row');
             var quantity = parseFloat(row.find('.item-quantity').val()) || 0;
             var unitPrice = parseFloat(row.find('.item-unit-price').val()) || 0;
-            row.find('.item-total-price').val((quantity * unitPrice).toFixed(2));
+            var taxRate = parseFloat(row.find('.item-tax-rate').val()) || 0;
+            
+            var subtotal = quantity * unitPrice;
+            var tax = subtotal * (taxRate / 100);
+            var total = subtotal + tax;
+            
+            row.find('.item-total-price').val(total.toFixed(2));
             updateTotals();
         });
 
@@ -557,15 +586,28 @@
 
         function updateTotals() {
             var subtotal = 0;
-            $('.item-total-price').each(function () {
-                subtotal += parseFloat($(this).val()) || 0;
+            var itemsTaxTotal = 0;
+            
+            $('.item-row').each(function() {
+                var row = $(this);
+                var quantity = parseFloat(row.find('.item-quantity').val()) || 0;
+                var unitPrice = parseFloat(row.find('.item-unit-price').val()) || 0;
+                var taxRate = parseFloat(row.find('.item-tax-rate').val()) || 0;
+                
+                var itemSubtotal = quantity * unitPrice;
+                var itemTax = itemSubtotal * (taxRate / 100);
+                
+                subtotal += itemSubtotal;
+                itemsTaxTotal += itemTax;
             });
-            var taxes = parseFloat($('input[id*="taxAmount"]').val()) || 0;
+            
+            var additionalTaxes = parseFloat($('input[id*="taxAmount"]').val()) || 0;
             var logistics = parseFloat($('input[id*="logisticCosts"]').val()) || 0;
-            var total = subtotal + taxes + logistics;
+            var total = subtotal + itemsTaxTotal + additionalTaxes + logistics;
 
             $('#invoice-subtotal').text('$ ' + subtotal.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
-            $('#invoice-taxes').text('$ ' + taxes.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+            $('#invoice-items-tax').text('$ ' + itemsTaxTotal.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
+            $('#invoice-taxes').text('$ ' + additionalTaxes.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
             $('#invoice-logistics').text('$ ' + logistics.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
             $('#invoice-total').text('$ ' + total.toLocaleString('es-CO', { minimumFractionDigits: 2 }));
         }
