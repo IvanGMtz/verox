@@ -1492,5 +1492,72 @@ class StoreController extends Controller
             return $response;
         }
     }
+    public function get_facturas_pendientesAction(Request $request)
+    {
+        try {
+            $start_date = $request->request->get("start");
+            $finish_date = $request->request->get("stop");
+            $em = $this->getDoctrine()->getManager();
+            
+            $orders = $em->getRepository('AppBundle:DespachoOrden')
+                ->createQueryBuilder('a')
+                ->where('a.statusPago = :estado_parcial OR (a.statusPago = :estado_pagado AND (a.abono1 > 0 OR a.abono2 > 0))')
+                ->setParameter('estado_parcial', 3)
+                ->setParameter('estado_pagado', 2)
+                ->andWhere('a.fechaCreacion >= :start')
+                ->setParameter('start', $start_date . " 00:00:00")
+                ->andWhere('a.fechaCreacion <= :finish')
+                ->setParameter('finish', $finish_date . " 23:59:00")
+                ->getQuery()
+                ->getResult();
+
+            $facturasPendientes = [];
+            
+            foreach ($orders as $order) {
+                $total = $order->getTotal();
+                $abono1 = $order->getAbono1() ? $order->getAbono1() : 0;
+                $abono2 = $order->getAbono2() ? $order->getAbono2() : 0;
+                $totalAbonado = $abono1 + $abono2;
+                $pendiente = $total - $totalAbonado;
+                
+                if ($pendiente > 0) {
+                    $estado = 'Pendiente';
+                    if ($totalAbonado > 0) {
+                        $estado = 'Parcialmente Pagado';
+                    }
+                    
+                    $clienteNombre = 'Sin Cliente';
+                    $clienteAsesor = 'Sin Asesor';
+                    
+                    if ($order->getClienteId()) {
+                        $clienteNombre = $order->getClienteId()->getNombre() . ' ' . $order->getClienteId()->getApellidos();
+                        $clienteAsesor = $order->getClienteId()->getAsesor();
+                    }
+                    
+                    array_push($facturasPendientes, [
+                        'order_id' => $order->getId(),
+                        'cliente_nombre' => $clienteNombre,
+                        'asesor' => $clienteAsesor,
+                        'total' => $total,
+                        'abonado' => $totalAbonado,
+                        'pendiente' => $pendiente,
+                        'estado' => $estado,
+                        'fecha_creacion' => $order->getFechaCreacion() ? $order->getFechaCreacion()->format('Y-m-d') : ''
+                    ]);
+                }
+            }
+            
+            usort($facturasPendientes, function($a, $b) {
+                return $b['pendiente'] - $a['pendiente'];
+            });
+            
+            $response = new Response(json_encode($facturasPendientes));
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        } catch (\Throwable $th) {
+            $response = new Response($th->getMessage());
+            return $response;
+        }
+    }
 }
 ?>

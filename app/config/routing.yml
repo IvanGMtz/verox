@@ -113,3 +113,8 @@ supplierinvoice_mark_as_paid:
     path:     /{id}/mark-as-paid
     defaults: { _controller: AppBundle:SupplierInvoice:markAsPaid }
     methods:  [GET]
+
+store_get_facturas_pendientes:
+    path: /store/get_facturas_pendientes
+    defaults: { _controller: AppBundle:Store:get_facturas_pendientes }
+    methods: [POST]

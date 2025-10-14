@@ -58,7 +58,8 @@ class MyMenuItemListListener {
           $productos = new MenuItemModel('productos_menu', 'Productos', '', array(), 'fas fa-box-open');
           $productos->addChild(new MenuItemModel('producto_index', 'Lista de Productos', 'producto_index', array(), 'fas fa-list'));
           if($this->user->hasRole('ROLE_ADMIN_VENTAS') || $this->user->hasRole('ROLE_SUPER_ADMIN') || 
-             $this->user->hasRole('ROLE_DESIGN') || $this->user->hasRole('ROLE_ADMIN_PRODUCCION')){
+             $this->user->hasRole('ROLE_DESIGN') || $this->user->hasRole('ROLE_ADMIN_PRODUCCION') ||
+             $this->user->hasRole('ROLE_CORTE') || $this->user->hasRole('ROLE_INVENTARIO')){
             $productos->addChild(new MenuItemModel('producto_new', 'Crear Producto', 'producto_new', array(), 'fas fa-plus-circle'));
           }
           if($this->user->hasRole('ROLE_ADMIN_VENTAS') || $this->user->hasRole('ROLE_SUPER_ADMIN')){
@@ -86,6 +87,17 @@ class MyMenuItemListListener {
           $despachos->addChild(new MenuItemModel('despachoorden_index', 'Órdenes de Despacho', 'despachoorden_index', array(), 'fas fa-clipboard-list'));
           $despachos->addChild(new MenuItemModel('despachoorden_new', 'Nueva Orden', 'despachoorden_new', array(), 'fas fa-plus-square'));
           array_push($menuItems, $despachos);
+        }
+
+        // BONOS Y USUARIOS TIENDA para VENDEDOR y DESPACHOS
+        if($this->user && !is_string($this->user) && 
+           ($this->user->hasRole('ROLE_VENDEDOR') || $this->user->hasRole('ROLE_DESPACHOS'))){
+          if(!isset($tienda)){
+            $tienda = new MenuItemModel('tienda_menu', 'Tienda Online', '', array(), 'fas fa-store-alt');
+            $tienda->addChild(new MenuItemModel('storebonos_index', 'Bonos de Compra', 'storebonos_index', array(), 'fas fa-ticket-alt'));
+            $tienda->addChild(new MenuItemModel('storeusuarios_index', 'Clientes', 'storeusuarios_index', array(), 'fas fa-users'));
+            array_push($menuItems, $tienda);
+          }
         }
 
         // MÓDULO DE DISEÑO Y PRODUCCIÓN

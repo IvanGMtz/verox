@@ -1,0 +1,60 @@
+<div id="search_report" class="p-3" style="display:block;">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h3 class="card-title"><i class="fas fa-filter"></i> Filtros de Búsqueda</h3>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label class="font-weight-bold">Tipo de Reporte</label>
+          <select id="reporteTipo" class="form-control form-control-lg" onchange="cambiarTipoReporte();">
+            <option value="Total">Total Vendido</option>
+            <option value="Categoria">Total Vendido X Categoria</option>
+            <option value="Asesor">Total Vendido X Asesor</option>
+            <option value="Top">Productos más vendidos</option>
+          </select>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-3" id="categoriasSelector" style="display:none;">
+          <label class="font-weight-bold">Categoria</label>
+          <select id="Categoria" class="form-control form-control-lg">
+            {% for categoria in categorias %}
+              <option value="{{ categoria }}">{{ categoria }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-3" id="asesorselector" style="display:none;">
+          <label class="font-weight-bold">Asesor</label>
+          <select id="Asesor" class="form-control form-control-lg">
+            {% for asesor in asesores %}
+              <option value="{{ asesor }}">{{ asesor }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label class="font-weight-bold">Fecha Inicial</label>
+          <input type="date" id="start" class="form-control form-control-lg">
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label class="font-weight-bold">Fecha Final</label>
+          <input type="date" id="stop" class="form-control form-control-lg">
+        </div>
+        
+        <div class="col-lg-4 col-md-12 mb-3">
+          <label class="font-weight-bold d-block">&nbsp;</label>
+          <button id="btn_hoy" class="btn btn-info btn-lg mr-2" onclick="setHoyYGenerar();">
+            <i class="fas fa-calendar-day"></i> Hoy
+          </button>
+          <button id="Traer_reporte" class="btn btn-success btn-lg" onclick="solicitarReporte();">
+            <i class="fas fa-chart-line"></i> Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
