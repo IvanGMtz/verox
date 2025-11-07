@@ -1501,9 +1501,8 @@ class StoreController extends Controller
             
             $orders = $em->getRepository('AppBundle:DespachoOrden')
                 ->createQueryBuilder('a')
-                ->where('a.statusPago = :estado_parcial OR (a.statusPago = :estado_pagado AND (a.abono1 > 0 OR a.abono2 > 0))')
+                ->where('a.statusPago = :estado_parcial')
                 ->setParameter('estado_parcial', 3)
-                ->setParameter('estado_pagado', 2)
                 ->andWhere('a.fechaCreacion >= :start')
                 ->setParameter('start', $start_date . " 00:00:00")
                 ->andWhere('a.fechaCreacion <= :finish')
@@ -1520,7 +1519,7 @@ class StoreController extends Controller
                 $totalAbonado = $abono1 + $abono2;
                 $pendiente = $total - $totalAbonado;
                 
-                if ($pendiente > 0) {
+                if ($pendiente > 0.01) {
                     $estado = 'Pendiente';
                     if ($totalAbonado > 0) {
                         $estado = 'Parcialmente Pagado';

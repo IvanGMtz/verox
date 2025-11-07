@@ -1,108 +1,224 @@
 {% extends 'AvanzuAdminThemeBundle:layout:base-layout.html.twig' %}
-{% block avanzu_document_title %}Home{% endblock %}
-{% block avanzu_page_title %}Estación de Trabajo{% endblock %}
-{% block avanzu_page_subtitle %}{% if q is defined %}Filtrado por: {{q}}{% endif %}{% endblock %}
+{% block avanzu_document_title %}Dashboard{% endblock %}
+{% block avanzu_page_title %}Dashboard{% endblock %}
+
 {% block titulo_pagina %}
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1 class="m-0">Ordenes de Trabajo</h1>
-        </div><!-- /.col -->
-        <div class="col-sm-6">
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-{% endblock %}
-{% block avanzu_page_content %}
-<div class="row">
-  <div class="col-lg-3 col-6">
-    <!-- small box -->
-    <div class="small-box bg-success">
-      <div class="inner">
-        <h3>Abrir</h3>
-
-        <p>Ordenes de producción</p>
-      </div>
-      <div class="icon">
-        <i class="ion ion-bag"></i>
-      </div>
-      <a href="{{ path('produccionorden_index') }}" class="small-box-footer">Abrir <i class="fas fa-check"></i></a>
-    </div>
-  </div>
-  <div class="col-lg-3 col-6">
-    <!-- small box -->
-    <div class="small-box bg-info">
-      <div class="inner">
-        <h3>Abrir</h3>
-
-        <p>Ordenes de Diseño</p>
-      </div>
-      <div class="icon">
-        <i class="fas fa-female"></i>
-      </div>
-      <a href="{{ path('disenoorden_index') }}" class="small-box-footer">Abrir <i class="fas fa-check"></i></a>
-    </div>
-  </div>
-</div>
 <div class="content-header">
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1 class="m-0">Mis pendientes</h1>
-      </div><!-- /.col -->
-      <div class="col-sm-6">
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container-fluid -->
-</div>
-{% if is_granted('ROLE_DESIGN') %}
-  {% for orden in ordenes %}
-    {% set count = 0 %}
-    {% for diseno in disenos %}
-      {% if diseno.orden.id == orden.id %}
-        {% set count = count + 1 %}
-      {% endif %}
-    {% endfor %}
-    {% if count < orden.cantidad %}
-      <div class="alert alert-warning mt-2" role="alert">
-        Atención: <br>
-        La orden <a class="alert-link" href="{{ path('disenoorden_show',{id: orden.id}) }}">{{ orden.referencia }}</a> tiene diseños pendientes por crear
+        <h1 class="m-0">Dashboard de Ventas</h1>
       </div>
-    {% endif %}
-  {% endfor %}
-{% endif %}
-{% for proceso in procesos_activos %}
-  {% if proceso.proceso == "DISEÑO" %}
-    {% if is_granted('ROLE_DESIGN') %}
-    <div class="alert alert-warning mt-2" role="alert">
-      Pendiente en orden de {{ proceso.tipoOrden }}: <br>
-      Tienes pendiente terminar el diseño <a class="alert-link" href="{{ path('diseno_show',{id: proceso.diseno.id}) }}">{{ proceso.diseno.nombre }}</a>
+      <div class="col-sm-6 text-right">
+        <span id="periodo_actual" class="badge badge-primary p-2" style="font-size: 14px;"></span>
+      </div>
     </div>
-    {% endif %}
-  {% elseif proceso.proceso == "BORDADO" and proceso.status == 0 and is_granted('ROLE_BORDADO') %}
-  <div class="alert alert-warning mt-2" role="alert">
-    Pendiente en orden de {{ proceso.tipoOrden }}: <br>
-    Tienes pendiente piezas por Bordar para: <a class="alert-link" href="{% if proceso.tipoOrden == 'DISEÑO' %}{{ path('diseno_show4',{id: proceso.diseno.id}) }}{% else %}{{ path('diseno_show3',{diseno: proceso.diseno.id,produccionOrden:proceso.orden}) }}{% endif %} ">{{ proceso.diseno.nombre }}</a>
   </div>
-  {% else %}
-    {% if is_granted('ROLE_' ~ proceso.proceso) %}
-    <div class="alert alert-warning mt-2" role="alert">
-      Pendiente en orden de {{ proceso.tipoOrden }}: <br>
-      Tienes pendiente terminar tu proceso para: <a class="alert-link" href="{% if proceso.tipoOrden == 'DISEÑO' %}{{ path('diseno_show',{id: proceso.diseno.id}) }}{% else %}{{ path('diseno_show2',{diseno: proceso.diseno.id,produccionOrden:proceso.orden}) }}{% endif %} ">{{ proceso.diseno.nombre }}</a>
-    </div>
-    {% endif %}
-  {% endif %}
-{% endfor %}
+</div>
 {% endblock %}
-{% block avanzu_javascripts_inline %}
-  <script>
 
-  function new_order_design(){
-    $('#modal-design').modal('show');
-  }
-  </script>
+{% block avanzu_page_content %}
+
+<!-- Selector de Período -->
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row align-items-end">
+          <div class="col-md-3">
+            <label class="font-weight-bold">Mes</label>
+            <select id="mes_selector" class="form-control form-control-lg">
+              <option value="1">Enero</option>
+              <option value="2">Febrero</option>
+              <option value="3">Marzo</option>
+              <option value="4">Abril</option>
+              <option value="5">Mayo</option>
+              <option value="6">Junio</option>
+              <option value="7">Julio</option>
+              <option value="8">Agosto</option>
+              <option value="9">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="font-weight-bold">Año</label>
+            <select id="anio_selector" class="form-control form-control-lg">
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-primary btn-lg btn-block" onclick="cargarDashboard();">
+              <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cards de Métricas Principales -->
+<div class="row mb-4">
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card bg-primary text-white shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-0 font-weight-bold" id="total_ventas">0</h4>
+            <p class="mb-0">Ventas del Mes</p>
+          </div>
+          <i class="fas fa-shopping-cart fa-3x" style="opacity: 0.5;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card bg-success text-white shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-0 font-weight-bold" id="total_ordenes">0</h4>
+            <p class="mb-0">Órdenes</p>
+          </div>
+          <i class="fas fa-file-invoice fa-3x" style="opacity: 0.5;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card bg-warning text-white shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-0 font-weight-bold" id="total_productos">0</h4>
+            <p class="mb-0">Productos Vendidos</p>
+          </div>
+          <i class="fas fa-box fa-3x" style="opacity: 0.5;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-md-6 mb-3">
+    <div class="card bg-info text-white shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-0 font-weight-bold" id="total_dinero">$0</h4>
+            <p class="mb-0">Total Recaudado</p>
+          </div>
+          <i class="fas fa-dollar-sign fa-3x" style="opacity: 0.5;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fila de Gráficos y Tops -->
+<div class="row">
+
+  <!-- Mapa de Calor -->
+  <div class="col-lg-8 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h3 class="card-title mb-0"><i class="fas fa-map-marked-alt"></i> Mapa de Ventas por Ubicación</h3>
+      </div>
+      <div class="card-body p-0">
+        <div id="mapa_ventas" style="height: 400px; width: 100%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top 5 Productos -->
+  <div class="col-lg-4 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h3 class="card-title mb-0"><i class="fas fa-trophy"></i> Top 5 Productos</h3>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush" id="top_productos">
+          <div class="text-center p-3">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Cargando...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Fila de Categorías y Departamentos -->
+<div class="row">
+
+  <!-- Top 5 Categorías -->
+  <div class="col-lg-6 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white">
+        <h3 class="card-title mb-0"><i class="fas fa-tags"></i> Top 5 Categorías</h3>
+      </div>
+      <div class="card-body">
+        <canvas id="chart_categorias" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventas por Departamento -->
+  <div class="col-lg-6 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-white">
+        <h3 class="card-title mb-0"><i class="fas fa-map-marker-alt"></i> Ventas por Departamento</h3>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+          <table class="table table-hover table-sm mb-0">
+            <thead class="thead-light" style="position: sticky; top: 0; z-index: 10; background-color: #f8f9fa;">
+              <tr>
+                <th>Ranking</th>
+                <th>Departamento</th>
+                <th class="text-center">Ventas</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="tabla_departamentos">
+              <tr>
+                <td colspan="4" class="text-center">
+                  <i class="fas fa-spinner fa-spin"></i> Cargando...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block avanzu_javascripts_inline %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<!-- Leaflet CSS y JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- SweetAlert2 para notificaciones -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script del dashboard -->
+<script src="{{ asset('js/dashboard/dashboard-main.js') }}"></script>
+
+<script>
+  var baseUrl = "{{ app.request.getSchemeAndHttpHost() }}";
+
+  document.addEventListener('DOMContentLoaded', function () {
+    inicializarDashboard();
+  });
+</script>
 {% endblock %}

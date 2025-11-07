@@ -118,3 +118,8 @@ store_get_facturas_pendientes:
     path: /store/get_facturas_pendientes
     defaults: { _controller: AppBundle:Store:get_facturas_pendientes }
     methods: [POST]
+
+dashboard_data:
+    path: /dashboard/data
+    defaults: { _controller: AppBundle:Ordenes:getDashboardData }
+    methods: [POST]

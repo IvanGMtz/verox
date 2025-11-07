@@ -106,59 +106,73 @@ function mostrarReporteTotal(reporte, startDate, stopDate, filtros) {
 }
 
 function generarCardsResumenPrincipal(cantidad, totalPrendas, total, totalEnvios) {
-  const html = '<div class="col-lg-3 col-md-6 mb-3">' +
-      '<div class="card bg-primary text-white shadow">' +
-        '<div class="card-body">' +
-          '<div class="d-flex justify-content-between align-items-center">' +
-            '<div>' +
-              '<h2 class="mb-0 font-weight-bold">' + cantidad + '</h2>' +
-              '<p class="mb-0">Transacciones</p>' +
-            '</div>' +
-            '<i class="fas fa-shopping-cart fa-3x opacity-50"></i>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="col-lg-3 col-md-6 mb-3">' +
-      '<div class="card bg-success text-white shadow">' +
-        '<div class="card-body">' +
-          '<div class="d-flex justify-content-between align-items-center">' +
-            '<div>' +
-              '<h2 class="mb-0 font-weight-bold">' + totalPrendas.toFixed(0) + '</h2>' +
-              '<p class="mb-0">Unidades</p>' +
-            '</div>' +
-            '<i class="fas fa-box fa-3x opacity-50"></i>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="col-lg-3 col-md-6 mb-3">' +
-      '<div class="card bg-warning text-white shadow">' +
-        '<div class="card-body">' +
-          '<div class="d-flex justify-content-between align-items-center">' +
-            '<div>' +
-              '<h2 class="mb-0 font-weight-bold">' + total.toFixed(2) + '</h2>' +
-              '<p class="mb-0">Total Efectivo</p>' +
-            '</div>' +
-            '<i class="fas fa-dollar-sign fa-3x opacity-50"></i>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="col-lg-3 col-md-6 mb-3">' +
-      '<div class="card bg-info text-white shadow">' +
-        '<div class="card-body">' +
-          '<div class="d-flex justify-content-between align-items-center">' +
-            '<div>' +
-              '<h2 class="mb-0 font-weight-bold">' + (totalEnvios + total).toFixed(2) + '</h2>' +
-              '<p class="mb-0">Gran Total</p>' +
-            '</div>' +
-            '<i class="fas fa-chart-line fa-3x opacity-50"></i>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  
+  const html = `
+    <div class="col-lg-2 col-md-6 mb-3">
+      <div class="card bg-primary text-white shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="mb-0 font-weight-bold">${cantidad}</h2>
+              <p class="mb-0">Transacciones</p>
+            </div>
+            <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2 col-md-6 mb-3">
+      <div class="card bg-success text-white shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="mb-0 font-weight-bold">${totalPrendas.toFixed(0)}</h2>
+              <p class="mb-0">Unidades</p>
+            </div>
+            <i class="fas fa-box fa-3x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-warning text-white shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="mb-0 font-weight-bold">${total.toFixed(2)}</h2>
+              <p class="mb-0">Total Efectivo</p>
+            </div>
+            <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2 col-md-6 mb-3">
+      <div class="card bg-info text-white shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="mb-0 font-weight-bold">${totalEnvios.toFixed(2)}</h2>
+              <p class="mb-0">Total Envíos</p>
+            </div>
+            <i class="fas fa-truck fa-3x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="mb-0 font-weight-bold">${(total + totalEnvios).toFixed(2)}</h2>
+              <p class="mb-0">Gran Total</p>
+            </div>
+            <i class="fas fa-chart-line fa-3x opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
   $("#cards_resumen_principal").html(html);
 }
 
