@@ -10,8 +10,9 @@ function mostrarReporteTotal(reporte, startDate, stopDate, filtros) {
   document.getElementById("cards_desglose").innerHTML = "";
   document.getElementById("detail_data_total").innerHTML = "";
   
-  // Mostrar filtro de asesor
+  // Mostrar filtro de asesor y actualizar indicador
   document.getElementById("asesorSelector2").style.display = "block";
+  actualizarIndicadorVista(filtros.category);
   
   let cantidad = 0;
   let totalPrendas = 0;
@@ -103,6 +104,32 @@ function mostrarReporteTotal(reporte, startDate, stopDate, filtros) {
     totalNuevos,
     totalVentaNetaNuevos
   );
+}
+
+function actualizarIndicadorVista(asesor) {
+  const indicador = document.getElementById("indicadorVista");
+  
+  if (asesor === "TODOS") {
+    indicador.innerHTML = `
+      <div class="d-flex align-items-center">
+        <i class="fas fa-chart-bar fa-2x text-primary mr-3"></i>
+        <div>
+          <h4 class="mb-0 font-weight-bold">Reporte General</h4>
+          <small class="text-muted">Mostrando datos de todos los asesores</small>
+        </div>
+      </div>
+    `;
+  } else {
+    indicador.innerHTML = `
+      <div class="d-flex align-items-center">
+        <i class="fas fa-user-circle fa-2x text-info mr-3"></i>
+        <div>
+          <h4 class="mb-0 font-weight-bold">${asesor}</h4>
+          <small class="text-muted">Reporte individual del asesor</small>
+        </div>
+      </div>
+    `;
+  }
 }
 
 function generarCardsResumenPrincipal(cantidad, totalPrendas, total, totalEnvios) {

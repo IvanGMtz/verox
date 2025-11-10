@@ -31,11 +31,8 @@ class MyMenuItemListListener {
         $em = $this->em;
         $menuItems = array();
         
-        // HOME - Para roles de producción
-        if($this->user && !is_string($this->user) &&
-          ($this->user->hasRole('ROLE_DESIGN') || $this->user->hasRole('ROLE_ADMIN_PRODUCCION') || $this->user->hasRole('ROLE_SUPER_ADMIN') || $this->user->hasRole('ROLE_CORTE')
-          || $this->user->hasRole('ROLE_CONFECCION') || $this->user->hasRole('ROLE_BORDADO') || $this->user->hasRole('ROLE_LAVANDERIA') || $this->user->hasRole('ROLE_INVENTARIO')
-          || $this->user->hasRole('ROLE_TERMINADOS') || $this->user->hasRole('ROLE_PRETERMINADOS') || $this->user->hasRole('ROLE_EMPAQUE') || $this->user->hasRole('ROLE_TRAZO'))){
+        // HOME - Para todos los usuarios autenticados
+        if($this->user && !is_string($this->user)){
           array_push($menuItems, new MenuItemModel('diseno_home', 'Dashboard', 'ordenes_index', array(), 'fas fa-home'));
         }
 
